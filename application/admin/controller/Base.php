@@ -9,17 +9,22 @@ class Base extends Controller
     public function __construct()
     {
         parent::__construct();
-//        $userId = session('sys_user_id');
-//        $username = session('user_name');
-//        $group_id = session('group_id');
-//        if( empty($userId) && empty($username) && empty($group_id) ){
-//            $this->redirect('admin/login/index');
-//        }
+        $this->sysUserId = session('sys_user_id');
+        $this->sysUsername = session('user_name');
+        $this->group_id = session('group_id');
+        if( empty($this->sysUserId) && empty($this->sysUsername) && empty($this->group_id) ){
+            $this->redirect('admin/login/index');
+        }
 
 
     }
 
     public function menus(){
-
+        $menus = array(
+            '主页' => array('power'=>'home','child'=>array(),'status'=>1),
+            '系统设置' => array('power'=>'home','child'=>array(),'status'=>1),
+            '管理员管理' => array('power'=>'home','child'=>array(),'status'=>1)
+        );
     }
+
 }

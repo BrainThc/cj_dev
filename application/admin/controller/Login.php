@@ -1,7 +1,7 @@
 <?php
 namespace app\admin\controller;
 use think\Controller;
-use app\admin\model\SysUser;
+use app\admin\model\SysUserModel;
 use think\Exception;
 
 class Login extends Controller
@@ -27,7 +27,7 @@ class Login extends Controller
             $username = trim($data['username']);
             $password = trim($data['password']);
             $sysUserModel = model('SysUser');
-            if( $sysUserModel->getUser($username,true) === false )
+            if( $sysUserModel->issetUser($username,true) === false )
                 throw new Exception('用户不存在');
 
             $userInfo = $sysUserModel->getInfo;
@@ -35,18 +35,18 @@ class Login extends Controller
             if( $sysUserModel->encryptPwd($password,$userInfo['keyCode']) != $userInfo['password'] )
                 throw new Exception('密码错误');
 
-            if( captcha_check($data['verifyCode']) === false )
-                throw new Exception('验证码错误');
+//            if( captcha_check($data['verifyCode']) === false )
+//                throw new Exception('验证码错误');
 
             //检查账号状态
-            if( SysUser::$map_status[$userInfo['status']]['value'] != SysUser::USER_NORMAL )
+            if( SysUserModel::$map_status[$userInfo['status']]['value'] != SysUserModel::USER_NORMAL )
                 throw new Exception('账号已被禁用');
-
-            //添加登录日志 待定
 
             //配置登录信息
             $loginModel = model('Login');
-            $loginModel->SignInfo($userInfo);
+            if( $loginModel->signInfo($userInfo) === false )
+                throw new Exception('网络错误，账号登信息配置失败');
+
             $json['msg'] = '登录成功';
             $json['status'] = 1;
         }catch( Exception $e ){
@@ -60,7 +60,7 @@ class Login extends Controller
      */
     public function signOut(){
         $loginModel = model('Login');
-        $loginModel->SignOut();
+        $loginModel->signOut();
         $userId = session('sys_user_id');
         if( empty($userId) ){
             $this->success('退出成功，正在跳转~~~',\think\Url::build('admin/login/index'),'',1);

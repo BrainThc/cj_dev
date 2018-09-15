@@ -5,12 +5,11 @@ class Powergroup extends Base
     public function __construct()
     {
         parent::__construct();
-        $this->sysUserId = session('sys_user_id');
     }
 
     public function index(){
         echo $this->sysUserId;
-        return $this->fetch();
+//        return $this->fetch();
     }
 
     /**

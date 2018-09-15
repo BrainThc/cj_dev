@@ -7,12 +7,11 @@ use think\Model;
  * 权限组model
  * Class Powergroup
  */
-class Powergroup extends Model
+class PowerGroupModel extends Model
 {
     protected $table = 'sys_user_group';
 
     public function getAll($whereData=[],$page=1,$size=16){
-//        return $this->getTable();
         if( !empty($whereData) ) {
             foreach ($whereData as $key => $value) {
                 DB::where($whereData, $value);
