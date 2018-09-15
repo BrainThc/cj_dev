@@ -1,9 +1,7 @@
 <?php
 namespace app\admin\controller;
-use think\Db;
 use think\Controller;
-use app\admin\model\SysUserModel;
-use app\admin\model\LoginModel;
+use app\admin\model\SysUser;
 use think\Exception;
 
 class Login extends Controller
@@ -28,7 +26,7 @@ class Login extends Controller
 
             $username = trim($data['username']);
             $password = trim($data['password']);
-            $sysUserModel = new SysUserModel();
+            $sysUserModel = model('SysUser');
             if( $sysUserModel->getUser($username,true) === false )
                 throw new Exception('用户不存在');
 
@@ -41,13 +39,13 @@ class Login extends Controller
                 throw new Exception('验证码错误');
 
             //检查账号状态
-            if( SysUserModel::$map_status[$userInfo['status']]['status'] != SysUserModel::USER_NORMAL )
+            if( SysUser::$map_status[$userInfo['status']]['value'] != SysUser::USER_NORMAL )
                 throw new Exception('账号已被禁用');
 
             //添加登录日志 待定
 
             //配置登录信息
-            $loginModel = new LoginModel();
+            $loginModel = model('Login');
             $loginModel->SignInfo($userInfo);
             $json['msg'] = '登录成功';
             $json['status'] = 1;
@@ -61,7 +59,7 @@ class Login extends Controller
      * 退出
      */
     public function signOut(){
-        $loginModel = new LoginModel();
+        $loginModel = model('Login');
         $loginModel->SignOut();
         $userId = session('sys_user_id');
         if( empty($userId) ){

@@ -1,22 +1,19 @@
 <?php
 namespace app\admin\controller;
-use think\Db;
-use think\Controller;
-//use app\admin\model\SysUser;
 
 /**
  * Class SysUser
  * @package app\admin\controller
  */
 
-class SysUser extends Controller
+class Sysuser extends Base
 {
 
     //列表主页
     public function index()
     {
-        echo '1232';
-        exit;
+        echo 123;
+        echo '这里是管理员管理列表';
         return $this->fetch();
     }
 

@@ -6,7 +6,7 @@ use think\Model;
  * 管理员账号model
  * Class User
  */
-class SysUserModel extends Model{
+class SysUser extends Model{
 
     protected $table = 'sys_user';
 
@@ -16,18 +16,18 @@ class SysUserModel extends Model{
     const USER_NORMAL= 1;
     const USER_DISABLE = 2;
 
-    // 账号状态映射
+    // 账号状态静态映射
     public static $map_status = array(
         self::USER_DELETE => array(
-            'status' => '0',
+            'value' => '0',
             'desc' => '已注销',
         ),
         self::USER_NORMAL => array(
-            'status' => '1',
+            'value' => '1',
             'desc' => '状态正常',
         ),
         self::USER_DISABLE => array(
-            'status' => '2',
+            'value' => '2',
             'desc' => '已禁用',
         ),
     );

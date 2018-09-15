@@ -7,7 +7,7 @@ use think\Model;
  * 管理员账号model
  * Class User
  */
-class LoginModel extends Model
+class Login extends Model
 {
 
     public function SignInfo($userInfo){
