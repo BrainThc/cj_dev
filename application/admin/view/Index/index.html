@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<!--<script type="text/javascript" src="__SYSJS__/jquery.min.js"></script>-->
+<script type="text/javascript" src="__SYSJS__/jquery.min.js"></script>
 <script type="text/javascript" src="__SYSJS__/jquery.artDialog.js?skin=blue"></script>
 <script type="text/javascript" src="__SYSJS__/iframeTools.js"></script>
 <link rel='stylesheet' type='text/css' href='__SYSCSS__/style.css'>
@@ -12,61 +12,35 @@
 <div id="header" class="header">
 	<div class="logo"><a href="" onclick="return false;"><img src="__SYSIMG__/admin_logo.png" width="180"></a></div>
 	<div class="nav f_r"> <a href="javascript:void(0);" onclick="gocacheurl();"></a>&nbsp;&nbsp;</div>
-
 	<div class="nav">&nbsp;&nbsp;&nbsp;&nbsp;<i>|</i> 欢迎你！{:session('username')}  <i>|</i> [<a href="{:url("login/signOut")}" target="_top">退出</a>]  <i>|</i> <a href="" target="_blank">浏览站点</a> </div>
 
 	<div class="topmenu">
-		<ul>
-		<!--<volist name="menuGroupList" id="tag">	 -->
-		<li id="menu_"><span><a href="javascript:void(0);" onClick="sethighlight();">12321</a></span></li>
-		<!--</volist>-->
+		<ul id="menuTopBox">
+			{$homeMenuTop}
 		</ul>
 	</div>
 	<div class="header_footer"></div>
 </div>
-
-
 <div id="Main_content">
-
 	<div id="MainBox" >
 	    <div class="main_box">
 			<iframe name="main" id="Main" src='' frameborder="false" scrolling="auto"  width="100%" height="auto" allowtransparency="true"></iframe>
 		</div>
     </div>
-
 	<div id="leftMenuBox">
     	<div id="leftMenu">
 			<div style="padding-left:12px;_padding-left:10px;">				
-				<!--<volist name="menu" id="r">-->
-					<dl id="nav_">
-						<dt></dt>
-						<volist name="r[nav]" id="item">
-						<dd id="nav_"><span  onclick="javascript:gourl('')"><a href="" target="main">213213</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="" id="" target="main"></a></span></dd>
-						</volist>
-
-						<if condition="$r['bnav']['model'] eq 'Manual'">
-								<dd id="" >
-									<span  onclick="javascript:gourl()">
-										<a href="" target="main">123213</a>
-									</span>
-								</dd>
-						</if>
-
-					</dl>
-				<!--</volist>-->
+				<dl id="menuListBox">
+					{$homeMenuLeft}
+				</dl>
 			</div>
 		</div>
-
 		<div id="Main_drop">
-			<a  href="javascript:toggleMenu(1);" class="on"><img src="./Public/Images/admin_barclose.gif" width="11" height="60" border="0"  /></a>   
-			<a  href="javascript:toggleMenu(0);" class="off" style="display:none;"><img src="./Public/Images/admin_baropen.gif" width="11" height="60" border="0"  /></a>  
+			<a  href="javascript:toggleMenu(1);" class="on"><img src="__SYSIMG__/admin_barclose.gif" width="11" height="60" border="0"  /></a>
+			<a  href="javascript:toggleMenu(0);" class="off" style="display:none;"><img src="__SYSIMG__/admin_baropen.gif" width="11" height="60" border="0"  /></a>
 		</div>
     </div>
-
 </div>
-
-      
-
 <div id="footer" class="footer" >
 <!--浏览器版本控制-->
 <div class="footer_ie">你还在用落后的<strong style="color:#F60">IE <!--[if IE 6]>6<![endif]--><!--[if IE 7]>7<![endif]--><!--[if IE 8]>8<![endif]--></strong>？？OUT啦 为了体验<strong style="color:#F00">HTML5</strong> 感快<a href="http://windows.microsoft.com/zh-cn/internet-explorer/ie-10-worldwide-languages" target="_blank">升级IE</a>或使用<a href="http://www.liebao.cn" target="_blank">猎豹浏览器</a>吧！！</div>
@@ -116,9 +90,7 @@ function wSize(){
 }
 wSize();
 
-
 function sethighlight(n) {
-	 $('.topmenu li span').removeClass('current');
 	 $('#menu_'+n+' span').addClass('current');
 	 $('#leftMenu dl').hide();
 	 $('#nav_'+n).show();
@@ -127,10 +99,10 @@ function sethighlight(n) {
 	 url = $('#nav_'+n+' dd a').eq(0).attr('href');
 	 window.main.location.href= url;
 }
-sethighlight(1);
+// sethighlight(1);
 function gourl(n,url){
-	$('#leftMenu dl dd').removeClass('on');
-	$('#nav_'+n).addClass('on');
+
+	alert(window.location);
 	window.main.location.href=url;
 }
 
@@ -151,7 +123,30 @@ function toggleMenu(doit){
 		$('#leftMenu').show();
 		$('#MainBox .main_box').css('margin-left','224px');
 	}
-}	
+}
+
+//菜单选中
+function menuAction(n,op){
+    $('#menuTopBox li span').removeClass('current');
+    $('#menu_'+n+' span').addClass('current');
+    $.ajax({
+        type: 'POST',
+        url: "{:url('Index/getMenuLeftHtml')}",
+		data:{ op : op},
+        dataType: 'json',
+        success: function(data){
+			$('#menuListBox').html(data.info);
+            $('#nav_1 a').click();
+		},
+    });
+}
+
+function menuLeftAction(n,url){
+    $('#menuListBox dd').removeClass('on');
+    $('#nav_'+n).addClass('on');
+    window.main.location.href= url;
+}
+
 </script>
 <!--帮助手册-->
 

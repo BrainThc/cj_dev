@@ -1,6 +1,6 @@
 <?php
 namespace app\admin\controller;
-class Powergroup extends Base
+class Sysusergroup extends Base
 {
     public function __construct()
     {

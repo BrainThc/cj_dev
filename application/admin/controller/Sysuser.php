@@ -15,11 +15,29 @@ class Sysuser extends Base
 
         echo 123;
         echo '这里是管理员管理列表';
-        return $this->fetch();
+//        return $this->fetch();
     }
 
-    public function get_sysuser_list(){
-        
+    public function getSysUserList(){
+        $size = 16;
+        p(input());
+        $sysUserModel = model('SysUser');
+        $sysUserModel->getTable();
+        echo $sysUserModel;
+    }
+
+    /**
+     * 创建新管理员接口
+     */
+    public function createUser(){
+
+    }
+
+    /**
+     * 更改管理员信息
+     */
+    public function updateUser(){
+
     }
 
 }

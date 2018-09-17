@@ -22,7 +22,7 @@ define('__HOME__',$_SERVER['SERVER_NAME'].'/');//全局定量
  */
  function p($obj=NULL,$seeType=false){
      if( empty($obj) )
-         var_dump(NULL);
+         return var_dump(NULL);
 
      echo '<pre>';
      if($seeType){
@@ -31,5 +31,18 @@ define('__HOME__',$_SERVER['SERVER_NAME'].'/');//全局定量
          print_r($obj);
      }
      echo '</pre>';
+     exit;
 }
 
+/**
+ * 接口返回格式
+ * @param bool $bool    状态
+ * @param $desc         描述内容
+ * @param $data         返回参数
+ */
+function exitJosn($bool=false,$desc='',$data=[]){
+    $json['status'] = $bool ? 1 : 0;
+    $json['msg'] = $desc;
+    $json['info'] = $data;
+    exit(json_encode($json));
+}

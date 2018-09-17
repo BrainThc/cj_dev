@@ -59,7 +59,7 @@ class SysUserModel extends Model{
     }
 
     /**
-     * 检查用户吃否存在
+     * 检查用户是否存在
      * @param string $username      用户名
      * @param bool $isGet           是否提取用户信息 暂存 $this->getInfo
      * @return bool
