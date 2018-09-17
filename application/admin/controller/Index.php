@@ -7,10 +7,8 @@ class Index extends Base
 {
     public function index()
     {
-        $_op = request()->controller();
-        $_cat = request()->action();
-        $this->assign('homeMenuTop',$this->getMenuTop($_op));//后台一级导航栏
-        $this->assign('homeMenuLeft',$this->getMenuLeft($_op,$_cat));//后台左侧导航栏
+        $this->assign('homeMenuTop',$this->getMenuTop($this->_op));//后台一级导航栏
+        $this->assign('homeMenuLeft',$this->getMenuLeft($this->_op,$this->_cat));//后台左侧导航栏
         return $this->fetch();
     }
 
@@ -21,8 +19,8 @@ class Index extends Base
     }
 
     public function show(){
-        exitJosn(false,'奥术大师');
-        echo '这里是后台首页信息展示';
+        echo '这里是首页信息展示页<br />';
+        return $this->fetch();
     }
 
 }

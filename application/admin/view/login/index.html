@@ -54,7 +54,8 @@
             beforeSend:function(){
                 $('#result').html('<img src="__SYSIMG__/msg_loading.gif">').show();
             },
-            success:       complete,  // post-submit callback
+            success:       complete,  // post-submit callback,
+            error: errReturn,
             dataType: 'json'
         });
         return false;
@@ -64,11 +65,15 @@
         {
             $('#result').html(data.msg).show();
             window.location.href = '{:url("Index/index")}';
-            // setTimeout(function(){	window.location.href = '{:url("Index/index")}';},500);
             return false;
         }else{
+            // $('#verifyImage').attr('src','{:captcha_src()}?'+Math.random());
             $('#result').html(data.msg).show();
         }
+    }
+
+    function errReturn(){
+        $('#verifyImage').attr('src','{:captcha_src()}');
     }
     // function reload(){
     //     document.login.username.focus();

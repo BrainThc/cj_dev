@@ -8,14 +8,14 @@ use think\Model;
  */
 class SysUserModel extends Model{
 
-    protected $table = 'sys_user';
+    protected $name = 'sys_user';
     protected $pk = 'sys_user_id';
 
     public $getInfo = null;
 
-    const USER_DELETE = 0;
-    const USER_NORMAL= 1;
-    const USER_DISABLE = 2;
+    const USER_DELETE = 0;//已删除
+    const USER_NORMAL= 1;//正常用户
+    const USER_DISABLE = 2;//禁用
 
     // 账号状态静态映射
     public static $map_status = array(
@@ -71,7 +71,7 @@ class SysUserModel extends Model{
         if( empty($username) )
             return false;
 
-        $userInfo = Db::name($this->getTable())
+        $userInfo = Db::table($this->getTable())
             ->where('username',$username)
             ->find();
 
@@ -93,7 +93,7 @@ class SysUserModel extends Model{
         if( $sysUserId <= 0 ){
             return false;
         }
-        return Db::name($this->getTable())->where($this->getPk(),$sysUserId)->update($data);
+        return Db::table($this->getTable())->where($this->getPk(),$sysUserId)->update($data);
     }
 
 

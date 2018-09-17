@@ -10,7 +10,7 @@ use think\Request;
 class LogModel extends Model
 {
 
-    protected $table = 'sys_user_log';
+    protected $name = 'sys_user_log';
 
     const LOGIN = 'signIn';
     const INSERT = 'insert';
@@ -23,9 +23,11 @@ class LogModel extends Model
      * @param $desc     操作内容
      * @return bool
      */
-    public function note($type,$desc){
+    public function note($type,$desc,$userId=0){
+        $sys_user_id = $userId;
+        if($userId == 0)
+            $sys_user_id = session('sys_user_id');
 
-        $sys_user_id = session('sys_user_id');
         if( empty($sys_user_id) ){//未登陆非法操作
             //强制退出
             $loginModel = model('Login');
@@ -41,7 +43,7 @@ class LogModel extends Model
             'add_time' => time(),
             'add_ip'   => $request->ip(),
         ];
-        if( Db::name($this->getTable())->insert($data) === false ){
+        if( Db::table($this->getTable())->insert($data) === false ){
             return false;
         }
         return true;
