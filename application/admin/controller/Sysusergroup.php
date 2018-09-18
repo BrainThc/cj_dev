@@ -20,10 +20,9 @@ class Sysusergroup extends Base
     public function index(){
         $groupModel = $this->groupModel;
         $sql = "SELECT * FROM ".$groupModel->getTable();
-        echo $sql;
         $list = $groupModel->query($sql);
-        p($list,true);
-//        return $this->fetch();
+        $this->assign('list',$list);
+        return $this->fetch();
     }
 
     /**

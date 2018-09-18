@@ -21,9 +21,7 @@ class Sysuser extends Base
     public function index()
     {
         //调取所有
-        echo 123;
-        echo '这里是管理员管理列表';
-//        return $this->fetch();
+        return $this->fetch();
     }
 
     //刷新用户权限

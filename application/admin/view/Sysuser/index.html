@@ -1,0 +1,66 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf8" />
+    <title>管理员管理</title>
+    <link rel="stylesheet" type="text/css" href="__SYSCSS__/style.css" />
+    <script type="text/javascript" src="__SYSJS__/jquery.min.js"></script>
+    <script type="text/javascript" src="__SYSJS__/jquery.artDialog.js?skin=blue"></script>
+    <script type="text/javascript" src="__SYSJS__/my.js"></script>
+    <script language="JavaScript">
+        function confirm_delete(url){
+            art.dialog.confirm("", function(){location.href = url;});
+            $(document).keydown(function(event){
+                if(event.which == 13 ){
+                    location.href = url;
+                }
+            });
+        }
+    </script>
+</head>
+    <body width="100%">
+        <div id="result" class="result none"></div>
+        <div class="mainbox">
+
+            <table  class="search_table" width="100%">
+                <tr>
+                    <td>
+                        <form action="" method="get">
+                            <input type="hidden" name="g" value="" />
+                            <input type="hidden" name="m" value="" />
+                            <input type="hidden" name="a" value="" />
+                            筛选<input type="text" name="keyword"  class="input-text" value=""/>
+                            <select name="searchtype">
+                                <option value=""></option>
+                            </select>
+                            <select name="groupid">
+                                <option value=""></option>
+                            </select>
+                            <input type="submit" value="搜索"  class="button" />
+                            <input type="reset" value="重置" class="button"  />
+                        </form>
+                    </td>
+
+                </tr>
+            </table>
+
+            <form name="myform" action="" method="post">
+                <div class="table-list">
+                    <table width="100%" cellspacing="0">
+                        <thead>
+                        <tr>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+
+                    <div class="btn"><input type="submit" class="button" name="dosubmit" value="" /></div>  </div>
+        </div>
+        </form>
+
+        <div id="pages" class="page"></div>
+
+        </div>
+    </body>
+</html>
