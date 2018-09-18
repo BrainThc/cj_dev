@@ -6,7 +6,7 @@ use think\Model;
  * 管理员账号model
  * Class User
  */
-class SysUserModel extends Model{
+class SysUser extends Model{
 
     protected $name = 'sys_user';
     protected $pk = 'sys_user_id';
@@ -57,47 +57,6 @@ class SysUserModel extends Model{
         }
         return md5($pwd.$keyCode);
     }
-
-    /**
-     * 检查用户是否存在
-     * @param string $username      用户名
-     * @param bool $isGet           是否提取用户信息 暂存 $this->getInfo
-     * @return bool
-     * @throws \think\db\exception\DataNotFoundException
-     * @throws \think\db\exception\ModelNotFoundException
-     * @throws \think\exception\DbException
-     */
-    public function issetUser($username='',$isGet=false){
-        if( empty($username) )
-            return false;
-
-        $userInfo = Db::table($this->getTable())
-            ->where('username',$username)
-            ->find();
-
-        if($isGet)
-            $this->getInfo = $userInfo;
-
-        return !empty($userInfo);
-    }
-
-    /**
-     * 后台管理员信息更新操作
-     * @param int $sysUserId        管理员id
-     * @param $data                 更新内容参数 array()
-     * @return bool|int|string
-     * @throws \think\Exception
-     * @throws \think\exception\PDOException
-     */
-    public function updateUser($sysUserId=0,$data){
-        if( $sysUserId <= 0 ){
-            return false;
-        }
-        return Db::table($this->getTable())->where($this->getPk(),$sysUserId)->update($data);
-    }
-
-
-
 
 }
 

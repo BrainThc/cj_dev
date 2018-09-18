@@ -21,9 +21,6 @@ define('__HOME__',$_SERVER['SERVER_NAME'].'/');//全局定量
  * @param bool $seeType     是否显示变量类型
  */
  function p($obj=NULL,$seeType=false){
-     if( empty($obj) )
-         return var_dump(NULL);
-
      echo '<pre>';
      if($seeType){
          var_dump($obj);

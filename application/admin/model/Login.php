@@ -1,14 +1,13 @@
 <?php
 namespace app\admin\model;
-use think\Db;
+use app\admin\model\Log as LogModel;
 use think\Model;
-use think\Request;
 
 /**
  * 管理员账号model
  * Class User
  */
-class LoginModel extends Model
+class Login extends Model
 {
     public function signInfo($userInfo){
         $logModel = model('Log');

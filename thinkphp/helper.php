@@ -166,7 +166,7 @@ if (!function_exists('model')) {
      */
     function model($name = '', $layer = 'model', $appendSuffix = false)
     {
-        return Loader::model($name.'Model', $layer, $appendSuffix);
+        return Loader::model($name, $layer, $appendSuffix);
     }
 }
 

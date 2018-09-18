@@ -1,6 +1,6 @@
 <?php
 namespace app\admin\controller;
-use app\admin\model\SysUserModel;
+use app\admin\model\SysUser as SysUserModel;
 
 /**
  * Class SysUser
@@ -20,7 +20,7 @@ class Sysuser extends Base
     //列表主页
     public function index()
     {
-
+        //调取所有
         echo 123;
         echo '这里是管理员管理列表';
 //        return $this->fetch();

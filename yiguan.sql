@@ -17,18 +17,18 @@ CREATE TABLE IF NOT EXISTS `yg_sys_user_log`(
   `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '索引id',
   `sys_user_id` int(11) NOT NULL COMMENT '管理员id',
   `type` varchar(11) NOT NULL COMMENT '操作类型',
-  `description` text NOT NULL COMMENT '描述',
-  `add_time` int(10) NOT NULL COMMENT '添加时间',
-  `add_ip` char(15) NOT NULL COMMENT '操作ip'
+  `description` text NOT NULL DEFAULT '' COMMENT '描述',
+  `add_time` int(10) NOT NULL DEFAULT 0 COMMENT '添加时间',
+  `add_ip` char(15) NOT NULL DEFAULT '' COMMENT '操作ip'
 ) COMMENT '管理员操作日志';
 
 CREATE TABLE IF NOT EXISTS `yg_sys_user_group`(
   `group_id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '权限组索引',
   `group_name` varchar(50) NOT NULL COMMENT '权限组名',
   `value` text NOT NULL COMMENT '权限内容',
-  `status` tinyint(1) NOT NULL COMMENT '状态 0禁用 1正常',
-  `add_time` int(10) NOT NULL COMMENT '添加时间',
-  `edit_time` int(10) NOT NULL COMMENT '修改时间'
+  `status` tinyint(1) NOT NULL DEFAULT 1 COMMENT '状态 0禁用 1正常 2超级管理员',
+  `add_time` int(10) NOT NULL DEFAULT 0 COMMENT '添加时间',
+  `edit_time` int(10) NOT NULL DEFAULT 0 COMMENT '修改时间'
 ) COMMENT '管理员权限组';
 
 CREATE TABLE IF NOT EXISTS `yg_sys_user_token`(

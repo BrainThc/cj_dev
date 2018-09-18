@@ -7,10 +7,12 @@ use think\Model;
  * 权限组model
  * Class Powergroup
  */
-class SysUserGroupModel extends Model
+class SysUserGroup extends Model
 {
     protected $name = 'sys_user_group';
     protected $pk = 'group_id';
+
+    const SUPER_STATUS = 2;//超级管理员status值
 
     /**
      * 过滤菜单power参数

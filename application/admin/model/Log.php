@@ -7,7 +7,7 @@ use think\Request;
  * 日志model
  * Class User
  */
-class LogModel extends Model
+class Log extends Model
 {
 
     protected $name = 'sys_user_log';
