@@ -51,12 +51,11 @@ class Login extends Controller
                 throw new Exception('网络错误，登录信息记录失败');
 
             //更新用户信息
-            $request = Request();
             $userInfo['login_count']++;
             $data = [
                 'login_count'   => $userInfo['login_count'],
-                'last_ip'       => $request->ip(),
-                'last_time'     => time(),
+                'last_ip'       => Request()->ip(),
+                'last_time'     => time()
             ];
             $updateState = Db::table($sysUserModel->getTable())->where('sys_user_id',$userInfo['sys_user_id'])->update($data);
             if( empty($updateState) ){
@@ -80,7 +79,7 @@ class Login extends Controller
         if( empty($userId) ){
             $this->success('退出成功，正在跳转~~~',\think\Url::build('admin/login/index'),'',1);
         }else{
-            $this->success('操作失败，正在返回~~~',\think\Url::build('admin/index/index'),'',1);
+            $this->error('操作失败，正在返回~~~',\think\Url::build('admin/index/index'),'',1);
         }
     }
 

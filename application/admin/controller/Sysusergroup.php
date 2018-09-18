@@ -1,5 +1,6 @@
 <?php
 namespace app\admin\controller;
+use think\Db;
 use app\admin\model\SysUserGroup as SysUserGroupModel;
 use think\Exception;
 
@@ -28,7 +29,7 @@ class Sysusergroup extends Base
     /**
      * 获取所有权限组配置表内容
      */
-    public function getGroupList(){
+    public function get_group_list(){
         $menuList = $this->getMenuList();
         retrunJosn(true,'success',$menuList);
     }
@@ -36,7 +37,7 @@ class Sysusergroup extends Base
     /**
      * 获取权限组配置列表
      */
-    public function getGroupSite(){
+    public function get_group_site(){
         $menuList = $this->getMenuList();
 
     }
@@ -44,7 +45,7 @@ class Sysusergroup extends Base
     /**
      * 创建权限组
      */
-    public function createGroup(){
+    public function create_group(){
         //配置参数信息
         $data = input('.post');
         try{
@@ -67,27 +68,42 @@ class Sysusergroup extends Base
     }
 
     //初始化超级管理员
-    public function defaultSuperGroup($key = '')
+    public function default_super_group()
     {
-        p(SysUserGroupModel::SUPER_STATUS);
+        $key = input('key');
         if ($key == '')
             retrunJosn(false, '非法操作');
 
-        if ($key == __COMPANYKEY__)
+        if ($key != __COMPANYKEY__)
             retrunJosn(false, '非法操作');
 
+        $t = time();
         //检查超级管理员权限组是否存在
-        $this->groupModel;
+        $info = Db::table($this->groupModel->getTable())->where('status',SysUserGroupModel::SUPER_STATUS)->find();
         $menuList = $this->getMenuList();
         $poser_value = $this->groupModel->filterPowerData($menuList);
-        $insertData = array(
-            'group_name' => '超级管理员',
-            'value' => $poser_value,
-            'status' => SysUserGroupModel::SUPER_STATUS,
-            'add_time' => time(),
-            'edit_time' => time()
-        );
-        Db::table($this->groupModel->getTable())->insert();
+        $poser_value = implode(',',$poser_value);
+        if(empty($info)){
+            $data = array(
+                'group_name' => '超级管理员',
+                'value' => $poser_value,
+                'status' => SysUserGroupModel::SUPER_STATUS,
+                'add_time' => $t,
+                'edit_time' => $t
+            );
+            if( Db::table($this->groupModel->getTable())->insert($data) === false )
+                retrunJosn(false, '初始化失败');
+
+        }else{
+            $data = array(
+                'value' => $poser_value,
+                'edit_time' => $t
+            );
+            $updateState = Db::table($this->groupModel->getTable())->where('group_id',$info['group_id'])->update($data);
+            if( empty($updateState) )
+                retrunJosn(false, '初始化失败',$updateState);
+        }
+        retrunJosn(true, '初始化成功');
     }
 
 

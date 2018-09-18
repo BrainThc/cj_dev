@@ -12,7 +12,7 @@
 <div id="header" class="header">
 	<div class="logo"><a href="" onclick="return false;"><img src="__SYSIMG__/admin_logo.png" width="180"></a></div>
 	<div class="nav f_r"> <a href="javascript:void(0);" onclick="gocacheurl();"></a>&nbsp;&nbsp;</div>
-	<div class="nav">&nbsp;&nbsp;&nbsp;&nbsp;<i>|</i> 欢迎你！{:session('username')}  <i>|</i> [<a href="{:url("login/signOut")}" target="_top">退出</a>]  <i>|</i> <a href="" target="_blank">浏览站点</a> </div>
+	<div class="nav">&nbsp;&nbsp;&nbsp;&nbsp;<i>|</i> 欢迎你！{:session('username')}  <i>|</i> [<a href="{:url("login/signOut")}" >退出</a>]  <i>|</i> <a href="{:url('Sysuser/updateLoginCache')}" >刷新状态</a> <a href="" target="_blank">浏览站点</a> </div>
 
 	<div class="topmenu">
 		<ul id="menuTopBox">
@@ -126,13 +126,13 @@ function toggleMenu(doit){
 }
 
 //菜单选中
-function menuAction(n,op){
+function menuAction(n,act){
     $('#menuTopBox li span').removeClass('current');
     $('#menu_'+n+' span').addClass('current');
     $.ajax({
         type: 'POST',
         url: "{:url('Index/getMenuLeftHtml')}",
-		data:{ op : op},
+		data:{ act : act},
         dataType: 'json',
         success: function(data){
 			$('#menuListBox').html(data.info);

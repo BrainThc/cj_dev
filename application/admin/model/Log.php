@@ -2,7 +2,6 @@
 namespace app\admin\model;
 use think\Db;
 use think\Model;
-use think\Request;
 /**
  * 日志model
  * Class User
@@ -35,13 +34,12 @@ class Log extends Model
             return false;
         }
 
-        $request = Request();
         $data = [
             'sys_user_id' => $sys_user_id,
             'type'  =>  $type,
             'description'  =>  $desc,
             'add_time' => time(),
-            'add_ip'   => $request->ip(),
+            'add_ip'   => Request()->ip(),
         ];
         if( Db::table($this->getTable())->insert($data) === false ){
             return false;

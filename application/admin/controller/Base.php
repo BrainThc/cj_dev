@@ -10,16 +10,32 @@ class Base extends Controller
     public function __construct()
     {
         parent::__construct();
+        $this->set_map_power($this->getMenuList());
         $this->sysUserId = session('sys_user_id');
         $this->sysUsername = session('user_name');
         $this->group_id = session('group_id');
-        if( empty($this->sysUserId) && empty($this->sysUsername) && empty($this->group_id) ){
+        $this->arr_limits = session('sys_user_power');
+        $this->_act = request()->controller();
+        $this->_op = request()->action();
+        $this->checkLogin($this->_act,$this->_op);//用户权限检查
+        //菜单面包屑
+        $this->assign('breadCrumb',$this->getBreadCrumb($this->_act,$this->_op,'->'));
+    }
+
+    public function checkLogin($act,$op){
+        $loginModel = model('Login');
+        if( empty($this->sysUserId) ){
+            $loginModel->signOut();
             $this->redirect('admin/login/index');
         }
-        $this->_op = request()->controller();
-        $this->_cat = request()->action();
-        //菜单面包屑
-        $this->assign('breadCrumb',$this->getBreadCrumb($this->_op,$this->_cat,'->'));
+        if ( isset($this->map_power[$act][$op]) && in_array($this->map_power[$act][$op],$this->arr_limits) === false ){
+            if( $this->map_power[$act][$op] == 'home' ){
+                $loginModel->signOut();
+                $this->redirect('admin/login/index');
+            }
+            echo 'You do not have permission';
+            exit;
+        }
     }
 
     /**
@@ -34,21 +50,22 @@ class Base extends Controller
     public function getMenuList(){
         $menusList = array(
             //主页
-            array('name'=>'主页','power'=>'home','op'=>'Index','child'=>array(
-                array('name'=>'系统信息','power'=>'home','op'=>'Index','act'=>'show')
+            array('name'=>'主页','power'=>'home','act'=>'Index','op'=>'index','child'=>array(
+                array('name'=>'系统信息','power'=>'home_show','act'=>'Index','op'=>'show')
             )),
             //站点配置
-            array('name'=>'站点配置','power'=>'site','op'=>'Site','child'=>array()),
+            array('name'=>'站点配置','power'=>'site','act'=>'Site','child'=>array()),
             //管理员管理
-            array('name'=>'管理员管理','power'=>'sys_user','op'=>'Sysuser','child'=>array(
-                array('name'=>'管理员列表','power'=>'sys_user_list','op'=>'Sysuser','act'=>'index','child'=>array(
-                    array('name'=>'添加管理员','power'=>'sys_user_list_add','op'=>'Sysuser','act'=>'add')
+            array('name'=>'管理员管理','power'=>'sys_user','act'=>'Sysuser','child'=>array(
+                array('name'=>'管理员列表','power'=>'sys_user_list','act'=>'Sysuser','op'=>'index','child'=>array(
+                    array('name'=>'添加管理员','power'=>'sys_user_list_add','act'=>'Sysuser','op'=>'add')
                 )),
-                array('name'=>'权限组管理','power'=>'user_group','op'=>'Sysusergroup','act'=>'index')
+                array('name'=>'权限组管理','power'=>'sys_user_group','act'=>'Sysusergroup','op'=>'index','child'=>array(
+                ))
             )),
             //日志
-            array('name'=>'日志','power'=>'log','op'=>'Log','child'=>array(
-                array('name'=>'管理员操作日志','power'=>'sys_user_log','op'=>'Log','act'=>'index')
+            array('name'=>'日志','power'=>'log','act'=>'Log','child'=>array(
+                array('name'=>'管理员操作日志','power'=>'sys_user_log','act'=>'Log','op'=>'index')
             ))
         );
         return $menusList;
@@ -59,14 +76,20 @@ class Base extends Controller
      * @param $op           栏目主控制器
      * @return string       html内容
      */
-    public function getMenuTop($op=''){
+    public function getMenuTop($act=''){
+        if( empty($this->arr_limits) ){
+            $loginModel = model('Login');
+            $loginModel->signOut();
+            $this->error('您没有权限操作后台，正在返回~~~',\think\Url::build('admin/index/index'),'',1);
+            exit;
+        }
         $menulist = $this->getMenuList();
         $menuHtml = '';
         if( !empty($menulist) ){
             foreach( $menulist as $key => $value ){
-                if( !empty($value['child']) ){
-                    $is_act = $op == $value['op'] ? 'current' : '';
-                    $menuHtml .= '<li id="menu_'.($key+1).'"><span class="'.$is_act.'"><a href="javascript:void(0);" onClick="menuAction('.($key+1).',\''.$value['op'].'\');">'.$value['name'].'</a></span></li>';
+                if( !empty($value['child']) && in_array($value['power'],$this->arr_limits) === true ){
+                    $is_act = ($act == $value['act']) ? 'current' : '';
+                    $menuHtml .= '<li id="menu_'.($key+1).'"><span class="'.$is_act.'"><a href="javascript:void(0);" onClick="menuAction('.($key+1).',\''.$value['act'].'\');">'.$value['name'].'</a></span></li>';
                 }
             }
         }
@@ -75,23 +98,24 @@ class Base extends Controller
 
     /**
      * 侧边导航
-     * @param string $op        控制器
-     * @param string $act       方法
+     * @param string $act        控制器
+     * @param string $op       方法
      * @param bool $breadCrumb  是否获取面包屑
      * @return string           html内容
      */
-    public function getMenuLeft($op='',$act=''){
+    public function getMenuLeft($act='',$op=''){
         $menulist = $this->getMenuList();
         $menuHtml = '';
         if( !empty($menulist) ){
             foreach( $menulist as $key => $value ){
-                if( $op == $value['op'] ){
-                    $breadCrumb = $value['name'];
+                if( $act == $value['act'] ){
                     $menuHtml .= '<dt>'.$value['name'].'</dt>';
                     if( !empty($value['child']) ){
                         foreach( $value['child'] as $k => $v ){
-                            $is_act = ( $act == $v['act'] ) ? 'on' : '';
-                            $menuHtml .= '<dd id="nav_'.($k+1).'" class="'.$is_act.'"><span op="'.$v['op'].'" act="'.$v['act'].'" onclick="menuLeftAction('.($k+1).',\''.url($v['op'].'/'.$v['act']).'\')"><a href="'.url($v['op'].'/'.$v['act']).'" target="main" >'.$v['name'].'</a></span></dd>';
+                            if( in_array($v['power'],$this->arr_limits) ){
+                                $is_act = ( $op == $v['op'] && $act == $v['act'] ) ? 'on' : '';
+                                $menuHtml .= '<dd id="nav_'.($k+1).'" class="'.$is_act.'"><span op="'.$v['act'].'" act="'.$v['op'].'" onclick="menuLeftAction('.($k+1).',\''.url($v['act'].'/'.$v['op']).'\')"><a href="'.url($v['act'].'/'.$v['op']).'" target="main" >'.$v['name'].'</a></span></dd>';
+                            }
                         }
                     }
                     break;
@@ -103,25 +127,25 @@ class Base extends Controller
 
     /**
      * 获取面包屑
-     * @param string $op        控制器
-     * @param string $act       方法类
+     * @param string $act        控制器
+     * @param string $op       方法类
      * @return string           html内容
      */
-    public function getBreadCrumb($op='',$act='',$separator=''){
+    public function getBreadCrumb($act='',$op='',$separator=''){
         $breakDesc = [];
         $menuList = $this->getMenuList();
         if( !empty($menuList) ){
             foreach( $menuList as $key => $top ){
-                if( $top['op'] == $op ){
+                if( $top['act'] == $act ){
                     $breakDesc[] = $top['name'];
                     if( !empty($top['child']) ){
                         foreach( $top['child'] as $k => $left ){
-                            if( $act == $left['act'] ){
+                            if( $op == $left['op'] ){
                                 $breakDesc[] = $left['name'];
                                 break;
                             }else if( !empty($left['child']) ){
                                 foreach( $left['child'] as $kc => $contAct ){
-                                    if( $contAct['act'] == $act ){
+                                    if( $contAct['op'] == $op ){
                                         $breakDesc[] = $left['name'];
                                         $breakDesc[] = $contAct['name'];
                                         break;
@@ -138,6 +162,21 @@ class Base extends Controller
             return implode($separator,$breakDesc);
         }
         return $breakDesc;
+    }
+
+    /**
+     * 配置权限地图
+     * @param $menuList
+     */
+    public function set_map_power($menuList){
+        foreach ($menuList as $value) {
+            if (isset($value['act']) && isset($value['op']) && isset($value['power'])) {
+                $this->map_power[$value['act']][$value['op']] = $value['power'];
+            }
+            if (isset($value['child']) && !empty($value['child'])) {
+                $this->set_map_power($value['child']);
+            }
+        }
     }
 
 }

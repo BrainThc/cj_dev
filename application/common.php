@@ -28,7 +28,6 @@ define('__HOME__',$_SERVER['SERVER_NAME'].'/');//全局定量
          print_r($obj);
      }
      echo '</pre>';
-     exit;
 }
 
 /**
