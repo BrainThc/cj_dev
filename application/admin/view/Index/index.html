@@ -90,24 +90,8 @@ function wSize(){
 }
 wSize();
 
-function sethighlight(n) {
-	 $('#menu_'+n+' span').addClass('current');
-	 $('#leftMenu dl').hide();
-	 $('#nav_'+n).show();
-	 $('#leftMenu dl dd').removeClass('on');
-	 $('#nav_'+n+' dd').eq(0).addClass('on');
-	 url = $('#nav_'+n+' dd a').eq(0).attr('href');
-	 window.main.location.href= url;
-}
-// sethighlight(1);
-function gourl(n,url){
-
-	alert(window.location);
-	window.main.location.href=url;
-}
-
 function gocacheurl(){
-	mainurl = window.main.location.href;
+	mainurl = window.main..locationhref;
 	window.main.location.href= "&forward="+encodeURIComponent(mainurl);
 }
 
