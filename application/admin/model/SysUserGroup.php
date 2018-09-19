@@ -12,8 +12,16 @@ class SysUserGroup extends Model
     protected $name = 'sys_user_group';
     protected $pk = 'group_id';
 
+    const DISABLE_STATUS = 0;//禁用
+    const NORMAL_STATUS = 1;//正常
     const SUPER_STATUS = 2;//超级管理员status值
 
+    //权限组状态映射
+    public static $map_status = array(
+        self::DISABLE_STATUS    => '禁用',
+        self::NORMAL_STATUS     => '正常',
+        self::SUPER_STATUS      => '正常'
+    );
     /**
      * 过滤菜单power参数
      * @param $menuList         菜单参数集 必须带 power 唯一参数

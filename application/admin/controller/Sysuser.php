@@ -20,13 +20,34 @@ class Sysuser extends Base
     //列表主页
     public function index()
     {
-        //调取所有
+        $where = [];
+        $keyword = input('keyword','');
+        if( $keyword == '' ){
+            $where['username'] = ['like',"%{$keyword}%"];
+        }
+        $userList = Db::table($this->sysUserModel->getTable())
+            ->where($where)
+            ->order('sys_user_id','asc')
+            ->paginate(15);
+
+        if( !empty($userList) ){
+            foreach( $userList as $k => $v ){
+                $v['last_date'] = date('Y-m-d H:i:s',$v['last_time']);
+                $v['statusType'] = SysUserModel::$map_status[$v['status']]['desc'];
+                $userList[$k] = $v;
+            }
+        }
+        $page = $userList->render();
+        $this->assign('list',$userList);
+        $this->assign('page',$page);
         return $this->fetch();
     }
 
     //刷新用户权限
     public function updateLoginCache(){
-        $userInfo = Db::table($this->sysUserModel->getTable())->where('sys_user_id',$this->sysUserId)->find();
+        $userInfo = Db::table($this->sysUserModel->getTable())
+            ->where('sys_user_id',$this->sysUserId)
+            ->find();
         $loginModel = model('Login');
         if( $loginModel->signInfo($userInfo) === false )
             $this->error('刷新状态失败~~~',\think\Url::build('admin/index/index'),'',1);
@@ -35,15 +56,8 @@ class Sysuser extends Base
         exit;
     }
 
-    public function getSysUserList(){
-        $size = input('page') ? intval(input('page')) : 1;
-        $sysUserModel = model('SysUser');
-//        $sysUserModel->issetUser('admin',true);
-        //列表筛选
-        $status = input('state');
-        $sql = 'SELECT * FROM '.$sysUserModel->getTable();
-        $list = $sysUserModel->query($sql);
-        p($list);
+    //异步获取用户列表
+    public function get_sys_user_list(){
     }
 
     public function add(){

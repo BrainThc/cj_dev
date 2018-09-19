@@ -64,9 +64,9 @@ class Login extends Controller
             Db::commit();
         }catch( Exception $e ){
             Db::rollback();
-            retrunJosn(false,$e->getMessage());
+            returnJson(false,$e->getMessage());
         }
-        retrunJosn(true,'登录成功');
+        returnJson(true,'登录成功');
     }
 
     /**

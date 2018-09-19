@@ -16,6 +16,7 @@ class Log extends Model
     const DEL = 'del';
     const UPDATES = 'update';
 
+    //日志类型映射
     public static $map_type = array(
         self::LOGIN     => '登陆',
         self::INSERT    => '添加操作',

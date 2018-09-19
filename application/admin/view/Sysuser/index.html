@@ -17,6 +17,11 @@
             });
         }
     </script>
+    <style>
+        .pageTool{ text-align:center;}
+        .pageTool ul{display:block; width:max-content; margin:0 auto;}
+        .pageTool li{float:left; margin:0 10px;}
+    </style>
 </head>
     <body width="100%">
         <div id="result" class="result none"></div>
@@ -29,12 +34,12 @@
                             <input type="hidden" name="g" value="" />
                             <input type="hidden" name="m" value="" />
                             <input type="hidden" name="a" value="" />
-                            筛选<input type="text" name="keyword"  class="input-text" value=""/>
+                            <input type="text" name="keyword"  class="input-text" value="" placeholder="账号关键词" />
                             <select name="searchtype">
-                                <option value=""></option>
+                                <option value="">用户状态</option>
                             </select>
                             <select name="groupid">
-                                <option value=""></option>
+                                <option value="">权限组</option>
                             </select>
                             <input type="submit" value="搜索"  class="button" />
                             <input type="reset" value="重置" class="button"  />
@@ -43,19 +48,43 @@
 
                 </tr>
             </table>
-
             <form name="myform" action="" method="post">
                 <div class="table-list">
                     <table width="100%" cellspacing="0">
                         <thead>
                         <tr>
+                            <td>ID</td>
+                            <td align="left">用户名</td>
+                            <td>用户状态</td>
+                            <td>上一次登录时间</td>
+                            <td>操作</td>
                         </tr>
                         </thead>
                         <tbody>
+                        <?php if(!empty($list)): foreach( $list as $user ): ?>
+                                <tr>
+                                    <td>{$user.sys_user_id}</td>
+                                    <td align="left"> {$user.username}</td>
+                                    <td> {$user.statusType}</td>
+                                    <td> {$user.last_date}</td>
+                                    <td>
+                                        <a href="">编辑</a>
+                                        <?php if( $user['status'] == 1 ){ ?>
+                                        <a href="">禁用</a>
+                                        <?php } ?>
+                                        <?php if($user['status'] != 0){ ?>
+                                        <a href="">注销</a>
+                                        <?php } ?>
+                                    </td>
+                                </tr>
+                        <?php endforeach; endif;?>
                         </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="4" class="pageTool">{$page}</td>
+                            </tr>
+                        </tfoot>
                     </table>
-
-                    <div class="btn"><input type="submit" class="button" name="dosubmit" value="" /></div>  </div>
         </div>
         </form>
 

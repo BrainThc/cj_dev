@@ -56,7 +56,11 @@ class Base extends Controller
                 array('name'=>'系统信息','power'=>'home_show','act'=>'Index','op'=>'show')
             )),
             //站点配置
-            array('name'=>'站点配置','power'=>'site','act'=>'Site','child'=>array()),
+            array('name'=>'系统设置','power'=>'site','act'=>'Site','child'=>array(
+                array('name'=>'站点配置','power'=>'site_config','act'=>'Site','op'=>'set','child'=>array(
+                    array('name'=>'修改','power'=>'site_config_update','act'=>'Site','op'=>'do_update')
+                ))
+            )),
             //管理员管理
             array('name'=>'管理员管理','power'=>'sys_user','act'=>'Sysuser','child'=>array(
                 array('name'=>'管理员列表','power'=>'sys_user_list','act'=>'Sysuser','op'=>'index','child'=>array(

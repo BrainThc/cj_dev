@@ -22,7 +22,7 @@ class Login extends Model
         $sysData['group_name'] = $groupValue['group_name'];
         $sysData['group_status'] = $groupValue['status'];
         $is_super = false;
-        if(SysUserGroupModel::SUPER_STATUS == $groupValue['status']){
+        if( SysUserGroupModel::SUPER_STATUS == $groupValue['status'] ){
             $is_super = true;
         }
         $sysData['is_super'] =$is_super;

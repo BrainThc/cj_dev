@@ -36,7 +36,7 @@ define('__HOME__',$_SERVER['SERVER_NAME'].'/');//全局定量
  * @param $desc         描述内容
  * @param $data         返回参数
  */
-function retrunJosn($bool=false,$desc='fail',$data=[]){
+function returnJson($bool=false,$desc='fail',$data=[]){
     $json['status'] = $bool ? 1 : 0;
     $json['msg'] = $desc;
     $json['info'] = $data;

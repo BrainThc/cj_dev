@@ -9,7 +9,7 @@ class Log extends Base
     {
         $logModel = model('Log');
         $where = [];
-        $keyword = input('keyword');
+        $keyword = input('keyword','');
         if( $keyword != ''){
             $where['username'] = ['like',"%{$keyword}%"];
         }
@@ -22,13 +22,13 @@ class Log extends Base
         }else{
             $where['sys_user_id'] = ['=',$this->sysUserId];
         }
-        $log_type = input('type');
+        $log_type = input('type','');
         if( $log_type != '' ){
             $where['type'] = ['=',$log_type];
         }
-        $start_date = input('start_time');
+        $start_date = input('start_time','');
         $start_time = strtotime($start_date);
-        $end_date = input('end_time');
+        $end_date = input('end_time','');
         $end_time = strtotime($end_date);
         if( !empty($start_date) && !empty($end_date) ){
             $where['add_time'] = ['between',$start_time.','.$end_time];

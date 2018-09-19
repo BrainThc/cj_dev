@@ -12,7 +12,7 @@
 <div id="header" class="header">
 	<div class="logo"><a href="" onclick="return false;"><img src="__SYSIMG__/admin_logo.png" width="180"></a></div>
 	<div class="nav f_r"> <a href="javascript:void(0);" onclick="gocacheurl();"></a>&nbsp;&nbsp;</div>
-	<div class="nav">&nbsp;&nbsp;&nbsp;&nbsp;<i>|</i> 欢迎你！{:session('sys_user')['group_name']} ：{:session('sys_user')['username']}  <i>|</i> [<a href="{:url('login/signOut')}" >退出</a>]  <i>|</i> <a href="{:url('Sysuser/updateLoginCache')}" >刷新状态</a> <a href="" target="_blank">浏览站点</a> </div>
+	<div class="nav">&nbsp;&nbsp;&nbsp;&nbsp;<i>|</i> 欢迎你！{:session('sys_user')['group_name']} ：{:session('sys_user')['username']}  <i>|</i> [<a href="{:url('login/signOut')}" >退出</a>]  <i>|</i> <a href="{:url('Sysuser/updateLoginCache')}" >刷新状态</a> <a href="{:url('index/index/index')}" target="_blank">浏览站点</a> </div>
 
 	<div class="topmenu">
 		<ul id="menuTopBox">
@@ -115,7 +115,7 @@ function menuAction(n,act){
     $('#menu_'+n+' span').addClass('current');
     $.ajax({
         type: 'POST',
-        url: "{:url('Index/getMenuLeftHtml')}",
+        url: "{:url('Index/get_menu_left_html')}",
 		data:{ act : act},
         dataType: 'json',
         success: function(data){

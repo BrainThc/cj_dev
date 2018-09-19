@@ -13,9 +13,9 @@ class Index extends Base
     }
 
     //异步获取侧边导航html
-    public function getMenuLeftHtml(){
+    public function get_menu_left_html(){
         $_act = input('act');
-        retrunJosn(true,'侧边导航',$this->getMenuLeft($_act));
+        returnJson(true,'侧边导航',$this->getMenuLeft($_act));
     }
 
     public function show(){
