@@ -30,6 +30,13 @@ class Sysusergroup extends Base
             ->order('status','desc')
             ->paginate(15);
 
+        if( !empty($list) ){
+            foreach( $list as $k => $v ){
+                $v['statusType'] = SysUserGroupModel::$map_status[$v['status']];
+                $list[$k] = $v;
+            }
+        }
+
         $this->assign('list',$list);
         $page = $list->render();
         $this->assign('page',$page);
