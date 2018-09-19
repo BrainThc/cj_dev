@@ -13,18 +13,26 @@ class Login extends Model
 {
     public function signInfo($userInfo){
         $logModel = model('Log');
-        session('sys_user_id',$userInfo['sys_user_id']);
-        session('username',$userInfo['username']);
-        session('group_id',$userInfo['group_id']);
+        $sysData['sys_user_id'] = $userInfo['sys_user_id'];
+        $sysData['username'] = $userInfo['username'];
+        $sysData['group_id'] = $userInfo['group_id'];
         //获取权限信息
         $sysUserGroup = model('SysUserGroup');
-        $groupValue = Db::table($sysUserGroup->getTable())->field('value')->where('group_id',$userInfo['group_id'])->find();
+        $groupValue = Db::table($sysUserGroup->getTable())->field('value,group_name,status')->where('group_id',$userInfo['group_id'])->find();
+        $sysData['group_name'] = $groupValue['group_name'];
+        $sysData['group_status'] = $groupValue['status'];
+        $is_super = false;
+        if(SysUserGroupModel::SUPER_STATUS == $groupValue['status']){
+            $is_super = true;
+        }
+        $sysData['is_super'] =$is_super;
         if( empty($groupValue) ){
             $groupValue = [];
         }else{
             $groupValue = explode(',',$groupValue['value']);
         }
-        session('sys_user_power',$groupValue);
+        $sysData['sys_user_power'] =$groupValue;
+        session('sys_user',$sysData);
         if( $logModel->note(LogModel::LOGIN,'用户登陆') === false ){
             $this->signOut();
             return false;
@@ -33,10 +41,7 @@ class Login extends Model
     }
 
     public function signOut(){
-        session('sys_user_id',null);
-        session('username',null);
-        session('group_id',null);
-        session('sys_user_power',null);
+        session('sys_user',null);
     }
 
 }

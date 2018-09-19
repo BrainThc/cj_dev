@@ -11,15 +11,17 @@ class Base extends Controller
     {
         parent::__construct();
         $this->set_map_power($this->getMenuList());
-        $this->sysUserId = session('sys_user_id');
-        $this->sysUsername = session('user_name');
-        $this->group_id = session('group_id');
-        $this->arr_limits = session('sys_user_power');
+        $sysUserInfo = session('sys_user');
+        $this->sysUserId = $sysUserInfo['sys_user_id'];
+        $this->sysUsername = $sysUserInfo['username'];
+        $this->group_id = $sysUserInfo['group_id'];
+        $this->arr_limits = $sysUserInfo['sys_user_power'];
+        $this->is_super = $sysUserInfo['is_super'];
         $this->_act = request()->controller();
         $this->_op = request()->action();
         $this->checkLogin($this->_act,$this->_op);//用户权限检查
-        //菜单面包屑
-        $this->assign('breadCrumb',$this->getBreadCrumb($this->_act,$this->_op,'->'));
+        $this->assign('super_user',$this->is_super);//是否超级管理员
+        $this->assign('breadCrumb',$this->getBreadCrumb($this->_act,$this->_op,'->'));//菜单面包屑
     }
 
     public function checkLogin($act,$op){

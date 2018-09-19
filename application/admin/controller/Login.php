@@ -11,7 +11,7 @@ class Login extends Controller
     //登录主页
     public function index()
     {
-        $userId = session('sys_user_id');
+        $userId = session('sys_user');
         if( !empty($userId) ){
             $this->redirect('admin/index/index');
         }

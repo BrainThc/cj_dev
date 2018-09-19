@@ -32,7 +32,7 @@
 					</tr>
 					</thead>
 					<tbody>
-					<?php foreach( $list as $role ){ ?>
+					<?php if( !empty($list)): foreach( $list as $role ){ ?>
 						<tr>
 							<td align="center">{$role['group_id']}</td>
 							<td>{$role['group_name']}</td>
@@ -45,7 +45,7 @@
 								<a href=""></a>
 							</td>
 						</tr>
-					<?php } ?>
+					<?php } endif; ?>
 					</tbody>
 				</table>
 			</div>
