@@ -174,7 +174,7 @@ class Base extends Controller
      * 配置权限地图
      * @param $menuList
      */
-    public function set_map_power($menuList){
+    private function set_map_power($menuList){
         foreach ($menuList as $value) {
             if (isset($value['act']) && isset($value['op']) && isset($value['power'])) {
                 $this->map_power[$value['act']][$value['op']] = $value['power'];
