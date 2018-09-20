@@ -19,22 +19,19 @@ class Login extends Model
         //获取权限信息
         $sysUserGroup = model('SysUserGroup');
         $groupValue = Db::table($sysUserGroup->getTable())->field('value,group_name,status')->where('group_id',$userInfo['group_id'])->find();
-        if( empty($groupValue) ){
-            $groupValue = [];
-        }
-        $sysData['group_name'] = $groupValue['group_name'];
-        $sysData['group_status'] = $groupValue['status'];
         $is_super = false;
-        if( SysUserGroupModel::SUPER_STATUS == $groupValue['status'] ){
-            $is_super = true;
-        }
-        $sysData['is_super'] =$is_super;
         if( empty($groupValue) ){
-            $groupValue = [];
-        }else{
-            $groupValue = explode(',',$groupValue['value']);
+            $sysData['sys_user_power'] = [];
+        }else {
+            $sysData['group_name'] = $groupValue['group_name'];
+            $sysData['group_status'] = $groupValue['status'];
+            if (SysUserGroupModel::SUPER_STATUS == $groupValue['status']) {
+                $is_super = true;
+            }
+            $groupValue = explode(',', $groupValue['value']);
+            $sysData['sys_user_power'] = $groupValue;
         }
-        $sysData['sys_user_power'] =$groupValue;
+        $sysData['is_super'] = $is_super;
         session('sys_user',$sysData);
         if( $logModel->note(LogModel::LOGIN,'用户登陆') === false ){
             $this->signOut();
