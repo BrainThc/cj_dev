@@ -2,6 +2,7 @@
 namespace app\admin\controller;
 use think\Db;
 use app\admin\model\SysUserGroup as SysUserGroupModel;
+use app\admin\model\SysUser as SysUserModel;
 use think\Exception;
 
 /**
@@ -58,7 +59,7 @@ class Sysusergroup extends Base
             if( empty($info) ){
                 returnJson(false,'参数错误');
             }
-            $powerArr= explode(',',$info['value']);
+            $powerArr = explode(',',$info['value']);
         }
         $menuList = $this->getMenuList();
         $menuList = $this->get_group_set($menuList,$powerArr);
@@ -179,6 +180,30 @@ class Sysusergroup extends Base
         if( empty($updateState) ){
             returnJson(false,'网络错误，保存失败');
         }
+        returnJson(true,'保存成功');
+    }
+
+    /**
+     * 禁用权限组
+     * @throws Exception
+     * @throws \think\exception\PDOException
+     */
+    public function disable_group(){
+        $data = input('.post');
+        if( empty($data['group_id']) || empty($data['key']) ){
+            returnJson(false,'参数错误');
+        }
+        $group_id = $data['group_id'];
+        $key = trim($data['key']);
+        if( $key != __COMPANYKEY__ ){
+            returnJson(false,'秘钥错误');
+        }
+        $updateData['status'] = SysUserGroupModel::DISABLE_STATUS;
+        $updateState = Db::table($this->groupModel->getTable())->where('group_id',$group_id)->update($updateData);
+        if( empty($updateState) ){
+            returnJson(false,'网络错误，保存失败');
+        }
+        returnJson(true,'保存成功');
     }
 
     //初始化超级管理员权限组
@@ -223,7 +248,6 @@ class Sysusergroup extends Base
         }
         returnJson(true, '初始化成功');
     }
-
 
 
 }

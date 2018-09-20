@@ -19,6 +19,9 @@ class Login extends Model
         //获取权限信息
         $sysUserGroup = model('SysUserGroup');
         $groupValue = Db::table($sysUserGroup->getTable())->field('value,group_name,status')->where('group_id',$userInfo['group_id'])->find();
+        if( empty($groupValue) ){
+            $groupValue = [];
+        }
         $sysData['group_name'] = $groupValue['group_name'];
         $sysData['group_status'] = $groupValue['status'];
         $is_super = false;

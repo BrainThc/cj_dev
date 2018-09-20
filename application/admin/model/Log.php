@@ -32,16 +32,16 @@ class Log extends Model
      */
     public function note($type,$desc,$userId=0){
         $sys_user_id = $userId;
-        if($userId == 0)
+        if($userId == 0) {
             $sys_user_info = session('sys_user');
-
-        if( empty($sys_user_info) || empty($sys_user_info['sys_user_id']) ){//未登陆非法操作
-            //强制退出
-            $loginModel = model('Login');
-            $loginModel->signOut();
-            return false;
+            if (empty($sys_user_info) || empty($sys_user_info['sys_user_id'])) {//未登陆非法操作
+                //强制退出
+                $loginModel = model('Login');
+                $loginModel->signOut();
+                return false;
+            }
+            $sys_user_id = $sys_user_info['sys_user_id'];
         }
-        $sys_user_id = $sys_user_info['sys_user_id'];
         $data = [
             'sys_user_id' => $sys_user_id,
             'type'  =>  $type,
