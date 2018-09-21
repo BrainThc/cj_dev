@@ -25,7 +25,7 @@ class Sysuser extends Base
     {
         $where = [];
         //id筛选
-        $sys_user_id = input('keyword','');
+        $sys_user_id = input('sys_user_id','');
         if( $sys_user_id != '' ){
             $where['sys_user_id'] = ['=',$sys_user_id];
         }
@@ -59,6 +59,11 @@ class Sysuser extends Base
         $page = $userList->render();
         $this->assign('list',$userList);
         $this->assign('page',$page);
+        //获取所有权限组
+        $groupModel = model('SysUserGroup');
+        $groupList = Db::table($groupModel->getTable())->select();
+        $this->assign('groupList',$groupList);
+        $this->assign('statusList',SysUserModel::$map_status);//所有的用户状态类型
         return $this->fetch();
     }
 

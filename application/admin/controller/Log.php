@@ -15,7 +15,7 @@ class Log extends Base
         }
         //配置显示用户
         if( $this->is_super ){//只有超级用户才能查看所有会员
-            $sys_user_id = intval(input('sys_user_id'));
+            $sys_user_id = intval(input('sys_user_id'));//id筛选
             if( $sys_user_id > 0 ){
                 $where['sys_user_id'] = ['=',$sys_user_id];
             }

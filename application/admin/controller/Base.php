@@ -65,7 +65,8 @@ class Base extends Controller
                 //菜单管理
                 array('name'=>'导航管理','power'=>'menus','act'=>'Menus','op'=>'index','child'=>array(
                     array('name'=>'添加导航','power'=>'menus_create','act'=>'Site','op'=>'create_menu'),
-                    array('name'=>'修改导航','power'=>'menus_update','act'=>'Site','op'=>'update_menu')
+                    array('name'=>'修改导航','power'=>'menus_update','act'=>'Site','op'=>'update_menu'),
+                    array('name'=>'删除导航','power'=>'menus_del','act'=>'Site','op'=>'update_menu')
                 )),
             )),
             //文章管理

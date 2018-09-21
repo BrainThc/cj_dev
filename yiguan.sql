@@ -1,3 +1,6 @@
+/**
+管理员表
+ */
 CREATE TABLE IF NOT EXISTS `yg_sys_user` (
   `sys_user_id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '管理员索引id',
   `username` varchar(50) NOT NULL COMMENT '管理员用户名',
@@ -13,6 +16,15 @@ CREATE TABLE IF NOT EXISTS `yg_sys_user` (
   `desc` varchar(255) NOT NULL COMMENT '账号备注'
 ) ENGINE=InnoDB COMMENT '管理员表';
 
+/**
+token秘钥表
+ */
+CREATE TABLE IF NOT EXISTS `yg_sys_user_token`(
+)
+
+/**
+用户操作记录表
+ */
 CREATE TABLE IF NOT EXISTS `yg_sys_user_log`(
   `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '索引id',
   `sys_user_id` int(11) NOT NULL COMMENT '管理员id',
@@ -22,6 +34,9 @@ CREATE TABLE IF NOT EXISTS `yg_sys_user_log`(
   `add_ip` char(15) NOT NULL DEFAULT '' COMMENT '操作ip'
 ) ENGINE=InnoDB COMMENT '管理员操作日志';
 
+/**
+权限组列表
+ */
 CREATE TABLE IF NOT EXISTS `yg_sys_user_group`(
   `group_id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '权限组索引',
   `group_name` varchar(50) NOT NULL COMMENT '权限组名',
@@ -31,6 +46,9 @@ CREATE TABLE IF NOT EXISTS `yg_sys_user_group`(
   `edit_time` int(10) NOT NULL DEFAULT 0 COMMENT '修改时间'
 ) ENGINE=InnoDB COMMENT '管理员权限组';
 
+/**
+系统配置表
+ */
 CREATE TABLE IF NOT EXISTS `yg_site_config`(
   `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '配置索引id',
   `site_name` varchar(255) NOT NULL UNIQUE COMMENT '配置名',
@@ -39,16 +57,27 @@ CREATE TABLE IF NOT EXISTS `yg_site_config`(
   `last_value` text NOT NULL DEFAULT '' COMMENT '上一次的值'
 ) ENGINE=InnoDB COMMENT '系统配置表';
 
-CREATE TABLE IF NOT EXISTS `yg_menu`(
+/**
+导航管理表
+ */
+CREATE TABLE IF NOT EXISTS `yg_menus`(
   `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '菜单索引id',
   `menu_name` varchar(255) NOT NULL COMMENT '菜单名',
-  `menu_url`  text NOT NULL COMMENT '跳转链接',
-  `menu_icon` text NOT NULL COMMENT '菜单icon图',
-  `pid` int(11) NOT NULL COMMENT '父级菜单id 0为一级菜单',
-  `sequence` int(3) NOT NULL COMMENT '排序 由大到小',
-  `add_time` int(10) NOT NULL COMMENT '添加时间',
-  `edit_time` int(10) NOT NULL COMMENT '修改时间'
+  `menus_type` int(11) NOT NULL COMMENT '导航类型 对应menus_type 索引',
+  `menu_url`  text NOT NULL DEFAULT '' COMMENT '跳转链接',
+  `menu_icon` text NOT NULL DEFAULT '' COMMENT '菜单icon图',
+  `pid` int(11) NOT NULL DEFAULT 0 COMMENT '父级菜单id 0为一级菜单',
+  `sequence` int(3) NOT NULL DEFAULT 0 COMMENT '排序 由大到小',
+  `add_time` int(10) NOT NULL DEFAULT 0 COMMENT '添加时间',
+  `edit_time` int(10) NOT NULL DEFAULT 0 COMMENT '修改时间'
 ) ENGINE=InnoDB COMMENT '导航菜单表';
 
-CREATE TABLE IF NOT EXISTS `yg_sys_user_token`(
-)
+/**
+导航类型
+ */
+CREATE TABLE IF NOT EXISTS `yg_menus_type`(
+  `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '索引id',
+  `type_name` varchar(255) NOT NULL COMMENT '类型名',
+  `desc` text NOT NULL DEFAULT '' COMMENT '描述',
+  `add_time` int(10) NOT NULL DEFAULT 0 COMMENT '添加时间'
+) ENGINE=InnoDB COMMENT '导航菜单类型';

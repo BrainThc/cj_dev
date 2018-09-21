@@ -30,16 +30,20 @@
             <table  class="search_table" width="100%">
                 <tr>
                     <td>
-                        <form action="" method="get">
-                            <input type="hidden" name="g" value="" />
-                            <input type="hidden" name="m" value="" />
-                            <input type="hidden" name="a" value="" />
-                            <input type="text" name="keyword"  class="input-text" value="" placeholder="账号关键词" />
+                        <form action="?" method="get">
+                            <input type="text" name="sys_user_id"  class="input-text" value="<?=input('sys_user_id','')?>" placeholder="账号id" />
+                            <input type="text" name="keyword"  class="input-text" value="<?=input('keyword','')?>" placeholder="账号关键词" />
                             <select name="searchtype">
                                 <option value="">用户状态</option>
+                                <?php foreach( $statusList as $status ){ ?>
+                                <option value="<?=$status['value']?>"><?=$status['desc']?></option>
+                                <?php } ?>
                             </select>
                             <select name="groupid">
                                 <option value="">权限组</option>
+                                <?php foreach( $groupList as $group ){ ?>
+                                <option value="<?=$group['group_id']?>"><?=$group['group_name']?></option>
+                                <?php } ?>
                             </select>
                             <input type="submit" value="搜索"  class="button" />
                             <input type="reset" value="重置" class="button"  />
