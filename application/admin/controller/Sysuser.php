@@ -14,9 +14,9 @@ use think\Exception;
 class Sysuser extends Base
 {
 
-    public function __construct()
+    public function _initialize()
     {
-        parent::__construct();
+        parent::_initialize();
         $this->sysUserModel = model('SysUser');
     }
 
@@ -187,7 +187,7 @@ class Sysuser extends Base
 
             //日志记录
             $logModel = model('Log');
-            if( $logModel->note(LogModel::UPDATES,'编辑管理员管理员：'.$updateState['username']) === false )
+            if( $logModel->note(LogModel::UPDATES,'编辑管理员信息：'.$updateState['username']) === false )
                 throw new Exception('网络错误，操作失败');
 
             Db::commit();

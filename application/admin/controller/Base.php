@@ -7,9 +7,9 @@ class Base extends Controller
     public $arr_limits;
     public $map_power;
 
-    public function __construct()
+    public function _initialize()
     {
-        parent::__construct();
+        parent::_initialize();
         $this->set_map_power($this->getMenuList());
         $sysUserInfo = session('sys_user');
         $this->sysUserId = $sysUserInfo['sys_user_id'];
@@ -55,19 +55,50 @@ class Base extends Controller
             array('name'=>'主页','power'=>'home','act'=>'Index','op'=>'index','child'=>array(
                 array('name'=>'系统信息','power'=>'home_show','act'=>'Index','op'=>'show')
             )),
-            //站点配置
+            //系统设置
             array('name'=>'系统设置','power'=>'site','act'=>'Site','child'=>array(
-                array('name'=>'站点配置','power'=>'site_config','act'=>'Site','op'=>'set','child'=>array(
-                    array('name'=>'修改','power'=>'site_config_update','act'=>'Site','op'=>'do_update')
-                ))
+                //站点配置
+                array('name'=>'站点配置','power'=>'site_config','act'=>'Site','op'=>'index','child'=>array(
+                    array('name'=>'创建配置','power'=>'site_config_create','act'=>'Site','op'=>'create_config'),
+                    array('name'=>'修改配置','power'=>'site_config_update','act'=>'Site','op'=>'update_config')
+                )),
+                //菜单管理
+                array('name'=>'导航管理','power'=>'menus','act'=>'Menus','op'=>'index','child'=>array(
+                    array('name'=>'添加导航','power'=>'menus_create','act'=>'Site','op'=>'create_menu'),
+                    array('name'=>'修改导航','power'=>'menus_update','act'=>'Site','op'=>'update_menu')
+                )),
+            )),
+            //文章管理
+            array('name'=>'文章管理','power'=>'article','act'=>'Article','child'=>array(
+                //商品列表
+                array('name'=>'栏目管理','power'=>'article_cate','act'=>'Articlecate','op'=>'index'),
+                array('name'=>'文章管理','power'=>'article_list','act'=>'Article','op'=>'index'),
+            )),
+            //商品管理
+            array('name'=>'商品管理','power'=>'goods','act'=>'Goods','child'=>array(
+                //商品列表
+                array('name'=>'菜单管理','power'=>'goods_list','act'=>'Goods','op'=>'lists')
+            )),
+            //订单管理
+            array('name'=>'订单管理','power'=>'order','act'=>'Order','child'=>array(
+                //商品列表
+                array('name'=>'订单列表','power'=>'order_list','act'=>'Order','op'=>'lists')
+            )),
+            //模板配置管理
+            array('name'=>'模板管理','power'=>'template','act'=>'Template','child'=>array(
+                //商品列表
+                array('name'=>'PC首页','power'=>'template_pc','act'=>'Template','op'=>'pc'),
+                array('name'=>'移动首页','power'=>'template_wap','act'=>'Template','op'=>'wap'),
             )),
             //管理员管理
             array('name'=>'管理员管理','power'=>'sys_user','act'=>'Sysuser','child'=>array(
+                //管理员列表
                 array('name'=>'管理员列表','power'=>'sys_user_list','act'=>'Sysuser','op'=>'index','child'=>array(
                     array('name'=>'添加管理员','power'=>'sys_user_list_create','act'=>'Sysuser','op'=>'create_user'),
                     array('name'=>'编辑管理员','power'=>'sys_user_list_update','act'=>'Sysuser','op'=>'update_user'),
                     array('name'=>'删除管理员','power'=>'sys_user_list_del','act'=>'Sysuser','op'=>'disable_user')
                 )),
+                //权限组管理
                 array('name'=>'权限组管理','power'=>'sys_user_group','act'=>'Sysusergroup','op'=>'index','child'=>array(
                     array('name'=>'添加权限组信息','power'=>'sys_user_group_create','act'=>'Sysuser','op'=>'create_group'),
                     array('name'=>'编辑权限组信息','power'=>'sys_user_group_update','act'=>'Sysuser','op'=>'update_group'),
@@ -78,6 +109,7 @@ class Base extends Controller
             )),
             //日志
             array('name'=>'日志','power'=>'log','act'=>'Log','child'=>array(
+                //操作日志
                 array('name'=>'管理员操作日志','power'=>'sys_user_log','act'=>'Log','op'=>'index')
             ))
         );

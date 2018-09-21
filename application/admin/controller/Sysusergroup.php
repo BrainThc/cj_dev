@@ -3,6 +3,7 @@ namespace app\admin\controller;
 use think\Db;
 use app\admin\model\SysUserGroup as SysUserGroupModel;
 use app\admin\model\SysUser as SysUserModel;
+use app\admin\model\Log as LogModel;
 use think\Exception;
 
 /**
@@ -12,9 +13,9 @@ use think\Exception;
  */
 class Sysusergroup extends Base
 {
-    public function __construct()
+    public function _initialize()
     {
-        parent::__construct();
+        parent::_initialize();
         $this->groupModel = model('SysUserGroup');
     }
 
@@ -114,10 +115,19 @@ class Sysusergroup extends Base
                 'add_time'      => $t,
                 'edit_time'     => $t,
             );
+            Db::startTrans();
             if( Db::table($this->groupModel->getTable())->insert($insertData) === false ){
                 throw new Exception('网络错误，操作失败');
             }
+
+            //添加日志
+            $logModel = model('Log');
+            if( $logModel->note(LogModel::INSERT,'添加权限组：'.$insertData['group_name']) === false )
+                throw new Exception('网络错误，操作失败');
+
+            Db::commit();
         }catch( Exception $e ){
+            Db::rollback();
             returnJson(false,$e->getMessage());
         }
         returnJson(true,'添加成功');
@@ -155,11 +165,19 @@ class Sysusergroup extends Base
                 'group_name' => $group_name,
                 'edit_time'  => $t,
             );
+            Db::startTrans();
             $updateState = Db::table($this->groupModel->getTable())->where('group_id',$checkInfo['group_id'])->update($insertData);
-            if( empty($updateState) ){
+            if( empty($updateState) )
                 throw new Exception('网络错误，操作失败');
-            }
+
+            //日志记录
+            $logModel = model('Log');
+            if( $logModel->note(LogModel::UPDATES,'编辑权限组：'.$checkInfo['group_name']) === false )
+                throw new Exception('网络错误，操作失败');
+
+            Db::commit();
         }catch( Exception $e ){
+            Db::rollback();
             returnJson(false,$e->getMessage());
         }
         returnJson(true,'保存成功');
@@ -176,10 +194,20 @@ class Sysusergroup extends Base
         $group_id = $data['group_id'];
         $power_value = $data['power_value'];
         $updateData['value'] = $power_value;
+        Db::startTrans();
         $updateState = Db::table($this->groupModel->getTable())->where('group_id',$group_id)->update($updateData);
         if( empty($updateState) ){
+            Db::rollback();
             returnJson(false,'网络错误，保存失败');
         }
+
+        //日志记录
+        $logModel = model('Log');
+        if( $logModel->note(LogModel::UPDATES,"编辑权限组id:{$group_id}权限配置") === false ) {
+            Db::rollback();
+            returnJson(false, '网络错误，保存失败');
+        }
+        Db::commit();
         returnJson(true,'保存成功');
     }
 
@@ -198,11 +226,20 @@ class Sysusergroup extends Base
         if( $key != __COMPANYKEY__ ){
             returnJson(false,'秘钥错误');
         }
+        Db::startTrans();
         $updateData['status'] = SysUserGroupModel::DISABLE_STATUS;
         $updateState = Db::table($this->groupModel->getTable())->where('group_id',$group_id)->update($updateData);
         if( empty($updateState) ){
-            returnJson(false,'网络错误，保存失败');
+            Db::rollback();
+            returnJson(false,'网络错误，操作失败');
         }
+        //日志记录
+        $logModel = model('Log');
+        if( $logModel->note(LogModel::UPDATES,'编辑管理员管理员：'.$updateState['username']) === false ) {
+            Db::rollback();
+            returnJson(false, '网络错误，操作失败');
+        }
+        Db::commit();
         returnJson(true,'保存成功');
     }
 
@@ -223,6 +260,7 @@ class Sysusergroup extends Base
             $menuList = $this->getMenuList();
             $poser_value = $this->groupModel->filterPowerData($menuList);
             $poser_value = implode(',', $poser_value);
+            Db::startTrans();
             if (empty($info)) {
                 $data = array(
                     'group_name' => '超级管理员',
@@ -243,7 +281,14 @@ class Sysusergroup extends Base
                 if (empty($updateState))
                     throw new Exception('初始化失败');
             }
+            //日志记录
+            $logModel = model('Log');
+            if( $logModel->note(LogModel::UPDATES,"初始化超级管理员权限配置") === false ) {
+                throw new Exception('保存失败');
+            }
+            Db::commit();
         }catch( Exception $e ){
+            Db::rollback();
             returnJson(false, $e->getMessage());
         }
         returnJson(true, '初始化成功');
