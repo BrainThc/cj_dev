@@ -13,8 +13,11 @@ CREATE TABLE IF NOT EXISTS `yg_sys_user` (
   `login_count` int(11) NOT NULL COMMENT '登录次数',
   `last_ip` char(15) NOT NULL COMMENT '注册ip',
   `last_time` int(10) NOT NULL DEFAULT 0 COMMENT '上一次登录时间',
-  `desc` varchar(255) NOT NULL COMMENT '账号备注'
+  `desc` varchar(255) NOT NULL COMMENT '账号备注',
 ) ENGINE=InnoDB COMMENT '管理员表';
+
+/*添加索引*/
+ALTER TABLE  `yg_sys_user` ADD INDEX (  `group_id` );
 
 /**
 token秘钥表
@@ -81,3 +84,36 @@ CREATE TABLE IF NOT EXISTS `yg_menus_type`(
   `desc` text NOT NULL DEFAULT '' COMMENT '描述',
   `add_time` int(10) NOT NULL DEFAULT 0 COMMENT '添加时间'
 ) ENGINE=InnoDB COMMENT '导航菜单类型';
+
+/**
+文章栏目类型
+ */
+CREATE TABLE IF NOT EXISTS `yg_article_cate`(
+  `art_cate_id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '文章栏目索引id',
+  `cate_name` varchar(255) NOT NULL COMMENT '栏目名称',
+  `pid` int(11) NOT NULL DEFAULT 0 COMMENT '上级栏目页',
+  `sequence` tinyint(3) NOT NULL DEFAULT 0 COMMENT '排序由大到小',
+  `add_time` int(10) NOT NULL DEFAULT 0 COMMENT '添加时间',
+  `edit_time` int(10) NOT NULL DEFAULT 0 COMMENT '编辑时间'
+) ENGINE=InnoDB COMMENT '文章栏目表';
+
+/**
+文章表
+ */
+CREATE TABLE IF NOT EXISTS `yg_article`(
+  `article_id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '文章索引id',
+  `art_cate_id` int(11) NOT NULL COMMENT '栏目索引id',
+  `title` varchar(255) NOT NULL COMMENT '文章标题',
+  `keyword` varchar(255) NOT NULL DEFAULT '' COMMENT 'seo关键词',
+  `description` text NOT NULL DEFAULT '' COMMENT '简介描述',
+  `content` text NOT NULL DEFAULT '' COMMENT '文章内容',
+  `sequence` tinyint(3) NOT NULL DEFAULT 0 COMMENT '文章排序',
+  `read_group` tinyint(3) NOT NULL DEFAULT 0 COMMENT '阅读权限 0所有人 1注册用户 2管理员',
+  `read_num` int(11) NOT NULL DEFAULT 0 COMMENT '阅读数',
+  `recommend` tinyint(2) NOT NULL DEFAULT 0 COMMENT '是否推荐 1是 0否',
+  `status` tinyint(2) NOT NULL DEFAULT 2 COMMENT '文章状态 1已审核 2审核中 0审核失败',
+  `is_show` tinyint(2) NOT NULL DEFAULT 1 COMMENT '是否显示 1显示 0隐藏',
+  `add_time` int(10) NOT NULL DEFAULT 0 COMMENT '添加时间',
+  `edit_time` int(10) NOT NULL DEFAULT 0 COMMENT '编辑时间'
+) ENGINE=InnoDB COMMENT '文章表';
+

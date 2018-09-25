@@ -1,0 +1,75 @@
+<!DOCTYPE>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf8" />
+    <title>站点配置</title>
+    <link rel="stylesheet" type="text/css" href="__SYSCSS__/style.css" />
+    <script type="text/javascript" src="__SYSJS__/jquery.min.js"></script>
+    <script type="text/javascript" src="__SYSJS__/jquery.artDialog.js?skin=blue"></script>
+    <script type="text/javascript" src="__SYSJS__/my.js"></script>
+    <script type="text/javascript" src="__JS__/vue.min.js" ></script>
+    <style>
+        .pageTool{ text-align:center;}
+        .pageTool ul{display:block; width:max-content; margin:0 auto;}
+        .pageTool li{float:left; margin:0 10px;}
+    </style>
+</head>
+<body width="100%">
+<div id="result" class="result none"></div>
+<div class="mainbox" id="main_vue">
+    <div id="nav" class="mainnav_title">
+        <ul>
+            <a href="">1</a>|
+        </ul>
+    </div>
+    <form method='post'  id="form1" action="">
+        <table cellpadding=0 cellspacing=0 width="100%" class="table_form" >
+            <tr>
+                <th width="140">{{ test }}</th>
+                <td><input type="text" class="input-text"  name="" value="" size="40">213</td>
+            </tr>
+            <!--图片上传-->
+            <tr>
+                <th width="140"></th>
+                <td id="box_">
+                    <div id="_aid_box" style="display:none;"></div>
+                    <input type="text" class="input-text" id="" name="" value="" size="40">
+                    <input type="button" class="button" value="上传" onclick="javascript:swfupload('_uploadfile','','',1,1,0,10,'jpeg,jpg,png,gif',5,230,'',yesdo,nodo)" />
+                    <a href="javascript:void(0);" onclick="">预览</a>
+                    &nbsp;
+                </td>
+            </tr>
+        </table>
+        <div class="btn">
+            <INPUT TYPE="submit"  value="保存" class="button" >
+            <input TYPE="reset"  value="重置" class="button">
+        </div>
+    </form>
+</div>
+<script>
+    var vue = new Vue({
+        el: '#main_vue',
+        data:{
+            'test' : 21321
+        },
+        methods:{
+            getNavList:function(){//获取头部导航
+                $.ajax({
+                    type: 'POST',
+                    url: "{:url('Index/get_menu_left_html')}",
+                    data:{ act : act},
+                    dataType: 'json',
+                    success: function(data){
+                        $('#menuListBox').html(data.info);
+                        $('#nav_1 a').click();
+                    },
+                    error:function(e){
+                        alert('网络错误数据提取失败');
+                    }
+                });
+            }
+        }
+    })
+</script>
+</body>
+</html>

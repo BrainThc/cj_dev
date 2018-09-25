@@ -18,7 +18,7 @@ class Menus extends Base
         $this->menusTypeModel = model('MenusType');
 
         //获取所有菜单类型
-        $type_list = DB::table($this->menusTypeModel->getTable())->select();
+        $type_list = Db::table($this->menusTypeModel->getTable())->select();
         $this->assign('typeList',$type_list);
     }
 
@@ -29,41 +29,14 @@ class Menus extends Base
             $where['menus_type'] = ['=',$type];
         }
         $where['pid'] = ['=',0];
-        $nav_all = DB::table($this->menusModel->getTable())
+        $nav_all = Db::table($this->menusModel->getTable())
             ->where($where)
             ->order('sequence','desc')
             ->select();
         //配置树状结构
-        $nav_list = $this->getMenuTree($nav_all,$type);
-        p($nav_list);
-        exit;
+        $nav_list = $this->menusModel->getMenuTree($nav_all,$type);
         $this->assign('nav_list',$nav_list);
         return $this->fetch();
-    }
-
-    /**
-     * 配置树状结构
-     * @param $menulist
-     * @param $type
-     */
-    public function getMenuTree($menuSt,$type){
-        if( !empty($menuSt) ){
-            foreach( $menuSt as $key => $list ){
-                $where['pid'] = ['=',$list['id']];
-                if( $type > 0 ){
-                    $where['menus_type'] = ['=',$type];
-                }
-                $nav_son = DB::table($this->menusModel->getTable())
-                    ->where($where)
-                    ->order('sequence','desc')
-                    ->select();
-                if( !empty($nav_son) ){
-                    $nav_son = $this->getMenuTree($nav_son,$type);
-                }
-                $menuSt[$key]['child'] = $nav_son;
-            }
-        }
-        return $menuSt;
     }
 
     //添加导航菜单
@@ -97,7 +70,6 @@ class Menus extends Base
             if( Db::table($this->menusModel->getTable())->insert($insertData) === false )
                 throw new Exception('网络错误，添加失败');
 
-            //记录日志
             //添加日志
             $logModel = model('Log');
             if( $logModel->note(LogModel::INSERT,'添加导航菜单：'.$insertData['menu_name']) === false )
@@ -149,7 +121,7 @@ class Menus extends Base
 
             //添加日志
             $logModel = model('Log');
-            if( $logModel->note(LogModel::INSERT,'添加导航菜单：'.$updateData['menu_name']) === false )
+            if( $logModel->note(LogModel::UPDATES,'编辑导航菜单：'.$updateData['menu_name']) === false )
                 throw new Exception('网络错误，操作失败');
 
             Db::commit();
