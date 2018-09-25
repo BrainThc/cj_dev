@@ -102,7 +102,7 @@ CREATE TABLE IF NOT EXISTS `yg_article_cate`(
  */
 CREATE TABLE IF NOT EXISTS `yg_article`(
   `article_id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '文章索引id',
-  `art_cate_id` int(11) NOT NULL COMMENT '栏目索引id',
+  `art_cate_id` int(11) NOT NULL DEFAULT 0 COMMENT '栏目索引id',
   `title` varchar(255) NOT NULL COMMENT '文章标题',
   `keyword` varchar(255) NOT NULL DEFAULT '' COMMENT 'seo关键词',
   `description` text NOT NULL DEFAULT '' COMMENT '简介描述',
