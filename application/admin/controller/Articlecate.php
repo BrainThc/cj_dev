@@ -43,12 +43,11 @@ class Articlecate extends Controller
 
             $insertData['pid'] = empty($data['pid']) ? 0 : intval($data['pid']);
             $insertData['sequence'] = empty($data['sequence']) ? 0 : intval($data['sequence']);
-            if( $insertData['pid'] < 0 || $insertData['sequence'] < 0 )
-                throw new Exception('参数错误');
 
             $t = time();
             $insertData['add_time'] = $t;
             $insertData['edit_time'] = $t;
+
             Db::startTrans();
             if( Db::table($this->articleCateModel->getTable())->insert($insertData) === false )
                 throw new Exception('网络错误，添加失败');
@@ -90,10 +89,8 @@ class Articlecate extends Controller
 
             $updateData['pid'] = empty($data['pid']) ? 0 : intval($data['pid']);
             $updateData['sequence'] = empty($data['sequence']) ? 0 : intval($data['sequence']);
-            if( $updateData['sequence'] < 0 || $updateData['sequence'] < 0  )
-                throw new Exception('参数错误');
-
             $updateData['edit_time'] = time();
+
             Db::startTrans();
             $updateState = Db::table($this->articleCateModel->getTable())->where($where)->update($updateData);
             if( empty($updateState) )
