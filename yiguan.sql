@@ -8,10 +8,10 @@ CREATE TABLE IF NOT EXISTS `yg_sys_user` (
   `keyCode` varchar(6) NOT NULL COMMENT '身份秘钥',
   `group_id` int(11) NOT NULL DEFAULT 0 COMMENT '所属权限组', 
   `status` tinyint(1) NOT NULL DEFAULT 1 COMMENT '账号状态 0 已删除 1正常',
-  `reg_ip` char(15) NOT NULL COMMENT '注册ip',
+  `reg_ip` varchar(15) NOT NULL COMMENT '注册ip',
   `reg_time` int(10) NOT NULL DEFAULT 0 COMMENT '注册时间',
   `login_count` int(11) NOT NULL COMMENT '登录次数',
-  `last_ip` char(15) NOT NULL COMMENT '注册ip',
+  `last_ip` varchar(15) NOT NULL COMMENT '注册ip',
   `last_time` int(10) NOT NULL DEFAULT 0 COMMENT '上一次登录时间',
   `desc` varchar(255) NOT NULL COMMENT '账号备注',
 ) ENGINE=InnoDB COMMENT '管理员表';
@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS `yg_sys_user_log`(
   `type` varchar(11) NOT NULL COMMENT '操作类型',
   `description` text NOT NULL DEFAULT '' COMMENT '描述',
   `add_time` int(10) NOT NULL DEFAULT 0 COMMENT '添加时间',
-  `add_ip` char(15) NOT NULL DEFAULT '' COMMENT '操作ip'
+  `add_ip` varchar(15) NOT NULL DEFAULT '' COMMENT '操作ip'
 ) ENGINE=InnoDB COMMENT '管理员操作日志';
 
 /**
@@ -118,3 +118,55 @@ CREATE TABLE IF NOT EXISTS `yg_article`(
   `edit_time` int(10) NOT NULL DEFAULT 0 COMMENT '编辑时间'
 ) ENGINE=InnoDB COMMENT '文章表';
 
+/**
+广告位表
+ */
+CREATE TABLE IF NOT EXISTS `yg_adv_position`(
+  `pos_id` int(11) NOT NULL NULL AUTO_INCREMENT PRIMARY KEY COMMENT '广告位索引id',
+  `pos_name` varchar(255) NOT NULL COMMENT '广告位名',
+  `pos_desc` varchar(255) NOT NULL COMMENT '广告位描述',
+  `image` text NOT NULL COMMENT '默认图',
+  `width` varchar(11) NOT NULL DEFAULT '' COMMENT '广告位宽度 0则为定义的',
+  `height` varchar(11) NOT NULL DEFAULT '' COMMENT '广告位高度 0则为定义的',
+  `add_time` int(10) NOT NULL DEFAULT 0 COMMENT '添加时间',
+  `edit_time` int(10) NOT NULL DEFAULT 0 COMMENT '编辑时间'
+) ENGINE=InnoDB COMMENT '广告位表';
+
+/**
+广告图列表
+ */
+CREATE TABLE IF NOT EXISTS `yg_adv_list`(
+  `adv_id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '广告索引你id',
+  `pos_id`  int(11) NOT NULL COMMENT '所属广告位id',
+  `adv_title` varchar(255) NOT NULL COMMENT '广告标题',
+  `adv_img` text NOT NULL COMMENT '图片地址',
+  `adv_url` text NOT NULL COMMENT '跳转地址',
+  `start_time` int(10) NOT NULL DEFAULT 0 COMMENT '开始时间',
+  `end_time` int(10) NOT NULL DEFAULT 0 COMMENT '结束时间',
+  `add_time` int(10) NOT NULL DEFAULT 0 COMMENT '添加时间',
+  `edit_time` int(10) NOT NULL DEFAULT 0 COMMENT '编辑时间'
+) ENGINE=InnoDB COMMENT '广告图表';
+
+/**
+图库资源记录表
+ */
+CREATE TABLE IF NOT EXISTS `yg_images_upload`(
+  `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '索引id',
+  `user_type` int(11) NOT NULL COMMENT '0 会员用户 1后台',
+  `user_id` int(11) NOT NULL COMMENT '用户id',
+  `file` text NOT NULL DEFAULT '' COMMENT '所在文件夹标识',
+  `url` text NOT NULL DEFAULT '' COMMENT '图片路径',
+  `add_time` int(10) NOT NULL DEFAULT 0 COMMENT '添加时间'
+) ENGINE=MyISAM COMMENT '图片上传记录';
+
+/**
+手机验证码表
+ */
+CREATE TABLE IF NOT EXISTS `yg_mobild_code`(
+ `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '索引id',
+ `mobile` varchar(50) NOT NULL COMMENT '手机号',
+ `code` varchar(10) NOT NULL COMMENT '验证码code',
+ `add_time` int(10) NOT NULL COMMENT '添加时间',
+ `finished_time` int(10) NOT NULL COMMENT '失效时间',
+ `add_ip` varchar(50) NOT NULL COMMENT '添加ip'
+) ENGINE=MyISAM COMMENT '手机验证码表';
