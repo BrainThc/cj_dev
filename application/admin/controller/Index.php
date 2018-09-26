@@ -19,7 +19,6 @@ class Index extends Base
     }
 
     public function show(){
-        echo '这里是首页信息展示页<br />';
         return $this->fetch();
     }
 

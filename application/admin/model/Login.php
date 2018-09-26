@@ -16,6 +16,9 @@ class Login extends Model
         $sysData['sys_user_id'] = $userInfo['sys_user_id'];
         $sysData['username'] = $userInfo['username'];
         $sysData['group_id'] = $userInfo['group_id'];
+        $sysData['login_count'] = $userInfo['login_count'];
+        $sysData['last_time'] = date('Y-m-d H:i:s',$userInfo['last_time']);
+        $sysData['last_ip'] = $userInfo['last_ip'];
         //获取权限信息
         $sysUserGroup = model('SysUserGroup');
         $groupValue = Db::table($sysUserGroup->getTable())->field('value,group_name,status')->where('group_id',$userInfo['group_id'])->find();

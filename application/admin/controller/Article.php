@@ -125,7 +125,7 @@ class Article extends Base
             $art_info = Db::table($this->articleModel->getTable())
                 ->where('article_id',$art_id)
                 ->find();
-            if( empty($art_info)  )
+            if( empty($art_info) )
                 throw new Exception('参数错误');
 
             Db::startTrans();
