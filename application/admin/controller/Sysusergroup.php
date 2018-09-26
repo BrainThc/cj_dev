@@ -94,7 +94,7 @@ class Sysusergroup extends Base
      */
     public function create_group(){
         //配置参数信息
-        $data = input('.post');
+        $data = input('post.');
         try{
             if( empty($data['group_name']) || empty($data['group_power']) ){
                 throw new Exception('参数错误');
@@ -138,7 +138,7 @@ class Sysusergroup extends Base
      */
     public function update_group(){
         //配置参数信息
-        $data = input('.post');
+        $data = input('');
         try{
             if( empty($data['group_id']) || empty($data['group_name']) || empty($data['group_power']) ){
                 throw new Exception('参数错误');
@@ -187,7 +187,7 @@ class Sysusergroup extends Base
      * 更新权限配置
      */
     public function update_power(){
-        $data = input('.post');
+        $data = input('post.');
         if( empty($data['group_id']) || empty($data['power_value']) ){
             returnJson(false,'参数错误');
         }
@@ -217,7 +217,7 @@ class Sysusergroup extends Base
      * @throws \think\exception\PDOException
      */
     public function disable_group(){
-        $data = input('.post');
+        $data = input('post.');
         if( empty($data['group_id']) || empty($data['key']) ){
             returnJson(false,'参数错误');
         }

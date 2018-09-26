@@ -60,20 +60,37 @@ class Base extends Controller
                 //站点配置
                 array('name'=>'站点配置','power'=>'site_config','act'=>'Site','op'=>'index','child'=>array(
                     array('name'=>'创建配置','power'=>'site_config_create','act'=>'Site','op'=>'create_config'),
-                    array('name'=>'修改配置','power'=>'site_config_update','act'=>'Site','op'=>'update_config')
+                    array('name'=>'编辑配置','power'=>'site_config_update','act'=>'Site','op'=>'update_config')
                 )),
                 //菜单管理
                 array('name'=>'导航管理','power'=>'menus','act'=>'Menus','op'=>'index','child'=>array(
                     array('name'=>'添加导航','power'=>'menus_create','act'=>'Site','op'=>'create_menu'),
-                    array('name'=>'修改导航','power'=>'menus_update','act'=>'Site','op'=>'update_menu'),
+                    array('name'=>'编辑导航','power'=>'menus_update','act'=>'Site','op'=>'update_menu'),
                     array('name'=>'删除导航','power'=>'menus_del','act'=>'Site','op'=>'update_menu')
                 )),
             )),
             //文章管理
             array('name'=>'文章管理','power'=>'article','act'=>'Article','child'=>array(
-                //商品列表
-                array('name'=>'栏目管理','power'=>'article_cate','act'=>'Articlecate','op'=>'index'),
-                array('name'=>'文章管理','power'=>'article_list','act'=>'Article','op'=>'index'),
+                //文章栏目
+                array('name'=>'栏目管理','power'=>'article_cate','act'=>'Articlecate','op'=>'index','child'=>array(
+                    array('name'=>'添加栏目页','power'=>'article_cate_create_view','act'=>'Articlecate','op'=>'add','child'=>array(
+                        array('name'=>'添加栏目','power'=>'article_cate_create','act'=>'Articlecate','op'=>'create_cate')
+                    )),
+                    array('name'=>'编辑栏目页','power'=>'article_cate_update_view','act'=>'Articlecate','op'=>'edit','child'=>array(
+                        array('name'=>'编辑栏目','power'=>'article_cate_update','act'=>'Articlecate','op'=>'update_cate')
+                    )),
+                )),
+                //文章列表
+                array('name'=>'文章管理','power'=>'article_list','act'=>'Article','op'=>'index','child'=>array(
+                    array('name'=>'添加文章页','power'=>'article_create_view','act'=>'Article','op'=>'add','child'=>array(
+                        array('name'=>'添加文章','power'=>'article_create','act'=>'Article','op'=>'create_article')
+                    )),
+                    array('name'=>'编辑文章页','power'=>'article_create_view','act'=>'Article','op'=>'edit','child'=>array(
+                        array('name'=>'编辑栏目','power'=>'article_update','act'=>'Article','op'=>'update_article')
+                    )),
+                    array('name'=>'文章推荐设置','power'=>'article_recomm','act'=>'Article','op'=>'set_recomm'),
+                    array('name'=>'删除/恢复文章','power'=>'article_deleted','act'=>'Article','op'=>'set_deleted'),
+                )),
             )),
             //商品管理
             array('name'=>'商品管理','power'=>'goods','act'=>'Goods','child'=>array(
@@ -82,12 +99,18 @@ class Base extends Controller
             )),
             //订单管理
             array('name'=>'订单管理','power'=>'order','act'=>'Order','child'=>array(
-                //商品列表
+                //订单列表
                 array('name'=>'订单列表','power'=>'order_list','act'=>'Order','op'=>'lists')
+            )),
+            //营销管理
+            array('name'=>'营销广告','power'=>'market','act'=>'Market','child'=>array(
+                //订单列表
+                array('name'=>'广告位管理','power'=>'market_banner_pos','act'=>'Advpost','op'=>'index'),
+                array('name'=>'广告管理','power'=>'market_banner_content','act'=>'Adv','op'=>'index')
             )),
             //模板配置管理
             array('name'=>'模板管理','power'=>'template','act'=>'Template','child'=>array(
-                //商品列表
+                //各个模板模块
                 array('name'=>'PC首页','power'=>'template_pc','act'=>'Template','op'=>'pc'),
                 array('name'=>'移动首页','power'=>'template_wap','act'=>'Template','op'=>'wap'),
             )),
@@ -223,6 +246,35 @@ class Base extends Controller
                 $this->set_map_power($value['child']);
             }
         }
+    }
+
+    /**
+     * 页面校验码
+     * @param string $name      校验码名 session
+     * @return string           检验码串
+     */
+    public function setViewCode($name='viewCode'){
+        $code = str_shuffle(md5(rand(1111,9999)));
+        session($name,$code);
+        return $code;
+    }
+
+    /**
+     * 检查页面校验码
+     * @param string $name      校验码名 session
+     * @param string $code      提交的校验码
+     * @return bool             true or false
+     */
+    public function checkViewCode($name='viewCode',$code=''){
+        $viewCode = session($name);
+        if( empty($viewCode) || empty($code) )
+            return false;
+
+        if( $viewCode == $code ){
+            session($name,null);
+            return true;
+        }
+        return false;
     }
 
 }

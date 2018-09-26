@@ -40,7 +40,7 @@ class Site extends Base
     //创建配置
     public function create_config()
     {
-        $data = input('.post');
+        $data = input('post.');
         try {
             if (empty($data['site_name']) )
                 throw new Exception('填写配置名');
@@ -77,7 +77,7 @@ class Site extends Base
 
     //更新配置
     public function update_config(){
-        $data = input('.post');
+        $data = input('post.');
         try {
             if (empty($data['site_name']) || empty($data['config_id']) )
                 throw new Exception('参数错误');

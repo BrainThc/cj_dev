@@ -23,8 +23,11 @@ class Login extends Controller
         $data = input('post.');
         $sysUserModel = model('SysUser');
         try{
-            if( empty($data) || empty($data['username']) || empty($data['password']) || empty($data['verifyCode']) )
+            if( empty($data) || empty($data['username']) || empty($data['password']) )
                 throw new Exception('账号和密码不能为空');
+
+//            if( empty($data['verifyCode']) )
+//                throw new Exception('请填写验证码');
 
             $username = trim($data['username']);
             $password = trim($data['password']);
@@ -37,8 +40,8 @@ class Login extends Controller
             if( $sysUserModel->encryptPwd($password,$userInfo['keyCode']) != $userInfo['password'] )
                 throw new Exception('密码错误');
 
-            if( captcha_check($data['verifyCode']) === false )
-                throw new Exception('验证码错误');
+//            if( captcha_check($data['verifyCode']) === false )
+//                throw new Exception('验证码错误');
 
             //检查账号状态
             if( SysUserModel::$map_status[$userInfo['status']]['value'] != SysUserModel::USER_NORMAL )

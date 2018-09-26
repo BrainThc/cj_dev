@@ -1,10 +1,10 @@
 <?php
 namespace app\admin\controller;
 use think\Db;
-use think\Controller;
+use app\admin\model\Log as LogModel;
 use think\Exception;
 
-class Articlecate extends Controller
+class Articlecate extends Base
 {
 
     public function _initialize()
@@ -35,13 +35,20 @@ class Articlecate extends Controller
 
     //添加栏目
     public function create_cate(){
-        $data = input('.post');
+        $data = input('post.');
         try{
             $insertData['cate_name'] = empty($data['cate_name']) ? '' : trim($data['cate_name']);
             if( $insertData['cate_name'] == '' )
                 throw new Exception('栏目名不能为空');
 
             $insertData['pid'] = empty($data['pid']) ? 0 : intval($data['pid']);
+            //检查上级是否存在
+            if( $insertData['pid'] > 0 ){
+                $checkInfo = Db::table($this->articleCateModel->getTable())->where('art_cate_id',$insertData['pid'])->find();
+                if( empty($checkInfo) ){
+                    throw new Exception('上级栏目不存在');
+                }
+            }
             $insertData['sequence'] = empty($data['sequence']) ? 0 : intval($data['sequence']);
 
             $t = time();
@@ -72,7 +79,7 @@ class Articlecate extends Controller
 
     //提交编辑
     public function update_cate(){
-        $data = input('.post');
+        $data = input('post.');
         try{
             if( empty($data['art_cate_id']) || intval($data['art_cate_id']) <= 0 )
                 throw new Exception('参数错误');

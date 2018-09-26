@@ -113,6 +113,7 @@ CREATE TABLE IF NOT EXISTS `yg_article`(
   `recommend` tinyint(2) NOT NULL DEFAULT 0 COMMENT '是否推荐 1是 0否',
   `status` tinyint(2) NOT NULL DEFAULT 2 COMMENT '文章状态 1已审核 2审核中 0审核失败',
   `is_show` tinyint(2) NOT NULL DEFAULT 1 COMMENT '是否显示 1显示 0隐藏',
+  `deleted` tinyint(2) NOT NULL DEFAULT 0 COMMENT '是否已删除 1已删除 0未删除',
   `add_time` int(10) NOT NULL DEFAULT 0 COMMENT '添加时间',
   `edit_time` int(10) NOT NULL DEFAULT 0 COMMENT '编辑时间'
 ) ENGINE=InnoDB COMMENT '文章表';

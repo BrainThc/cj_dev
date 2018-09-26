@@ -90,7 +90,7 @@ class Sysuser extends Base
      * 添加管理员
      */
     public function create_user(){
-        $data = input('.post');
+        $data = input('post.');
         try{
             $insertData = [];
             if( empty($data['username']) )
@@ -147,7 +147,7 @@ class Sysuser extends Base
      * 更改管理员信息
      */
     public function update_user(){
-        $data = input('.post');
+        $data = input('post.');
         try{
             $updateData = [];
             if( empty($data['sys_user_id']) ){
@@ -207,7 +207,7 @@ class Sysuser extends Base
     * 禁用管理员
     */
     public function disable_user(){
-        $data = input('.post');
+        $data = input('post.');
         try{
             if( empty($data['sys_user_id']) || empty($data['key']) ){
                 throw new Exception('参数错误');

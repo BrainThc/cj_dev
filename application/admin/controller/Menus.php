@@ -41,7 +41,7 @@ class Menus extends Base
 
     //添加导航菜单
     public function create_menu(){
-        $data = input('.post');
+        $data = input('post.');
         try{
             if( empty($data['menu_name']) )
                 throw new Exception('导航名不能为空');
@@ -85,7 +85,7 @@ class Menus extends Base
 
     //编辑导航菜单信息
     public function update_menu(){
-        $data = input('.post');
+        $data = input('post.');
         try{
             if( empty($data['id']) && intval($data['id']) > 0 )
                 throw new Exception('参数错误');
