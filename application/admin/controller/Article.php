@@ -203,7 +203,7 @@ class Article extends Base
             if( empty($art_info) )
                 throw new Exception('文章名不能为空');
 
-            $where['art_id'] = ['=',$art_info['article_id']];
+            $where['article_id'] = ['=',$art_info['article_id']];
             //栏目类型
             $updateData['art_cate_id'] = empty($data['art_cate_id']) ? 0 : intval($data['art_cate_id']);
             //检查栏目类型
@@ -232,7 +232,7 @@ class Article extends Base
 
             Db::startTrans();
             $updateState = Db::table($this->articleModel->getTable())
-                ->where($where['art_id'])
+                ->where($where)
                 ->update($updateData);
             if( empty($updateState) )
                 throw new Exception('网络错误，保存失败');

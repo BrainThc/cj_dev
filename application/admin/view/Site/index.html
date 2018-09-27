@@ -53,7 +53,10 @@
             'test' : 21321
         },
         methods:{
-            getNavList:function(){//获取头部导航
+            //获取头部导航
+            getNavList:function getNavList(){
+                var that = this;
+                act = that.test;
                 $.ajax({
                     type: 'POST',
                     url: "{:url('Index/get_menu_left_html')}",
@@ -69,7 +72,7 @@
                 });
             }
         }
-    })
+    });
 </script>
 </body>
 </html>
