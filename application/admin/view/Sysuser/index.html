@@ -51,11 +51,11 @@
                     <table width="100%" cellspacing="0">
                         <thead>
                         <tr>
-                            <td>ID</td>
-                            <td align="left">用户名</td>
-                            <td>用户状态</td>
-                            <td>上一次登录时间</td>
-                            <td>操作</td>
+                            <th>ID</th>
+                            <th align="left">用户名</th>
+                            <th>用户状态</th>
+                            <th>上一次登录时间</th>
+                            <th>操作</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -136,7 +136,7 @@
                             title:'添加管理员',
                             type:2,
                             closeBtn:1,
-                            area:['100%','100%'],
+                            area:['50%','50%'],
                             content: "{:url('Sysuser/add')}"
                         })
                     },
@@ -147,7 +147,7 @@
                             title:'编辑管理员',
                             type:2,
                             closeBtn:1,
-                            area:['100%','100%'],
+                            area:['50%','50%'],
                             content:toUrl
                         })
                     },

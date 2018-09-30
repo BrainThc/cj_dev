@@ -14,6 +14,7 @@
         .pageTool ul{display:block; width:max-content; margin:0 auto;}
         .pageTool li{float:left; margin:0 10px;}
         #main_vue{display:none;}
+        input[type="checkbox"]{margin:0 5px;}
     </style>
 </head>
 <body width="100%">
@@ -89,10 +90,16 @@
                     if( isTop ){
                         that.group_html += '<tr><td><input type="checkbox" name="group_power[]"  value="'+group_list[s].power+'" />'+group_list[s].name+'</td><td>';
                     }else{
-                        that.group_html += '<input type="checkbox" name="group_power[]" value="'+group_list[s].power+'" />'+group_list[s].name+'';
+                        that.group_html += '<input type="checkbox" name="group_power[]" value="'+group_list[s].power+'" />'+group_list[s].name;
                     }
                     if( typeof(group_list[s].child) != 'undefined' ){
+                        if( !isTop ){
+                            that.group_html += '【';
+                        }
                         that.set_group_html(group_list[s].child);
+                        if( !isTop ){
+                            that.group_html += '】';
+                        }
                     }
                     if( isTop ){
                         that.group_html += '</td></tr>';
