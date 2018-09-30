@@ -19,6 +19,7 @@ class Sysusergroup extends Base
         $this->groupModel = model('SysUserGroup');
     }
 
+    //展示页面
     public function index(){
         $groupModel = $this->groupModel;
         $where = [];
@@ -30,7 +31,7 @@ class Sysusergroup extends Base
         $list = Db::table($groupModel->getTable())
             ->where($where)
             ->order('status','desc')
-            ->paginate(15);
+            ->paginate(2);
 
         if( !empty($list) ){
             foreach( $list as $k => $v ){
@@ -45,11 +46,38 @@ class Sysusergroup extends Base
         return $this->fetch();
     }
 
+    //获取权限组列表
+    public function get_group_list(){
+        $groupModel = $this->groupModel;
+        $where = [];
+        //权限组名关键词搜索
+        $keyword = input('post.keyword','');
+        if( $keyword != '' ){
+            $where['group_name'] = ['like',"%{$keyword}%"];
+        }
+        $list = Db::table($groupModel->getTable())
+            ->where($where)
+            ->order('group_id','asc')
+            ->paginate(15);
+
+        if( !empty($list) ){
+            foreach( $list as $k => $v ){
+                $v['statusType'] = SysUserGroupModel::$map_status[$v['status']];
+                $list[$k] = $v;
+            }
+        }
+        $info['list'] = $list;
+        $this->assign('list',$list);
+        $page = $list->render();
+        $info['page'] = empty($page) ? '' : $page;
+        returnJson(true,'success',$info);
+    }
+
     /**
      * 获取所有权限组配置表内容
      */
-    public function get_group_list(){
-        $group_id = input('group_id',0);
+    public function get_power_list(){
+        $group_id = input('post.group_id',0);
         $powerArr = [];
         if( $group_id > 0 ){
             $info = Db::table($this->groupModel->getTable())
@@ -76,9 +104,9 @@ class Sysusergroup extends Base
     private function get_group_set($menuList=[],$powerArr=[]){
         if( !empty($menuList) ) {
             foreach ( $menuList as $key => $value ) {
-                $value['checked'] = 0;
+                $value['checked'] = false;
                 if( in_array($value['power'],$powerArr) ){
-                    $value['checked'] = 1;
+                    $value['checked'] = true;
                 }
                 if(!empty($value['child'])){
                     $value['child'] = $this->get_group_set($value['child'],$powerArr);
@@ -89,6 +117,11 @@ class Sysusergroup extends Base
         return $menuList;
     }
 
+    //添加页面
+    public function add(){
+        return $this->fetch();
+    }
+
     /**
      * 创建权限组
      */
@@ -96,7 +129,7 @@ class Sysusergroup extends Base
         //配置参数信息
         $data = input('post.');
         try{
-            if( empty($data['group_name']) || empty($data['group_power']) ){
+            if( empty($data['group_name']) ){
                 throw new Exception('参数错误');
             }
             $t = time();
@@ -109,9 +142,14 @@ class Sysusergroup extends Base
             if( !empty($checkInfo) )
                 throw new Exception('权限组已存在');
 
+            $power_value = 'home';
+            $group_power = empty($data['group_power']) ? [] : $data['group_power'];
+            if( !empty($group_power) && is_array($group_power) ){
+                $power_value = implode(',',$group_power);
+            }
             $insertData = array(
                 'group_name'    => $group_name,
-                'value'         => 'home',
+                'value'         => $power_value,
                 'add_time'      => $t,
                 'edit_time'     => $t,
             );
@@ -134,26 +172,36 @@ class Sysusergroup extends Base
     }
 
     /**
+     * 更新权限组页
+     */
+    public function edit(){
+        $id = intval(input('param.id',0));
+        if( $id <= 0 ){
+            noPermission();
+            url();
+        }
+        $info = Db::table($this->groupModel->getTable())
+            ->where('group_id',$id)
+            ->find();
+
+        if( empty($info) )
+            noPermission();
+
+        $this->assign('info',$info);
+        return $this->fetch();
+    }
+
+    /**
      * 更新权限组信息
      */
     public function update_group(){
         //配置参数信息
-        $data = input('');
+        $data = input('post.');
         try{
-            if( empty($data['group_id']) || empty($data['group_name']) || empty($data['group_power']) ){
+            if( empty($data['group_id']) )
                 throw new Exception('参数错误');
-            }
-            $t = time();
-            //检查权限组名是否重复
-            $group_name = trim($data['group_name']);
-            $checkInfo = Db::table($this->groupModel->getTable())
-                ->where('group_name',$group_name)
-                ->find();
 
-            if( !empty($checkInfo) )
-                throw new Exception('权限组名已存在');
-
-            $group_id = trim($data['group_id']);
+            $group_id = intval($data['group_id']);
             $info = Db::table($this->groupModel->getTable())
                 ->where('group_id',$group_id)
                 ->find();
@@ -161,19 +209,41 @@ class Sysusergroup extends Base
             if( empty($info) )
                 throw new Exception('权限组信息异常');
 
+            if( empty($data['group_name']) )
+                throw new Exception('权限组名不能为空');
+
+            $group_name = trim($data['group_name']);
+            $t = time();
+            //检查权限组名是否重复
+            $check_where['group_name'] = ['=',$group_name];
+            $check_where['group_id'] = ['<>',$info['group_id']];
+            $checkInfo = Db::table($this->groupModel->getTable())
+                ->where($check_where)
+                ->find();
+
+            if( !empty($checkInfo) )
+                throw new Exception('权限组名已存在');
+
+            $power_value = 'home';
+            $group_power = empty($data['group_power']) ? [] : $data['group_power'];
+            if( !empty($group_power) && is_array($group_power) ){
+                $power_value = implode(',',$group_power);
+            }
+
             $insertData = array(
                 'group_name' => $group_name,
+                'value' => $power_value,
                 'edit_time'  => $t,
             );
             Db::startTrans();
-            $updateState = Db::table($this->groupModel->getTable())->where('group_id',$checkInfo['group_id'])->update($insertData);
+            $updateState = Db::table($this->groupModel->getTable())->where('group_id',$info['group_id'])->update($insertData);
             if( empty($updateState) )
-                throw new Exception('网络错误，操作失败');
+                throw new Exception('网络错误，操作失败x1');
 
             //日志记录
             $logModel = model('Log');
-            if( $logModel->note(LogModel::UPDATES,'编辑权限组：'.$checkInfo['group_name']) === false )
-                throw new Exception('网络错误，操作失败');
+            if( $logModel->note(LogModel::UPDATES,'编辑权限组：'.$info['group_name']) === false )
+                throw new Exception('网络错误，操作失败x2');
 
             Db::commit();
         }catch( Exception $e ){
@@ -184,63 +254,46 @@ class Sysusergroup extends Base
     }
 
     /**
-     * 更新权限配置
-     */
-    public function update_power(){
-        $data = input('post.');
-        if( empty($data['group_id']) || empty($data['power_value']) ){
-            returnJson(false,'参数错误');
-        }
-        $group_id = $data['group_id'];
-        $power_value = $data['power_value'];
-        $updateData['value'] = $power_value;
-        Db::startTrans();
-        $updateState = Db::table($this->groupModel->getTable())->where('group_id',$group_id)->update($updateData);
-        if( empty($updateState) ){
-            Db::rollback();
-            returnJson(false,'网络错误，保存失败');
-        }
-
-        //日志记录
-        $logModel = model('Log');
-        if( $logModel->note(LogModel::UPDATES,"编辑权限组id:{$group_id}权限配置") === false ) {
-            Db::rollback();
-            returnJson(false, '网络错误，保存失败');
-        }
-        Db::commit();
-        returnJson(true,'保存成功');
-    }
-
-    /**
      * 禁用权限组
      * @throws Exception
      * @throws \think\exception\PDOException
      */
     public function disable_group(){
         $data = input('post.');
-        if( empty($data['group_id']) || empty($data['key']) ){
-            returnJson(false,'参数错误');
-        }
-        $group_id = $data['group_id'];
-        $key = trim($data['key']);
-        if( $key != __COMPANYKEY__ ){
-            returnJson(false,'秘钥错误');
-        }
-        Db::startTrans();
-        $updateData['status'] = SysUserGroupModel::DISABLE_STATUS;
-        $updateState = Db::table($this->groupModel->getTable())->where('group_id',$group_id)->update($updateData);
-        if( empty($updateState) ){
+        try{
+            if( empty($data['group_id']) || empty($data['key']) )
+                throw new Exception('参数错误');
+
+            $group_id = intval($data['group_id']);
+            $info = Db::table($this->groupModel->getTable())
+                ->where('group_id',$group_id)
+                ->find();
+
+            if( empty($info) )
+                throw new Exception('参数错误');
+
+            $key = trim($data['key']);
+            if( $key != __COMPANYKEY__ )
+                throw new Exception('秘钥错误');
+
+            Db::startTrans();
+            $updateData['status'] = $info['status'] ? SysUserGroupModel::DISABLE_STATUS : SysUserGroupModel::NORMAL_STATUS;
+            $conMsg = SysUserGroupModel::$map_status[$updateData['status']];
+            $updateState = Db::table($this->groupModel->getTable())->where('group_id',$group_id)->update($updateData);
+            if( empty($updateState) )
+                throw new Exception('网络错误，操作失败');
+
+                //日志记录
+            $logModel = model('Log');
+            if( $logModel->note(LogModel::UPDATES,"设置权限组：{$info['group_name']} 为 {$conMsg} 状态") === false )
+                throw new Exception('网络错误，操作失败');
+
+            Db::commit();
+            returnJson(true,'操作成功');
+        }catch( Exception $e ){
             Db::rollback();
-            returnJson(false,'网络错误，操作失败');
+            returnJson(false,$e->getMessage());
         }
-        //日志记录
-        $logModel = model('Log');
-        if( $logModel->note(LogModel::UPDATES,'编辑管理员管理员：'.$updateState['username']) === false ) {
-            Db::rollback();
-            returnJson(false, '网络错误，操作失败');
-        }
-        Db::commit();
-        returnJson(true,'保存成功');
     }
 
     //初始化超级管理员权限组

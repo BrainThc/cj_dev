@@ -42,3 +42,11 @@ function returnJson($bool=false,$desc='fail',$data=[]){
     $json['info'] = $data;
     exit(json_encode($json));
 }
+
+/**
+ * 返回后台主页
+ */
+function noPermission(){
+    echo 'You do not have permission';
+    exit;
+}

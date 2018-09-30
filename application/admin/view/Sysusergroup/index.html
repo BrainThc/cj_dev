@@ -7,28 +7,30 @@
 	<script type="text/javascript" src="__SYSJS__/jquery.min.js"></script>
 	<script type="text/javascript" src="__SYSJS__/jquery.artDialog.js?skin=blue"></script>
 	<script type="text/javascript" src="__SYSJS__/my.js"></script>
-	<script language="JavaScript">
-        function confirm_delete(url){
-            art.dialog.confirm("", function(){location.href = url;});
-            $(document).keydown(function(event){
-                if(event.which == 13 ){
-                    location.href = url;
-                }
-            });
-        }
-	</script>
+	<script type="text/javascript" src="__JS__/vue.min.js" ></script>
+	<script type="text/javascript" src="__JS__/layer/layer.js" ></script>
 	<style>
 		.pageTool{ text-align:center;}
 		.pageTool ul{display:block; width:max-content; margin:0 auto;}
 		.pageTool li{float:left; margin:0 10px;}
+		#main_vue{display:none;}
 	</style>
 </head>
 	<body width="100%">
 		<div id="result" class="result none"></div>
-		<div class="mainbox">
+		<div class="mainbox" id="main_vue" >
+			<div id="nav" class="mainnav_title">
+				<ul>
+                	<a  href="javascript:void(0);" v-on:click="add_group">添加权限组</a>|
+				</ul>
+			</div>
 			<div class="table-list">
 				<table width="100%" cellspacing="0">
 					<thead>
+					<tr>
+						<td><input type="text" placeholder="关键词搜索" v-model="keyword" /></td>
+						<td><input type="button" v-on:click="search" class="button" value="搜索"/></td>
+					</tr>
 					<tr>
 						<th width="40">ID</th>
 						<th align="left" >权限组名</th>
@@ -37,54 +39,166 @@
 					</tr>
 					</thead>
 					<tbody>
-					<?php if( !empty($list)): foreach( $list as $role ){ ?>
-						<tr>
-							<td align="center">{$role['group_id']}</td>
-							<td>{$role['group_name']}</td>
-							<td align="center">{$role['statusType']}</td>
+						<tr v-for="(group,index) in group_list">
+							<td align="center">{{ group.group_id }}</td>
+							<td>{{ group.group_name }}</td>
+							<td align="center">{{ group.statusType }}</td>
 							<td align="center">
-								<?php if( $role['status'] == 2 ){ ?>
-									<a href="javascript:defaultPower();">授权初始化</a>
-								<?php }else{ ?>
-									<a href="">修改</a> |
-									<a href="javascript:confirm_delete('')">删除</a> |
-									<a href="javascript: openwin()">授权设置</a> |
-									<a href="">用户列表</a>
-									<a href=""></a>
-								<?php } ?>
+								<span v-if="group.status!=2">
+									<a href="javascript:void(0);" v-on:click="edit_group(group.group_id)" >修改</a> |
+								</span>
+								<span v-if="group.status!=2" >
+									<a href="javascript:void(0);" v-on:click="disable_group(group.group_id)">{{ group.status ? '禁用' : '恢复' }}</a> |
+								</span>
+									<a href="javascript:void(0);" v-on:click="user_list(group.group_id)">用户列表</a>
+								<span  v-if="group.status==2"  > |</span>
+								<span  v-if="group.status==2" >
+									<a href="javascript:void(0);" v-on:click="default_power();">授权初始化</a>
+								</span>
 							</td>
 						</tr>
-					<?php } endif; ?>
 					</tbody>
 					<tfoot>
 						<tr>
-							<td colspan="4" class="pageTool">{$page}</td>
+							<td colspan="4" class="pageTool" v-html="page_html" ></td>
 						</tr>
 					</tfoot>
 				</table>
 			</div>
 		</div>
 		<script>
-			function defaultPower(){
-			    var keyCode = prompt('请输入秘钥');
-			    if( keyCode == '' || keyCode == null ){
-			        return false;
-				}
-
-                $.ajax({
-                    type: 'POST',
-                    url: "{:url('Sysusergroup/default_super_group')}",
-                    data:{ key : keyCode},
-                    dataType: 'json',
-                    success: function(data){
-                        if(data.status == 1){
-							alert(data.msg);
-						}else{
-							alert(data.msg);
-						}
+            var vue_main = new Vue({
+                el: '#main_vue',
+                data:{
+                    'group_list' : [],
+					'keyword' : '',
+					'page_html' : '',
+                },
+                mounted:function(){
+                    var that = this;
+                    //获取列表
+					that.get_group_list();
+					$('#main_vue').show();
+                },
+                methods:{
+					get_group_list:function(){
+                        var that = this;
+                        $.ajax({
+                            url: "{:url('Sysusergroup/get_group_list')}",
+                            type: 'POST',
+                            dataType: 'json',
+                            async: false,
+                            data:{'keyword' : that.keyword},
+                            success:function (data) {
+                                that.group_list = data.info.list.data;
+                                that.page_html = data.info.page;
+                            },
+                            error:function(e){
+                                layer.msg('网络错误数据拉取失败', {
+                                    skin: 'layui-layer-huise'
+                                });
+                                return false;
+                            }
+                        });
+					},
+                    search:function(){
+                        var that = this;
+                        that.get_group_list();
                     },
-                });
-			}
+					get_group_list_reset:function(){
+						var that = this;
+                        that.keyword = '';
+                        that.get_group_list();
+					},
+					add_group:function(){
+                        layer.open({
+                            title:'添加权限组',
+                            type:2,
+                            closeBtn:1,
+                            area:['100%','100%'],
+                            content: "{:url('Sysusergroup/add')}"
+                        })
+					},
+                    edit_group:function(group_id){
+                        var toUrl = "{:url('Sysusergroup/edit',['id'=>'group_id'])}";
+                        toUrl = toUrl.replace('group_id',group_id);
+                        layer.open({
+                            title:'编辑权限组',
+                            type:2,
+                            closeBtn:1,
+                            area:['100%','100%'],
+                            content:toUrl
+                        })
+					},
+                    disable_group:function(group_id){
+					    var that = this;
+                        var keyCode = prompt('请输入秘钥');
+                        if( keyCode == '' || keyCode == null ){
+                            return false;
+                        }
+                        $.ajax({
+                            type: 'POST',
+                            url: "{:url('Sysusergroup/disable_group')}",
+                            data:{ key:keyCode, group_id : group_id},
+                            dataType: 'json',
+                            success: function(data){
+                                layer.msg(data.msg, {
+                                    skin: 'layui-layer-huise'
+                                });
+                                if( data.status == 1 ){
+                                    that.get_group_list();
+                                }
+                                return false;
+                            },
+                            error:function(e){
+                                layer.msg('网络错误，操作失败', {
+                                    skin: 'layui-layer-huise'
+                                });
+                                return false;
+                            }
+                        });
+					},
+                    user_list:function(group_id){
+                        layer.open({
+                            title:'用户列表',
+                            type:2,
+                            closeBtn:1,
+                            area:['100%','100%'],
+                            content:"{:url('Sysuser/index')}?group_id="+group_id
+                        })
+					},
+                    default_power:function(){
+						var keyCode = prompt('请输入秘钥');
+						if( keyCode == '' || keyCode == null ){
+							return false;
+						}
+						$.ajax({
+							type: 'POST',
+							url: "{:url('Sysusergroup/default_super_group')}",
+							data:{ key : keyCode},
+							dataType: 'json',
+							success: function(data){
+								layer.msg(data.msg, {
+									skin: 'layui-layer-huise'
+								});
+								return false;
+							},
+							error:function(e){
+                                layer.msg('网络错误，操作失败', {
+                                    skin: 'layui-layer-huise'
+                                });
+                                return false;
+                            }
+						});
+					}
+				}
+            });
+
+            //关闭所有二级窗口
+            function clearWin(){
+                vue_main.get_group_list();
+                layer.closeAll();
+            }
 		</script>
 	</body>
 </html>

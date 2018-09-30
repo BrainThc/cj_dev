@@ -8,6 +8,7 @@
     <script type="text/javascript" src="__SYSJS__/jquery.artDialog.js?skin=blue"></script>
     <script type="text/javascript" src="__SYSJS__/my.js"></script>
     <script type="text/javascript" src="__JS__/vue.min.js" ></script>
+    <script type="text/javascript" src="__JS__/layer/layer.js" ></script>
     <style>
         .pageTool{ text-align:center;}
         .pageTool ul{display:block; width:max-content; margin:0 auto;}
@@ -19,21 +20,19 @@
 <div class="mainbox" id="main_vue">
     <div id="nav" class="mainnav_title">
         <ul>
-            <a href="">1</a>|
+            <span v-for="(nav,index) in site_nav">
+                <a  href="javascript:void(0);" v-on:click="getSiteList(nav.id)" >{{ nav.site_name }}</a>|
+            </span>
         </ul>
     </div>
     <form method='post'  id="form1" action="">
         <table cellpadding=0 cellspacing=0 width="100%" class="table_form" >
-            <tr>
-                <th width="140">{{ test }}</th>
-                <td><input type="text" class="input-text"  name="" value="" size="40">213</td>
-            </tr>
-            <!--图片上传-->
-            <tr>
-                <th width="140"></th>
-                <td id="box_">
+            <tr v-for="(site,index) in site_list" >
+                <th width="140">{{ site.site_name }}</th>
+                <td v-if=" site.site_type == 0 "><input type="text" class="input-text"  name="" v-model="site.site_value" size="40"> {{ site.site_key }}</td>
+                <td v-if=" site.site_type == 1 ">
                     <div id="_aid_box" style="display:none;"></div>
-                    <input type="text" class="input-text" id="" name="" value="" size="40">
+                    <input type="text" class="input-text" id="" name="" value="" size="40">{{ site.site_key }}
                     <input type="button" class="button" value="上传" onclick="javascript:swfupload('_uploadfile','','',1,1,0,10,'jpeg,jpg,png,gif',5,230,'',yesdo,nodo)" />
                     <a href="javascript:void(0);" onclick="">预览</a>
                     &nbsp;
@@ -42,35 +41,80 @@
         </table>
         <div class="btn">
             <INPUT TYPE="submit"  value="保存" class="button" >
-            <input TYPE="reset"  value="重置" class="button">
+            <?php if(session('sys_user')['is_super']){ ?>
+            <input TYPE="reset"  value="清空" class="button">
+            <?php } ?>
         </div>
     </form>
 </div>
 <script>
-    var vue = new Vue({
+    var vue_main = new Vue({
         el: '#main_vue',
         data:{
-            'test' : 21321
+            'site_nav' : [],
+            'site_list' : []
+        },
+        mounted:function(){
+            var that = this;
+            //获取头部设置类型
+            that.getNavList(0);
+            //获取列表
+            that.getSiteList(that.site_nav[0].id);
         },
         methods:{
             //获取头部导航
-            getNavList:function getNavList(){
+            getNavList:function(site_pid){
                 var that = this;
-                act = that.test;
+                if( typeof(site_pid) == 'undefined' ){
+                    site_pid = 0;
+                }
                 $.ajax({
+                    url: "{:url('site/get_config_list')}",
                     type: 'POST',
-                    url: "{:url('Index/get_menu_left_html')}",
-                    data:{ act : act},
                     dataType: 'json',
-                    success: function(data){
-                        $('#menuListBox').html(data.info);
-                        $('#nav_1 a').click();
+                    async: false,
+                    data:{'site_pid' : site_pid},
+                    success:function (data) {
+                        if( data.status ){
+                            that.site_nav = data.info;
+                        }
                     },
                     error:function(e){
-                        alert('网络错误数据提取失败');
+                        layer.msg('网络错误数据拉取失败', {
+                            skin: 'layui-layer-huise'
+                        });
+                        return false;
                     }
                 });
-            }
+            },
+            //获取类型内的配置列表
+            getSiteList:function(site_pid){
+                var that = this;
+                if( typeof(site_pid) == 'undefined' ){
+                    layer.msg('网络错误数据拉取失败', {
+                        skin: 'layui-layer-huise'
+                    });
+                    return false;
+                }
+                $.ajax({
+                    url: "{:url('site/get_config_list')}",
+                    type: 'POST',
+                    dataType: 'json',
+                    async: false,
+                    data:{'site_pid' : site_pid},
+                    success:function (data) {
+                        if( data.status ){
+                            that.site_list = data.info;
+                        }
+                    },
+                    error:function(e){
+                        layer.msg('网络错误数据拉取失败', {
+                            skin: 'layui-layer-huise'
+                        });
+                        return false;
+                    }
+                });
+            },
         }
     });
 </script>

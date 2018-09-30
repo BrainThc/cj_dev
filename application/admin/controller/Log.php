@@ -17,10 +17,10 @@ class Log extends Base
         if( $this->is_super ){//只有超级用户才能查看所有会员
             $sys_user_id = intval(input('sys_user_id'));//id筛选
             if( $sys_user_id > 0 ){
-                $where['sys_user_id'] = ['=',$sys_user_id];
+                $where['l.sys_user_id'] = ['=',$sys_user_id];
             }
         }else{
-            $where['sys_user_id'] = ['=',$this->sysUserId];
+            $where['l.sys_user_id'] = ['=',$this->sysUserId];
         }
         $log_type = input('type','');
         if( $log_type != '' ){
@@ -31,17 +31,17 @@ class Log extends Base
         $end_date = input('end_time','');
         $end_time = strtotime($end_date);
         if( !empty($start_date) && !empty($end_date) ){
-            $where['add_time'] = ['between',$start_time.','.$end_time];
+            $where['l.add_time'] = ['between',$start_time.','.$end_time];
         }else if( !empty($start_date) ){
-            $where['add_time'] = ['>=',$start_time];
+            $where['l.add_time'] = ['>=',$start_time];
         }else if( !empty($end_date) ){
-            $where['add_time'] = ['<=',$start_time];
+            $where['l.add_time'] = ['<=',$start_time];
         }
         $list = Db::table($logModel->getTable().' l')
             ->join($logModel->getTable('sys_user').' u','u.sys_user_id = l.sys_user_id')
             ->field('l.*,u.username')
             ->where($where)
-            ->order('add_time','desc')
+            ->order('l.add_time','desc')
             ->paginate(15);
         if( !empty($list) ){
             foreach( $list as $k => $row ){
@@ -51,6 +51,7 @@ class Log extends Base
         }
         $this->assign('list',$list);
         $page = $list->render();
+        $page = empty($page) ? '' : $page;
         $this->assign('page',$page);
         return $this->fetch();
     }

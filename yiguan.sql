@@ -54,9 +54,11 @@ CREATE TABLE IF NOT EXISTS `yg_sys_user_group`(
  */
 CREATE TABLE IF NOT EXISTS `yg_site_config`(
   `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '配置索引id',
+  `site_key` varchar(255) NOT NULL UNIQUE COMMENT '配置关键词',
   `site_name` varchar(255) NOT NULL UNIQUE COMMENT '配置名',
   `pid` int(11) NOT NULL COMMENT '父级配置id 0为一级',
   `site_value` text NOT NULL DEFAULT '' COMMENT '配置值',
+  `site_type` tinyint(1) NOT NULL DEFAULT 0 COMMENT '0文本 1图片',
   `last_value` text NOT NULL DEFAULT '' COMMENT '上一次的值'
 ) ENGINE=InnoDB COMMENT '系统配置表';
 

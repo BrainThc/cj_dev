@@ -67,6 +67,8 @@
             window.location.href = '{:url("Index/index")}';
             return false;
         }else{
+            errReturn();
+            $('#verifyCode').val('');
             // $('#verifyImage').attr('src','{:captcha_src()}?'+Math.random());
             $('#result').html(data.msg).show();
         }
@@ -75,14 +77,6 @@
     function errReturn(){
         $('#verifyImage').attr('src','{:captcha_src()}');
     }
-    // function reload(){
-    //     document.login.username.focus();
-    //     if(self!=top){
-    //         window.top.location.href = '{:captcha_src()}';
-    //     }
-    //     resetVerifyCode();
-    // }
-
 </script>
 </body>
-</html><!--thinkphp企业网站管理系统-->
+</html>

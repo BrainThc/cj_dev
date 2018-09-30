@@ -2,6 +2,7 @@
 namespace app\admin\model;
 use app\admin\model\Log as LogModel;
 use app\admin\model\SysUserGroup as SysUserGroupModel;
+use app\admin\model\SysUser as SysUserModel;
 use think\Model;
 use think\Db;
 
@@ -12,6 +13,10 @@ use think\Db;
 class Login extends Model
 {
     public function signInfo($userInfo){
+        if( empty($userInfo) || $userInfo['status'] != SysUserModel::USER_NORMAL ){
+            $this->signOut();
+            return false;
+        }
         $logModel = model('Log');
         $sysData['sys_user_id'] = $userInfo['sys_user_id'];
         $sysData['username'] = $userInfo['username'];

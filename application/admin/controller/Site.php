@@ -29,12 +29,12 @@ class Site extends Base
 
     //获取 一级 / 二级 配置列表
     public function get_config_list(){
-        $config_id = input('config_id',0);
-        $where['pid'] = $config_id;
+        $site_pid = input('site_pid',0);
+        $where['pid'] = $site_pid;
         $list = Db::table($this->siteModel->getTable())
             ->where($where)
             ->select();
-        returnJson(true,$list);
+        returnJson(true,'success',$list);
     }
 
     //创建配置
@@ -42,20 +42,26 @@ class Site extends Base
     {
         $data = input('post.');
         try {
-            if (empty($data['site_name']) )
-                throw new Exception('填写配置名');
+            if ( empty($data['site_key']) || empty($data['site_name']) )
+                throw new Exception('请填写配置信息');
 
+            $insertData['site_key'] = trim($data['site_key']);
             $insertData['site_name'] = trim($data['site_name']);
-            $insertData['pid'] = intval($data['pid']);
-            if( $insertData['pid'] < 0 ){
-                $insertData['pid'] = 0;
-            }
-            //检查配置是否存在
+            $insertData['site_type'] = empty($data['site_type']) ? 0 : intval($data['site_type']);
+            $insertData['pid'] = empty($data['pid']) ? 0 : intval($data['pid']);
+
+            //检查配置关键词和配置名是否存在
+            $checkState = Db::table($this->siteModel->getTable())
+                ->where('site_key',$insertData['site_key'])
+                ->find();
+            if( !empty($checkState) )
+                throw new Exception('配置关键词：“'.$insertData['site_key'].'” 已存在');
+
             $checkState = Db::table($this->siteModel->getTable())
                 ->where('site_name',$insertData['site_name'])
                 ->find();
             if( !empty($checkState) )
-                throw new Exception('配置'.$insertData['site_name'].'已存在');
+                throw new Exception('配置名：“'.$insertData['site_name'].'”已存在');
 
             Db::startTrans();
             //添加数据

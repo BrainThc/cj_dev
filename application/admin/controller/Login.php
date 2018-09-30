@@ -32,7 +32,9 @@ class Login extends Controller
             $username = trim($data['username']);
             $password = trim($data['password']);
             //用户检查
-            $userInfo = Db::table($sysUserModel->getTable())->where('username',$username)->find();
+            $where['username'] = ['=',$username];
+            $where['status'] = ['>',0];
+            $userInfo = Db::table($sysUserModel->getTable())->where($where)->find();
             if( empty($userInfo) )
                 throw new Exception('用户不存在');
 

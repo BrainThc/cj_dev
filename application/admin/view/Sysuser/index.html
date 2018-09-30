@@ -7,49 +7,43 @@
     <script type="text/javascript" src="__SYSJS__/jquery.min.js"></script>
     <script type="text/javascript" src="__SYSJS__/jquery.artDialog.js?skin=blue"></script>
     <script type="text/javascript" src="__SYSJS__/my.js"></script>
-    <script language="JavaScript">
-        function confirm_delete(url){
-            art.dialog.confirm("", function(){location.href = url;});
-            $(document).keydown(function(event){
-                if(event.which == 13 ){
-                    location.href = url;
-                }
-            });
-        }
-    </script>
+    <script type="text/javascript" src="__JS__/vue.min.js" ></script>
+    <script type="text/javascript" src="__JS__/layer/layer.js" ></script>
     <style>
         .pageTool{ text-align:center;}
         .pageTool ul{display:block; width:max-content; margin:0 auto;}
         .pageTool li{float:left; margin:0 10px;}
+        #main_vue{display:none;}
     </style>
 </head>
     <body width="100%">
         <div id="result" class="result none"></div>
-        <div class="mainbox">
-
+        <div class="mainbox" id="main_vue" >
+            <div id="nav" class="mainnav_title">
+                <ul>
+                    <a  href="javascript:void(0);" v-on:click="add_admin">添加账号</a>|
+                </ul>
+            </div>
             <table  class="search_table" width="100%">
                 <tr>
                     <td>
-                        <form action="?" method="get">
-                            <input type="text" name="sys_user_id"  class="input-text" value="<?=input('sys_user_id','')?>" placeholder="账号id" />
-                            <input type="text" name="keyword"  class="input-text" value="<?=input('keyword','')?>" placeholder="账号关键词" />
-                            <select name="searchtype">
-                                <option value="">用户状态</option>
-                                <?php foreach( $statusList as $status ){ ?>
-                                <option value="<?=$status['value']?>"><?=$status['desc']?></option>
-                                <?php } ?>
-                            </select>
-                            <select name="groupid">
-                                <option value="">权限组</option>
-                                <?php foreach( $groupList as $group ){ ?>
-                                <option value="<?=$group['group_id']?>"><?=$group['group_name']?></option>
-                                <?php } ?>
-                            </select>
-                            <input type="submit" value="搜索"  class="button" />
-                            <input type="reset" value="重置" class="button"  />
-                        </form>
+                        <input type="text" name="sys_user_id" v-model="sys_user_id" class="input-text" placeholder="账号id" />
+                        <input type="text" name="keyword" v-model="keyword" class="input-text" placeholder="账号关键词" />
+                        <select name="searchtype" v-model="status" >
+                            <option value="">用户状态</option>
+                            <?php foreach( $statusList as $key => $status ){ ?>
+                            <option value="<?=$status['value']?>" ><?=$status['desc']?></option>
+                            <?php } ?>
+                        </select>
+                        <select name="group_id" v-model="group_id">
+                            <option value="" >权限组</option>
+                            <?php foreach( $groupList as $group ){ ?>
+                            <option value="<?=$group['group_id']?>" ><?=$group['group_name']?></option>
+                            <?php } ?>
+                        </select>
+                        <input type="button" value="搜索"  class="button" v-on:click="get_user_list" />
+                        <input type="reset" value="重置" class="button" v-on:click="reset_search"  />
                     </td>
-
                 </tr>
             </table>
             <form name="myform" action="" method="post">
@@ -65,35 +59,162 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <?php if(!empty($list)): foreach( $list as $user ): ?>
-                                <tr>
-                                    <td>{$user.sys_user_id}</td>
-                                    <td align="left"> {$user.username}</td>
-                                    <td> {$user.statusType}</td>
-                                    <td> {$user.last_date}</td>
-                                    <td>
-                                        <a href="">编辑</a>
-                                        <?php if( $user['status'] == 1 ){ ?>
-                                        <a href="">禁用</a>
-                                        <?php } ?>
-                                        <?php if($user['status'] != 0){ ?>
-                                        <a href="">注销</a>
-                                        <?php } ?>
-                                    </td>
-                                </tr>
-                        <?php endforeach; endif;?>
+                            <tr v-for="(user,index) in user_list">
+                                <td>{{ user.sys_user_id }}</td>
+                                <td align="left">{{ user.username }}</td>
+                                <td>{{ user.statusType }}</td>
+                                <td>{{ user.last_date }}</td>
+                                <td>
+                                    <a href="javascript:void(0);" v-on:click="edit_admin(user.sys_user_id)">编辑</a>
+                                    <a v-if="user.status > 0" href="javascript:void(0);" v-on:click="disable_user(user.sys_user_id)">{{ (user.status == 1 ) ? '禁用' : '恢复' }}</a>
+                                    <a v-if="user.status != 0" href="javascript:void(0);" v-on:click="deleted_user(user.sys_user_id)" >注销</a>
+                                </td>
+                            </tr>
                         </tbody>
                         <tfoot>
-                            <tr>
-                                <td colspan="4" class="pageTool">{$page}</td>
-                            </tr>
+                        <tr>
+                            <td colspan="4" class="pageTool" v-html="page_html" ></td>
+                        </tr>
                         </tfoot>
                     </table>
+                </div>
+            </form>
         </div>
-        </form>
+        <script>
+            var vue_main = new Vue({
+                el: '#main_vue',
+                data:{
+                    'user_list' : [],
+                    'sys_user_id' : "<?=input('sys_user_id','')?>",
+                    'keyword' : "<?=input('keyword','')?>",
+                    'group_id' : "<?=input('group_id','')?>",
+                    'status' : "<?=input('status','')?>",
+                    'page_html' : '',
+                },
+                mounted:function(){
+                    var that = this;
+                    //获取列表
+                    that.get_user_list();
+                    $('#main_vue').show();
+                },
+                methods:{
+                    get_user_list:function(){
+                        var that = this;
+                        $.ajax({
+                            url: "{:url('Sysuser/get_user_list')}",
+                            type: 'post',
+                            dataType: 'json',
+                            async: false,
+                            data:{
+                                'sys_user_id' : that.sys_user_id,
+                                'keyword' : that.keyword,
+                                'group_id' : that.group_id,
+                                'status' : that.status
+                            },
+                            success:function (data) {
+                                that.user_list = data.info.list.data;
+                                that.page_html = data.info.page;
+                            },
+                            error:function(e){
+                                layer.msg('网络错误数据拉取失败', {
+                                    skin: 'layui-layer-huise'
+                                });
+                                return false;
+                            }
+                        });
+                    },
+                    reset_search:function(){
+                        var that = this;
+                        that.sys_user_id = '';
+                        that.keyword = '';
+                        that.group_id = '';
+                        that.status = '';
+                        that.get_user_list();
+                    },
+                    add_admin:function(){
+                        layer.open({
+                            title:'添加管理员',
+                            type:2,
+                            closeBtn:1,
+                            area:['100%','100%'],
+                            content: "{:url('Sysuser/add')}"
+                        })
+                    },
+                    edit_admin:function(user_id){
+                        var toUrl = "{:url('Sysuser/edit',['id'=>'user_id'])}";
+                        toUrl = toUrl.replace('user_id',user_id);
+                        layer.open({
+                            title:'编辑管理员',
+                            type:2,
+                            closeBtn:1,
+                            area:['100%','100%'],
+                            content:toUrl
+                        })
+                    },
+                    disable_user:function(user_id){
+                        var that = this;
+                        var keyCode = prompt('请输入秘钥');
+                        if( keyCode == '' || keyCode == null ){
+                            return false;
+                        }
+                        $.ajax({
+                            type: 'POST',
+                            url: "{:url('Sysuser/disable_user')}",
+                            data:{ key:keyCode, sys_user_id : user_id},
+                            dataType: 'json',
+                            success: function(data){
+                                layer.msg(data.msg, {
+                                    skin: 'layui-layer-huise'
+                                });
+                                if( data.status == 1 ){
+                                    that.get_user_list();
+                                }
+                                return false;
+                            },
+                            error:function(e){
+                                layer.msg('网络错误，操作失败', {
+                                    skin: 'layui-layer-huise'
+                                });
+                                return false;
+                            }
+                        });
+                    },
+                    deleted_user:function(user_id){
+                        var that = this;
+                        var keyCode = prompt('请输入秘钥');
+                        if( keyCode == '' || keyCode == null ){
+                            return false;
+                        }
+                        $.ajax({
+                            type: 'POST',
+                            url: "{:url('Sysuser/deleted_user')}",
+                            data:{ key:keyCode, sys_user_id : user_id},
+                            dataType: 'json',
+                            success: function(data){
+                                layer.msg(data.msg, {
+                                    skin: 'layui-layer-huise'
+                                });
+                                if( data.status == 1 ){
+                                    that.get_user_list();
+                                }
+                                return false;
+                            },
+                            error:function(e){
+                                layer.msg('网络错误，操作失败', {
+                                    skin: 'layui-layer-huise'
+                                });
+                                return false;
+                            }
+                        });
+                    },
+                }
+            });
 
-        <div id="pages" class="page"></div>
-
-        </div>
+            //关闭所有二级窗口
+            function clearWin(){
+                vue_main.get_user_list();
+                layer.closeAll();
+            }
+        </script>
     </body>
 </html>

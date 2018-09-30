@@ -35,8 +35,7 @@ class Base extends Controller
                 $loginModel->signOut();
                 $this->redirect('admin/login/index');
             }
-            echo 'You do not have permission';
-            exit;
+            noPermission();
         }
     }
 
@@ -95,7 +94,7 @@ class Base extends Controller
             //商品管理
             array('name'=>'商品管理','power'=>'goods','act'=>'Goods','child'=>array(
                 //商品列表
-                array('name'=>'菜单管理','power'=>'goods_list','act'=>'Goods','op'=>'lists')
+                array('name'=>'商品列表','power'=>'goods_list','act'=>'Goods','op'=>'lists')
             )),
             //订单管理
             array('name'=>'订单管理','power'=>'order','act'=>'Order','child'=>array(
@@ -118,17 +117,20 @@ class Base extends Controller
             array('name'=>'管理员管理','power'=>'sys_user','act'=>'Sysuser','child'=>array(
                 //管理员列表
                 array('name'=>'管理员列表','power'=>'sys_user_list','act'=>'Sysuser','op'=>'index','child'=>array(
-                    array('name'=>'添加管理员','power'=>'sys_user_list_create','act'=>'Sysuser','op'=>'create_user'),
-                    array('name'=>'编辑管理员','power'=>'sys_user_list_update','act'=>'Sysuser','op'=>'update_user'),
-                    array('name'=>'删除管理员','power'=>'sys_user_list_del','act'=>'Sysuser','op'=>'disable_user')
+                    array('name'=>'添加管理员页','power'=>'sys_user_create_view','act'=>'Sysuser','op'=>'add'),
+                    array('name'=>'添加管理员','power'=>'sys_user_create','act'=>'Sysuser','op'=>'create_user'),
+                    array('name'=>'编辑管理员页','power'=>'sys_user_update_view','act'=>'Sysuser','op'=>'edit'),
+                    array('name'=>'编辑管理员','power'=>'sys_user_update','act'=>'Sysuser','op'=>'update_user'),
+                    array('name'=>'删除管理员','power'=>'sys_user_del','act'=>'Sysuser','op'=>'disable_user')
                 )),
                 //权限组管理
                 array('name'=>'权限组管理','power'=>'sys_user_group','act'=>'Sysusergroup','op'=>'index','child'=>array(
-                    array('name'=>'添加权限组信息','power'=>'sys_user_group_create','act'=>'Sysuser','op'=>'create_group'),
-                    array('name'=>'编辑权限组信息','power'=>'sys_user_group_update','act'=>'Sysuser','op'=>'update_group'),
-                    array('name'=>'更改权限配置','power'=>'sys_user_group_power_update','act'=>'Sysuser','op'=>'update_power'),
-                    array('name'=>'禁用权限组','power'=>'sys_user_group_update','act'=>'Sysuser','op'=>'disable_group'),
-                    array('name'=>'超级管理员初始化','power'=>'sys_user_group_default','act'=>'Sysuser','op'=>'default_super_group'),
+                    array('name'=>'添加权限组页','power'=>'sys_user_group_create_view','act'=>'Sysusergroup','op'=>'add','child'=>array()),
+                    array('name'=>'添加权限组','power'=>'sys_user_group_create','act'=>'Sysusergroup','op'=>'create_group'),
+                    array('name'=>'编辑权限组信息','power'=>'sys_user_group_update','act'=>'Sysusergroup','op'=>'update_group'),
+                    array('name'=>'更改权限配置','power'=>'sys_user_group_power_update','act'=>'Sysusergroup','op'=>'update_power'),
+                    array('name'=>'禁用权限组','power'=>'sys_user_group_update','act'=>'Sysusergroup','op'=>'disable_group'),
+                    array('name'=>'超级管理员初始化','power'=>'sys_user_group_default','act'=>'Sysusergroup','op'=>'default_super_group'),
                 ))
             )),
             //日志
