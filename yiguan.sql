@@ -69,7 +69,7 @@ CREATE TABLE IF NOT EXISTS `yg_site_config`(
 CREATE TABLE IF NOT EXISTS `yg_menus`(
   `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '菜单索引id',
   `menu_name` varchar(255) NOT NULL COMMENT '菜单名',
-  `menus_type` int(11) NOT NULL COMMENT '导航类型 对应menus_type 索引',
+  `menus_type_id` int(11) NOT NULL COMMENT '导航类型 对应menus_type 索引',
   `menu_url`  text NOT NULL DEFAULT '' COMMENT '跳转链接',
   `menu_icon` text NOT NULL DEFAULT '' COMMENT '菜单icon图',
   `pid` int(11) NOT NULL DEFAULT 0 COMMENT '父级菜单id 0为一级菜单',

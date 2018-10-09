@@ -49,7 +49,9 @@ class View
             '__JS__'     => $root . '/static/js',
             '__SYSJS__'  => $root . '/static/admin/js',
             '__SYSCSS__' => $root . '/static/admin/css',
-            '__SYSIMG__' => $root . '/static/admin/images'
+            '__SYSIMG__' => $root . '/static/admin/images',
+            '__UPLOAD_CSS__' => $root . '/static/webuploader/css',
+            '__UPLOAD_JS__' => $root . '/static/webuploader/js',
         ];
         $this->replace = array_merge($baseReplace, (array) $replace);
     }

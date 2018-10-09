@@ -21,7 +21,7 @@ class Menus extends Model{
             foreach( $menuSt as $key => $list ){
                 $where['pid'] = ['=',$list['id']];
                 if( $type > 0 ){
-                    $where['menus_type'] = ['=',$type];
+                    $where['menus_type_id'] = ['=',$type];
                 }
                 $nav_son = Db::table($this->getTable())
                     ->where($where)

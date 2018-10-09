@@ -20,57 +20,91 @@
 <div id="result" class="result none"></div>
 <div class="mainbox" id="main_vue">
     <div id="nav" class="mainnav_title">
-        <a  href="javascript:void(0);" >栏目列表</a>|
-        <a  href="javascript:void(0);" v-on:click="add_cate" >添加栏目</a>
+        <span v-for="(type,index) in menus_type" >
+            <a v-on:click="get_menus_list(type.id)"  href="javascript:void(0);" >{{ type.type_name }}</a>|
+        </span>
+    </div>
+    <div class="mainnav_title">
+        <a  href="javascript:void(0);" v-on:click="add_cate" >添加导航</a>
     </div>
     <div class="pad-lr-10">
         <div class="table-list">
             <table width="100%" cellspacing="0">
                 <thead>
-                    <tr>
-                        <th width="40">排序</th>
-                        <th width="40">id</th>
-                        <th>栏目名</th>
-                        <th width="220">管理操作</th>
-                    </tr>
+                <tr>
+                    <th width="40">排序</th>
+                    <th width="40">id</th>
+                    <th>栏目名</th>
+                    <th width="220">管理操作</th>
+                </tr>
                 </thead>
-                <tbody v-for="(cate,index) in cate_list" >
-                    <tr>
-                        <td width='40' align='center'>
-                            <input type='text' size='3' v-model="cate.sequence" class='input-text-c' >
-                            <input v-if="cate.sequence != cate.oldSequence" type="button" v-on:click="update_sequence(index)" class="button" style="margin:0;" value="保存">
-                        </td>
-                        <td align='center'>{{ cate.art_cate_id }}</td>
-                        <td><span v-html="cate.tree"></span>{{ cate.cate_name }}</td>
-                        <td align='center'>
-                            <a href="javascript:void(0);" v-on:click="edit_cate(cate.art_cate_id)">编辑</a>
-                            <a href="javascript:void(0);" v-on:click="del_cate(cate.art_cate_id)">删除</a>
-                        </td>
-                    </tr>
+                <tbody v-for="(menus,index) in menus_list" >
+                <tr>
+                    <td width='40' align='center'>
+                        <input type='text' size='3' v-model="menus.sequence" class='input-text-c' >
+                        <input v-if="menus.sequence != menus.oldSequence" type="button" v-on:click="update_sequence(index)" class="button" style="margin:0;" value="保存">
+                    </td>
+                    <td align='center'>{{ menus.id }}</td>
+                    <td><span v-html="menus.tree"></span>{{ menus.menu_name }}</td>
+                    <td align='center'>
+                        <a href="javascript:void(0);" v-on:click="edit_cate(menus.menu_id)">编辑</a>
+                        <a href="javascript:void(0);" v-on:click="del_cate(menus.id)">删除</a>
+                    </td>
+                </tr>
                 </tbody>
             </table>
 
+        </div>
     </div>
-</div>
 </div>
 <script>
     var vue_main = new Vue({
         el: '#main_vue',
         data:{
-            'cate_list' : [],
+            'menus_type' : [],
+            'menus_list' : []
         },
         mounted:function(){
             var that = this;
-            that.get_cate_list();
+            that.get_menus_type();
+            that.get_menus_list(that.menus_type[0].id);
             $('#main_vue').show();
         },
         methods:{
-            get_cate_list:function(){
+            get_menus_type:function(){
                 var that = this;
                 $.ajax({
-                    url: "{:url('Articlecate/get_cate_list')}?v="+Math.random(),
+                    url: "{:url('Menus/get_menus_type')}?v="+Math.random(),
                     type: 'get',
                     dataType: 'json',
+                    async: false,
+                    success:function (data) {
+                        if(data.status){
+                            that.menus_type = data.info;
+                        }else{
+                            layer.msg(data.msg, {
+                                skin: 'layui-layer-huise'
+                            });
+                        }
+                    },
+                    error:function(e){
+                        layer.msg('网络错误数据拉取失败', {
+                            skin: 'layui-layer-huise'
+                        });
+                        return false;
+                    }
+                });
+            },
+            get_menus_list:function(type_id){
+                var that = this;
+                $.ajax({
+                    url: "{:url('Menus/get_menus_list')}",
+                    type: 'post',
+                    dataType: 'json',
+                    async: false,
+                    data:{
+                        type:type_id
+                    },
                     success:function (data) {
                         if(data.status){
                             //区分层级
@@ -89,23 +123,23 @@
                     }
                 });
             },
-            set_tree:function(cate_list){
+            set_tree:function(menus_list){
                 var that = this;
                 var nbsp = '';
-                for( var i = 0; i < cate_list.length; i++ ){
-                    cate_list[i].oldSequence = cate_list[i].sequence;
-                    cate_list[i].tree = '';
+                for( var i = 0; i < menus_list.length; i++ ){
+                    menus_list[i].oldSequence = menus_list[i].sequence;
+                    menus_list[i].tree = '';
                     nbsp = '';
-                    if( cate_list[i].pNum > 0 ){
-                        cate_list[i].tree += '├';
-                        for( var t = 0; t < cate_list[i].pNum; t++ ){
+                    if( menus_list[i].pNum > 0 ){
+                        menus_list[i].tree += '├';
+                        for( var t = 0; t < menus_list[i].pNum; t++ ){
                             nbsp += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
-                            cate_list[i].tree += '─';
+                            menus_list[i].tree += '─';
                         }
-                        cate_list[i].tree = nbsp+cate_list[i].tree;
+                        menus_list[i].tree = nbsp+menus_list[i].tree;
                     }
                 }
-                that.cate_list = cate_list;
+                that.menus_list = menus_list;
             },
             update_sequence:function(index){
                 var that = this;
@@ -124,11 +158,12 @@
                     dataType: 'json',
                     data:that.cate_list[index],
                     success:function (data) {
-                        layer.msg(data.msg, {
-                            skin: 'layui-layer-huise'
-                        });
                         if(data.status){
                             that.get_cate_list();
+                        }else{
+                            layer.msg(data.msg, {
+                                skin: 'layui-layer-huise'
+                            });
                         }
                     },
                     error:function(e){
@@ -150,11 +185,12 @@
                     dataType: 'json',
                     data:{ id:cate_id },
                     success:function (data) {
-                        layer.msg(data.msg, {
-                            skin: 'layui-layer-huise'
-                        });
                         if(data.status){
                             that.get_cate_list();
+                        }else{
+                            layer.msg(data.msg, {
+                                skin: 'layui-layer-huise'
+                            });
                         }
                     },
                     error:function(e){

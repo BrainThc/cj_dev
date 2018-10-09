@@ -115,7 +115,6 @@
             url: "{:url('Sysusergroup/update_group')}?v="+Math.random(),
             type: 'POST',
             dataType: 'json',
-            async: false,
             data: $(this).serialize(),
             success: function (data) {
                 layer.msg(data.msg, {

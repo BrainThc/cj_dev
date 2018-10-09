@@ -132,7 +132,6 @@
                     url: "{:url('site/update_config')}",
                     type: 'POST',
                     dataType: 'json',
-                    async: false,
                     data:  _obj,
                     success:function (data) {
                         layer.msg(data.msg, {
@@ -159,7 +158,6 @@
                     url: "{:url('site/update_all_config')}",
                     type: 'POST',
                     dataType: 'json',
-                    async: false,
                     data:  {info :that.site_list},
                     success:function (data) {
                         layer.msg(data.msg, {

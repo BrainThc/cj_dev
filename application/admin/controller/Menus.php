@@ -16,17 +16,25 @@ class Menus extends Base
         parent::_initialize();
         $this->menusModel = model('Menus');
         $this->menusTypeModel = model('MenusType');
-
-        //获取所有菜单类型
-        $type_list = Db::table($this->menusTypeModel->getTable())->select();
-        $this->assign('typeList',$type_list);
     }
 
     public function index(){
+        return $this->fetch();
+    }
+
+    //获取所有导航类型列表
+    public function get_menus_type(){
+        //获取所有菜单类型
+        $type_list = Db::table($this->menusTypeModel->getTable())->select();
+        returnJson(true,'success',$type_list);
+    }
+
+    //获取所有导航列表
+    public function get_menus_list(){
         //获取所有导航内容
-        $type = intval(input('type',0));
+        $type = intval(input('post.type',0));
         if( $type > 0 ){
-            $where['menus_type'] = ['=',$type];
+            $where['menus_type_id'] = ['=',$type];
         }
         $where['pid'] = ['=',0];
         $nav_all = Db::table($this->menusModel->getTable())
@@ -35,8 +43,27 @@ class Menus extends Base
             ->select();
         //配置树状结构
         $nav_list = $this->menusModel->getMenuTree($nav_all,$type);
-        $this->assign('nav_list',$nav_list);
-        return $this->fetch();
+        $menus_all = [];
+        $menus_all = $this->set_menu_list($nav_list,0,$menus_all);
+
+        returnJson(true,'success',$menus_all);
+    }
+
+    public function set_menu_list($list,$pNum,$menus_all){
+        foreach($list as $k => $i ){
+            $i['pNum'] = $pNum;
+            $menus_all[] = $i;
+            if( !empty($i['child']) ){
+                $menus_all = $this->set_menu_list($i['child'],$pNum+1,$menus_all);
+            }
+        }
+        foreach( $menus_all as $key => $menus ){
+            if( isset($menus['child'])){
+                unset($menus['child']);
+            }
+            $menus_all[$key] = $menus;
+        }
+        return $menus_all;
     }
 
     //添加导航菜单

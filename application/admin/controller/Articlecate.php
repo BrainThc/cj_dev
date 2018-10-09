@@ -42,6 +42,12 @@ class Articlecate extends Base
                 $cate_all = $this->set_cate_list($i['child'],$pNum+1,$cate_all);
             }
         }
+        foreach( $cate_all as $key => $cate ){
+            if( isset($cate['child'])){
+                unset($cate['child']);
+            }
+            $cate_all[$key] = $cate;
+        }
         return $cate_all;
     }
 
