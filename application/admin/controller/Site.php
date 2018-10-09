@@ -11,6 +11,8 @@ use think\Exception;
  */
 class Site extends Base
 {
+    public $error = '';
+
     public function _initialize(){
         parent::_initialize();
         $this->siteModel = model('SiteConfig');
@@ -81,14 +83,37 @@ class Site extends Base
         returnJson(true,'添加成功');
     }
 
-    //更新配置
+    //单个修改
     public function update_config(){
         $data = input('post.');
+        if( $this->update_set($data) == false ){
+            returnJson(false,$this->error);
+        }
+        returnJson(true,'保存成功');
+    }
+
+    //批量更新配置
+    public function update_all_config(){
+        $data = input('post.');
+        if( empty($data['info']) ){
+            returnJson(false,'参数错误');
+        }
+        foreach( $data['info'] as $info){
+            if( $this->update_set($info) === false ){
+                returnJson(false,$this->error);
+            }
+        }
+        returnJson(true,'保存成功');
+    }
+
+    //更新配置
+    public function update_set($data){
         try {
-            if (empty($data['site_name']) || empty($data['config_id']) )
+            if (empty($data['site_name']) || empty($data['id']) )
                 throw new Exception('参数错误');
 
             $where['site_name'] = trim($data['site_name']);
+            $where['id'] = intval($data['id']);
             //检查配置是否存在
             $checkInfo = Db::table($this->siteModel->getTable())
                 ->where($where)
@@ -96,34 +121,38 @@ class Site extends Base
             if( empty($checkInfo) )
                 throw new Exception('配置'.$where['site_name'].'不存在');
 
+            //没有修改过不更新操作
+            if($checkInfo['site_value'] == $data['site_value']){
+                return true;
+            }
             $updateData['pid'] = empty($data['pid']) ? 0 : $data['pid'];
             //检查操作类型
             $type = empty($data['type']) ? '' : $data['type'];
             $logMsg = '';
+            $updateData['edit_time'] = time();
             switch($type){
                 case 'back' :
                     $updateData['site_value'] = $checkInfo['last_value'];
-                    $logMsg = "编辑站点{$updateData['site_name']}恢复上一次的内容：：{$updateData['site_value']}";
+                    $logMsg = "编辑站点 “{$data['site_name']}” 恢复上一次的内容：：{$updateData['site_value']}";
                     break;
                 case 'reset' :
-                    $updateData['site_value'] = '';
                     $updateData['last_value'] = '';
-                    $logMsg = "编辑站点{$updateData['site_name']}配置内容：重置为空";
+                    $updateData['site_value'] = '';
+                    $logMsg = "编辑站点 “{$data['site_name']}” 配置内容：重置为空";
                     break;
                 default :
                     $updateData['last_value'] = $checkInfo['site_value'];
-                    $updateData['site_value'] = empty($data['site_name']) ? '' : $data['site_name'];
-                    $logMsg = "编辑站点{$updateData['site_name']}配置内容：{$updateData['site_value']}";
+                    $updateData['site_value'] = empty($data['site_value']) ? '' : $data['site_value'];
+                    $logMsg = "编辑站点 “{$data['site_name']}” 配置内容：{$updateData['site_value']}";
                     break;
             }
-
             Db::startTrans();
-            //添加数据
+            //更新数据
             $updateState = Db::table($this->siteModel->getTable())
                     ->where($where)
                     ->update($updateData);
             if( empty($updateState) )
-                throw new Exception('网络错误，添加失败');
+                throw new Exception('网络错误，操作失败');
 
             //日志记录
             $logModel = model('Log');
@@ -133,9 +162,10 @@ class Site extends Base
             Db::commit();
         } catch (Exception $e) {
             Db::rollback();
-            returnJson(false,$e->getMessage());
+            $this->error = $e->getMessage();
+            return false;
         }
-        returnJson(true,'添加成功');
+        return true;
     }
 
 }

@@ -178,7 +178,6 @@ class Sysusergroup extends Base
         $id = intval(input('param.id',0));
         if( $id <= 0 ){
             noPermission();
-            url();
         }
         $info = Db::table($this->groupModel->getTable())
             ->where('group_id',$id)

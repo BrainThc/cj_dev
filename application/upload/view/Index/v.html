@@ -1,0 +1,47 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <title>Document</title>
+    <script type="text/javascript" src="__JS__/plupload/plupload.full.min.js"></script>
+</head>
+<body>
+    <form  action="{:url('upload/index/index')}" method="post" enctype="multipart/form-data">
+        <div class="layui-form-item">
+            <label class="layui-form-label">图片上传</label>
+            <input type="file" class="files" name="files" id="files">
+            <input type="button" id="browse" value="接口">
+            <input type="button" id="start_upload" value="上传">
+            <input type="submit" >
+        </div>
+    </form>
+</body>
+</html>
+<script>
+    var uploader = new plupload.Uploader({
+        browse_button : 'browse', //触发文件选择对话框的按钮，为那个元素id
+        url : 'js/images/upload.shtml', //服务器端的上传页面地址
+        flash_swf_url : 'Moxie.swf', //swf文件，当需要使用swf方式进行上传时需要配置该参数
+        max_file_size: '2mb',//限制为2MB
+        filters: [{title: "Image files",extensions: "jpg,gif,png"}],//图片限制
+        silverlight_xap_url : 'js/Moxie.xap' //silverlight文件，当需要使用silverlight方式进行上传时需要配置该参数
+    });
+    //在实例对象上调用init()方法进行初始化
+    uploader.init();
+    //图片选择完毕触发
+    uploader.bind('FilesAdded',function(uploader,files){
+
+    });
+    //图片上传成功触发，ps:data是返回值（第三个参数是返回值）
+    uploader.bind('FileUploaded',function(uploader,files,data){
+    });
+    //会在文件上传过程中不断触发，可以用此事件来显示上传进度监听（比如说上传进度）
+    uploader.bind('UploadProgress',function(uploader,file){
+
+    });
+    //还有N多呢.....，具体参考链接==>http://www.sojson.com/jc_plupload.html 的各种事件说明。
+    //最后给"开始上传"按钮注册事件
+    document.getElementById('start_upload').onclick = function(){
+        uploader.start(); //调用实例对象的start()方法开始上传文件，当然你也可以在其他地方调用该方法
+    }
+
+</script>

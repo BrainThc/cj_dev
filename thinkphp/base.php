@@ -30,6 +30,10 @@ defined('CONF_PATH') or define('CONF_PATH', APP_PATH); // 配置文件目录
 defined('CONF_EXT') or define('CONF_EXT', EXT); // 配置文件后缀
 defined('ENV_PREFIX') or define('ENV_PREFIX', 'PHP_'); // 环境变量的配置前缀
 
+define('__HOME__',trim($_SERVER['HTTP_HOST'],'/').DS);//全局定量
+define('__UPLOAD_PATH__',__HOME__.'uploads'.DS);//全局定量
+define('__UPLOAD_SAVE_PATH__',ROOT_PATH.'public'.DS.'uploads'.DS);//全局定量
+
 // 环境常量
 define('IS_CLI', PHP_SAPI == 'cli' ? true : false);
 define('IS_WIN', strpos(PHP_OS, 'WIN') !== false);

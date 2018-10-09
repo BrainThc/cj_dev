@@ -59,11 +59,14 @@ class Base extends Controller
                 //站点配置
                 array('name'=>'站点配置','power'=>'site_config','act'=>'Site','op'=>'index','child'=>array(
                     array('name'=>'创建配置','power'=>'site_config_create','act'=>'Site','op'=>'create_config'),
-                    array('name'=>'编辑配置','power'=>'site_config_update','act'=>'Site','op'=>'update_config')
+                    array('name'=>'编辑配置','power'=>'site_config_update','act'=>'Site','op'=>'update_config'),
+                    array('name'=>'批量修改配置','power'=>'site_config_update_all','act'=>'Site','op'=>'update_all_config')
                 )),
                 //菜单管理
                 array('name'=>'导航管理','power'=>'menus','act'=>'Menus','op'=>'index','child'=>array(
+                    array('name'=>'添加导航页','power'=>'menus_create_view','act'=>'Site','op'=>'add'),
                     array('name'=>'添加导航','power'=>'menus_create','act'=>'Site','op'=>'create_menu'),
+                    array('name'=>'编辑导航页','power'=>'menus_update_view','act'=>'Site','op'=>'edit'),
                     array('name'=>'编辑导航','power'=>'menus_update','act'=>'Site','op'=>'update_menu'),
                     array('name'=>'删除导航','power'=>'menus_del','act'=>'Site','op'=>'update_menu')
                 )),
@@ -78,6 +81,7 @@ class Base extends Controller
                     array('name'=>'编辑栏目页','power'=>'article_cate_update_view','act'=>'Articlecate','op'=>'edit','child'=>array(
                         array('name'=>'编辑栏目','power'=>'article_cate_update','act'=>'Articlecate','op'=>'update_cate')
                     )),
+                    array('name'=>'删除栏目','power'=>'article_cate_del','act'=>'Articlecate','op'=>'del_cate'),
                 )),
                 //文章列表
                 array('name'=>'文章管理','power'=>'article_list','act'=>'Article','op'=>'index','child'=>array(

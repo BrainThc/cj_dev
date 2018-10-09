@@ -50,7 +50,7 @@ class Sysuser extends Base
         }
         //用户状态筛选
         $status = input('post.status','');
-        if( empty($status) && isset(SysUserModel::$map_status[$status]) ){
+        if( !empty($status) && isset(SysUserModel::$map_status[$status]) ){
             $where['status'] = SysUserModel::$map_status[$status]['value'];
         }
         $userList = Db::table($this->sysUserModel->getTable())

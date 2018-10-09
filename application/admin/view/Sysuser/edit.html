@@ -20,39 +20,37 @@
 <div id="result" class="result none"></div>
 <div class="mainbox" id="main_vue" >
     <div class="table-list">
-        <table width="100%" cellspacing="0">
-            <table cellpadding=0 cellspacing=0 width="100%" class="table_form" >
-                <?php if( $tipShow ){ ?>
-                <tr style="color:#FB0000;">
-                    <th width="140"></th>
-                    <td>注意：此账号已注销,修改密码后账号状态会将会恢复正常</td>
-                </tr>
-                <?php } ?>
-                <tr>
-                    <th width="140">账号：</th>
-                    <td><?=$info['username']?></td>
-                </tr>
-                <tr>
-                    <th width="140">修改密码：</th>
-                    <td><input type="text" class="input-text" name="password" size="40" v-model="password" ></td>
-                </tr>
-                <tr>
-                    <th width="140">权限组：</th>
-                    <td>
-                        <select name="group_id" v-model="group_id" >
-                            <option value="">请选择</option>
-                            <?php foreach( $groupList as $list){ ?>
-                            <option value="<?=$list['group_id']?>"><?=$list['group_name']?></option>
-                            <?php }?>
-                        </select>
-                    </td>
-                </tr>
-            </table>
-            <div class="btn" >
-                <input TYPE="button"  value="保存" class="button" v-on:click="edit_submit" />
-                <input TYPE="button"  value="返回" class="button" onclick="parent.window.clearWin();" />
-            </div>
+        <table cellpadding=0 cellspacing=0 width="100%" class="table_form" >
+            <?php if( $tipShow ){ ?>
+            <tr style="color:#FB0000;">
+                <th width="140"></th>
+                <td>注意：此账号已注销,修改密码后账号状态会将会恢复正常</td>
+            </tr>
+            <?php } ?>
+            <tr>
+                <th width="140">账号：</th>
+                <td><?=$info['username']?></td>
+            </tr>
+            <tr>
+                <th width="140">修改密码：</th>
+                <td><input type="text" class="input-text" name="password" size="40" v-model="password" ></td>
+            </tr>
+            <tr>
+                <th width="140">权限组：</th>
+                <td>
+                    <select name="group_id" v-model="group_id" >
+                        <option value="">请选择</option>
+                        <?php foreach( $groupList as $list){ ?>
+                        <option value="<?=$list['group_id']?>"><?=$list['group_name']?></option>
+                        <?php }?>
+                    </select>
+                </td>
+            </tr>
         </table>
+        <div class="btn" >
+            <input TYPE="button"  value="保存" class="button" v-on:click="edit_submit" />
+            <input TYPE="button"  value="返回" class="button" onclick="parent.window.clearWin();" />
+        </div>
     </div>
 </div>
 <script>
@@ -103,7 +101,7 @@
                         }
                     },
                     error: function (e) {
-                        layer.msg('网络错误数据拉取失败', {
+                        layer.msg('网络错误,修改失败', {
                             skin: 'layui-layer-huise'
                         });
                         return false;

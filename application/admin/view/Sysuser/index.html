@@ -20,9 +20,7 @@
         <div id="result" class="result none"></div>
         <div class="mainbox" id="main_vue" >
             <div id="nav" class="mainnav_title">
-                <ul>
                     <a  href="javascript:void(0);" v-on:click="add_admin">添加账号</a>|
-                </ul>
             </div>
             <table  class="search_table" width="100%">
                 <tr>
@@ -62,9 +60,9 @@
                             <tr v-for="(user,index) in user_list">
                                 <td>{{ user.sys_user_id }}</td>
                                 <td align="left">{{ user.username }}</td>
-                                <td>{{ user.statusType }}</td>
-                                <td>{{ user.last_date }}</td>
-                                <td>
+                                <td align="center">{{ user.statusType }}</td>
+                                <td align="center">{{ user.last_date }}</td>
+                                <td align="center">
                                     <a href="javascript:void(0);" v-on:click="edit_admin(user.sys_user_id)">编辑</a>
                                     <a v-if="user.status > 0" href="javascript:void(0);" v-on:click="disable_user(user.sys_user_id)">{{ (user.status == 1 ) ? '禁用' : '恢复' }}</a>
                                     <a v-if="user.status != 0" href="javascript:void(0);" v-on:click="deleted_user(user.sys_user_id)" >注销</a>
@@ -101,7 +99,7 @@
                     get_user_list:function(){
                         var that = this;
                         $.ajax({
-                            url: "{:url('Sysuser/get_user_list')}",
+                            url: "{:url('Sysuser/get_user_list')}?v="+Math.random(),
                             type: 'post',
                             dataType: 'json',
                             async: false,

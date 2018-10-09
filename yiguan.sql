@@ -59,7 +59,8 @@ CREATE TABLE IF NOT EXISTS `yg_site_config`(
   `pid` int(11) NOT NULL COMMENT '父级配置id 0为一级',
   `site_value` text NOT NULL DEFAULT '' COMMENT '配置值',
   `site_type` tinyint(1) NOT NULL DEFAULT 0 COMMENT '0文本 1图片',
-  `last_value` text NOT NULL DEFAULT '' COMMENT '上一次的值'
+  `last_value` text NOT NULL DEFAULT '' COMMENT '上一次的值',
+  `edit_time` int(10) NOT NULL DEFAULT 0 COMMENT '上一次修改时间'
 ) ENGINE=InnoDB COMMENT '系统配置表';
 
 /**

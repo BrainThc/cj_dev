@@ -13,7 +13,6 @@
 
 //不要随意改动
 define('__COMPANYKEY__','yiguankeji');//公司用户配置秘钥key
-define('__HOME__',$_SERVER['SERVER_NAME'].'/');//全局定量
 //公共函数
 /**
  * 打印查看对象
