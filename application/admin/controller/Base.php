@@ -62,13 +62,17 @@ class Base extends Controller
                     array('name'=>'编辑配置','power'=>'site_config_update','act'=>'Site','op'=>'update_config'),
                     array('name'=>'批量修改配置','power'=>'site_config_update_all','act'=>'Site','op'=>'update_all_config')
                 )),
-                //菜单管理
+                //导航管理
                 array('name'=>'导航管理','power'=>'menus','act'=>'Menus','op'=>'index','child'=>array(
-                    array('name'=>'添加导航页','power'=>'menus_create_view','act'=>'Site','op'=>'add'),
-                    array('name'=>'添加导航','power'=>'menus_create','act'=>'Site','op'=>'create_menu'),
-                    array('name'=>'编辑导航页','power'=>'menus_update_view','act'=>'Site','op'=>'edit'),
-                    array('name'=>'编辑导航','power'=>'menus_update','act'=>'Site','op'=>'update_menu'),
-                    array('name'=>'删除导航','power'=>'menus_del','act'=>'Site','op'=>'update_menu')
+                    array('name'=>'添加导航页','power'=>'menus_create_view','act'=>'Menus','op'=>'add','child'=>array(
+                        array('name'=>'添加导航','power'=>'menus_create','act'=>'Menus','op'=>'create_menu')
+                    )),
+                    array('name'=>'编辑导航页','power'=>'menus_update_view','act'=>'Menus','op'=>'edit','child'=>array(
+                        array('name'=>'编辑导航','power'=>'menus_update','act'=>'Menus','op'=>'update_menu')
+                    )),
+                    array('name'=>'编辑导航排序','power'=>'menus_sequence','act'=>'Menus','op'=>'update_sequence'),
+                    array('name'=>'删除导航','power'=>'menus_del','act'=>'Menus','op'=>'del_menu'),
+                    array('name'=>'添加导航类型','power'=>'menus_type_create','act'=>'Menus','op'=>'add_menus_type')
                 )),
             )),
             //文章管理
@@ -81,6 +85,7 @@ class Base extends Controller
                     array('name'=>'编辑栏目页','power'=>'article_cate_update_view','act'=>'Articlecate','op'=>'edit','child'=>array(
                         array('name'=>'编辑栏目','power'=>'article_cate_update','act'=>'Articlecate','op'=>'update_cate')
                     )),
+                    array('name'=>'编辑栏目排序','power'=>'article_cate_sequence','act'=>'Articlecate','op'=>'update_sequence'),
                     array('name'=>'删除栏目','power'=>'article_cate_del','act'=>'Articlecate','op'=>'del_cate'),
                 )),
                 //文章列表

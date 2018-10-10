@@ -1,0 +1,167 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf8" />
+    <title>管理员权限组管理</title>
+    <link rel="stylesheet" type="text/css" href="__SYSCSS__/style.css" />
+    <script type="text/javascript" src="__SYSJS__/jquery.min.js"></script>
+    <script type="text/javascript" src="__SYSJS__/jquery.artDialog.js?skin=blue"></script>
+    <script type="text/javascript" src="__SYSJS__/my.js"></script>
+    <script type="text/javascript" src="__JS__/vue.min.js" ></script>
+    <script type="text/javascript" src="__JS__/layer/layer.js" ></script>
+    <style>
+        .pageTool{ text-align:center;}
+        .pageTool ul{display:block; width:max-content; margin:0 auto;}
+        .pageTool li{float:left; margin:0 10px;}
+        #main_vue{display:none;}
+    </style>
+</head>
+<body width="100%">
+<div id="result" class="result none"></div>
+<div class="mainbox" id="main_vue" >
+    <div class="table-list">
+        <table cellpadding=0 cellspacing=0 width="100%" class="table_form" >
+            <tr>
+                <th width="140">导航名：</th>
+                <td ><input type="text" class="input-text" name="menu_name" size="40" v-model="menu_name" ></td>
+            </tr>
+            <tr>
+                <th width="140">跳转地址：</th>
+                <td ><input type="text" class="input-text" name="menu_url" size="40" v-model="menu_url" ></td>
+            </tr>
+            <tr>
+                <th width="140">父级导航：</th>
+                <td>
+                    <select name="pid" v-model="pid" >
+                        <option value="0">为一级导航</option>
+                        <option v-for="(menus,index) in menus_list" v-bind:value="menus.id" v-html="menus.menu_name"></option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <th width="140">排序：</th>
+                <td ><input type="text" class="input-text" name="sequence" size="40" v-model="sequence" ></td>
+            </tr>
+        </table>
+        <div class="btn" >
+            <input TYPE="button"  value="保存" class="button" v-on:click="edit_submit" />
+            <input TYPE="button"  value="返回" class="button" onclick="parent.window.clearWin();" />
+        </div>
+    </div>
+</div>
+<script>
+    var vue_main = new Vue({
+        el: '#main_vue',
+        data:{
+            'menu_id' : "<?=$info['id']?>",
+            'menu_name' : "<?=$info['menu_name']?>",
+            'menu_url' : "<?=$info['menu_url']?>",
+            'pid' : "<?=$info['pid']?>",
+            'sequence' : "<?=$info['sequence']?>",
+            'menus_list' : [],
+            'menus_type_id' : "<?=$info['menus_type_id']?>"
+        },
+        mounted:function(){
+            var that = this;
+            that.get_menus_list();
+            $('#main_vue').show();
+        },
+        methods: {
+            get_menus_list:function(type_id){
+                var that = this;
+                if( typeof(type_id) != 'undefined' ){
+                    that.menus_type_id = type_id;
+                }
+                $.ajax({
+                    url: "{:url('Menus/get_menus_list')}",
+                    type: 'post',
+                    dataType: 'json',
+                    async: false,
+                    data:{
+                        type:that.menus_type_id
+                    },
+                    success:function (data) {
+                        if(data.status){
+                            //区分层级
+                            that.set_tree(data.info);
+                        }else{
+                            layer.msg(data.msg, {
+                                skin: 'layui-layer-huise'
+                            });
+                        }
+                    },
+                    error:function(e){
+                        layer.msg('网络错误数据拉取失败', {
+                            skin: 'layui-layer-huise'
+                        });
+                        return false;
+                    }
+                });
+            },
+            set_tree:function(menus_list){
+                var that = this;
+                var nbsp = '';
+                for( var i = 0; i < menus_list.length; i++ ){
+                    menus_list[i].oldSequence = menus_list[i].sequence;
+                    menus_list[i].tree = '';
+                    nbsp = '';
+                    if( menus_list[i].pNum > 0 ){
+                        menus_list[i].tree += '├';
+                        for( var t = 0; t < menus_list[i].pNum; t++ ){
+                            nbsp += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+                            menus_list[i].tree += '─';
+                        }
+                        menus_list[i].tree = nbsp+menus_list[i].tree;
+                        menus_list[i].menu_name = menus_list[i].tree+menus_list[i].menu_name;
+                    }
+                }
+                that.menus_list = menus_list;
+            },
+            edit_submit:function(){
+                var that = this;
+                if( that.menu_name == '' ){
+                    layer.msg('栏目名不能为空', {
+                        skin: 'layui-layer-huise'
+                    });
+                    return false;
+                }
+                if( that.menus_type_id == '' || that.menus_type_id == 0 ){
+                    layer.msg('页面错误，请重新进入', {
+                        skin: 'layui-layer-huise'
+                    });
+                    return false;
+                }
+                $.ajax({
+                    url: "{:url('Menus/update_menu')}",
+                    type: 'post',
+                    dataType: 'json',
+                    data:{
+                        'menu_id' : that.menu_id,
+                        'menu_name' : that.menu_name,
+                        'menu_url' : that.menu_url,
+                        'pid' : that.pid,
+                        'sequence' : that.sequence,
+                    },
+                    success: function (data) {
+                        layer.msg(data.msg, {
+                            skin: 'layui-layer-huise'
+                        });
+                        if( data.status == 1 ){
+                            setTimeout(function(){
+                                parent.window.clearWin();
+                            },500);
+                        }
+                    },
+                    error: function (e) {
+                        layer.msg('网络错误,添加失败', {
+                            skin: 'layui-layer-huise'
+                        });
+                        return false;
+                    }
+                });
+            }
+        }
+    });
+</script>
+</body>
+</html>
