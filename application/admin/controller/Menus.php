@@ -110,7 +110,7 @@ class Menus extends Base
             //添加日志
             $logModel = model('Log');
             if( $logModel->note(LogModel::INSERT,'添加导航菜单：'.$insertData['menu_name']) === false )
-                throw new Exception('网络错误，操作失败');
+                throw new Exception('网络错误，添加失败');
 
             Db::commit();
         }catch( Exception $e ){
