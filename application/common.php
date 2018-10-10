@@ -46,6 +46,13 @@ function returnJson($bool=false,$desc='fail',$data=[]){
  * 返回后台主页
  */
 function noPermission(){
-    echo 'You do not have permission';
-    exit;
+    $_postData = input('post.');
+    $_getData = input('get.');
+    $msg = 'You do not have permission';
+    if( ( isset($_postData) && !empty($_postData) ) || ( isset($_getData['v']) && !empty($_getData['v']) ) ){
+        returnJson(false,$msg);
+    }else{
+        echo $msg;
+        exit;
+    }
 }
