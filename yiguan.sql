@@ -132,9 +132,12 @@ CREATE TABLE IF NOT EXISTS `yg_adv_position`(
   `pos_id` int(11) NOT NULL NULL AUTO_INCREMENT PRIMARY KEY COMMENT '广告位索引id',
   `pos_name` varchar(255) NOT NULL COMMENT '广告位名',
   `pos_desc` varchar(255) NOT NULL COMMENT '广告位描述',
-  `image` text NOT NULL COMMENT '默认图',
+  `pos_type` tinyint(2) NOT NULL DEFAULT 1 COMMENT '广告位类型 1 单图片 2视频 3 图片幻灯片轮播 4 多图',
+  `pos_adv_num` int(5) NOT NULL DEFAULT 0 COMMENT '广告位展示数 0为不限制',
+  `image` text NOT NULL COMMENT '默认图占位图',
   `width` varchar(11) NOT NULL DEFAULT '' COMMENT '广告位宽度 0则为定义的',
   `height` varchar(11) NOT NULL DEFAULT '' COMMENT '广告位高度 0则为定义的',
+  `status` tinyint(1) NOT NULL DEFAULT 1 COMMENT '广告位状态 1正常 0关闭',
   `add_time` int(10) NOT NULL DEFAULT 0 COMMENT '添加时间',
   `edit_time` int(10) NOT NULL DEFAULT 0 COMMENT '编辑时间'
 ) ENGINE=InnoDB COMMENT '广告位表';
