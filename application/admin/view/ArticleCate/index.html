@@ -127,14 +127,13 @@
                         layer.msg(data.msg, {
                             skin: 'layui-layer-huise'
                         });
-                        if(data.status){
-                            that.get_cate_list();
-                        }
+                        that.get_cate_list();
                     },
                     error:function(e){
                         layer.msg('网络错误，操作失败', {
                             skin: 'layui-layer-huise'
                         });
+                        that.get_cate_list();
                         return false;
                     }
                 });
