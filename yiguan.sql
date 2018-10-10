@@ -85,7 +85,9 @@ CREATE TABLE IF NOT EXISTS `yg_menus_type`(
   `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '索引id',
   `type_name` varchar(255) NOT NULL COMMENT '类型名',
   `desc` text NOT NULL DEFAULT '' COMMENT '描述',
-  `add_time` int(10) NOT NULL DEFAULT 0 COMMENT '添加时间'
+  `sequence` tinyint(3) NOT NULL COMMENT '排序 由大到小',
+  `add_time` int(10) NOT NULL DEFAULT 0 COMMENT '添加时间',
+  'edit_time' int(10) NOT NULL DEFAULT 0 COMMENT '修改时间'
 ) ENGINE=InnoDB COMMENT '导航菜单类型';
 
 /**
@@ -110,6 +112,8 @@ CREATE TABLE IF NOT EXISTS `yg_article`(
   `keyword` varchar(255) NOT NULL DEFAULT '' COMMENT 'seo关键词',
   `description` text NOT NULL DEFAULT '' COMMENT '简介描述',
   `content` text NOT NULL DEFAULT '' COMMENT '文章内容',
+  `img` text NOT NULL DEFAULT '' COMMENT '文章列表图',
+  `icon` text NOT NULL DEFAULT '' COMMENT '文章缩略图',
   `sequence` tinyint(3) NOT NULL DEFAULT 0 COMMENT '文章排序',
   `read_group` tinyint(3) NOT NULL DEFAULT 0 COMMENT '阅读权限 0所有人 1注册用户 2管理员',
   `read_num` int(11) NOT NULL DEFAULT 0 COMMENT '阅读数',
