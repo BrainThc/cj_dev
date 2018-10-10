@@ -52,6 +52,7 @@ class Base extends Controller
         $menusList = array(
             //主页
             array('name'=>'主页','power'=>'home','act'=>'Index','op'=>'index','child'=>array(
+                //系统信息
                 array('name'=>'系统信息','power'=>'home_show','act'=>'Index','op'=>'show')
             )),
             //系统设置
@@ -112,9 +113,17 @@ class Base extends Controller
             )),
             //营销管理
             array('name'=>'营销广告','power'=>'market','act'=>'Market','child'=>array(
-                //订单列表
-                array('name'=>'广告位管理','power'=>'market_banner_pos','act'=>'Advpost','op'=>'index'),
-                array('name'=>'广告管理','power'=>'market_banner_content','act'=>'Adv','op'=>'index')
+                //广告位管理
+                array('name'=>'广告位管理','power'=>'market_banner_pos','act'=>'Advposition','op'=>'index','child'=>array(
+                    array('name'=>'添加广告位页面','power'=>'market_banner_post_create_view','act'=>'Advposition','op'=>'add','child'=>array(
+                        array('name'=>'添加广告位','power'=>'market_banner_post_create','act'=>'Advposition','op'=>'create_pos')
+                    )),
+                    array('name'=>'编辑广告位页面','power'=>'market_banner_post_update_view','act'=>'Advposition','op'=>'edit','child'=>array(
+                        array('name'=>'编辑广告位','power'=>'market_banner_post_update','act'=>'Advposition','op'=>'update_pos')
+                    )),
+                    array('name'=>'删除广告位','power'=>'market_banner_post_del','act'=>'Advposition','op'=>'del_pos')
+                )),
+                array('name'=>'广告管理','power'=>'market_banner_content','act'=>'Advlist','op'=>'index')
             )),
             //模板配置管理
             array('name'=>'模板管理','power'=>'template','act'=>'Template','child'=>array(
