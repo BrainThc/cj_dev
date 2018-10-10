@@ -1,0 +1,175 @@
+<!DOCTYPE>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf8" />
+    <title>广告位管理</title>
+    <link rel="stylesheet" type="text/css" href="__SYSCSS__/style.css" />
+    <script type="text/javascript" src="__SYSJS__/jquery.min.js"></script>
+    <script type="text/javascript" src="__SYSJS__/jquery.artDialog.js?skin=blue"></script>
+    <script type="text/javascript" src="__SYSJS__/my.js"></script>
+    <script type="text/javascript" src="__JS__/vue.min.js" ></script>
+    <script type="text/javascript" src="__JS__/layer/layer.js" ></script>
+    <style>
+        .pageTool{ text-align:center;}
+        .pageTool ul{display:block; width:max-content; margin:0 auto;}
+        .pageTool li{float:left; margin:0 10px;}
+        #main_vue{display:none;}
+    </style>
+</head>
+<body width="100%">
+<div id="result" class="result none"></div>
+<div class="mainbox" id="main_vue" >
+    <div id="nav" class="mainnav_title">
+        <a  href="javascript:void(0);" v-on:click="add_post">添加广告位</a>|
+    </div>
+    <table  class="search_table" width="100%">
+        <tr>
+            <td>
+                <input type="text" name="pos_id" v-model="pos_id" class="input-text" placeholder="广告位id" />
+                <input type="text" name="keyword" v-model="keyword" class="input-text" placeholder="账号关键词" />
+                <input type="button" value="搜索"  class="button" v-on:click="get_advpost_list" />
+                <input type="reset" value="重置" class="button" v-on:click="reset_search"  />
+            </td>
+        </tr>
+    </table>
+    <form name="myform" action="" method="post">
+        <div class="table-list">
+            <table width="100%" cellspacing="0">
+                <thead>
+                <tr>
+                    <th width="60" >广告位id</th>
+                    <th align="left">广告位标题</th>
+                    <th align="left">广告位描述</th>
+                    <th align="center">广告类型</th>
+                    <th align="center">广告展示数</th>
+                    <th align="center">尺寸</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="(pos,index) in pos_list">
+                    <td align="center" >{{ pos.pos_id }}</td>
+                    <td align="left">{{ pos.pos_name }}</td>
+                    <td align="left">{{ pos.pos_desc }}</td>
+                    <td align="center">{{ pos.pos_type }}</td>
+                    <td align="center">{{ pos.pos_adv_num }}</td>
+                    <td align="center">{{ pos.width }} * {{ pos.height }}</td>
+                    <td align="center">
+                        <a href="javascript:void(0);" v-on:click="edit_pos(pos.pos_id)">编辑</a> |
+                        <a href="javascript:void(0);" v-on:click="del_pos(pos.pos_id)">删除</a>
+                    </td>
+                </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="4" class="pageTool" v-html="page_html" ></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </form>
+</div>
+<script>
+    var vue_main = new Vue({
+        el: '#main_vue',
+        data:{
+            'pos_list' : [],
+            'pos_id' : "<?=input('pos_id','')?>",
+            'keyword' : "<?=input('keyword','')?>",
+            'page_html' : '',
+        },
+        mounted:function(){
+            var that = this;
+            //获取列表
+            that.get_advpost_list();
+            $('#main_vue').show();
+        },
+        methods:{
+            get_advpost_list:function(){
+                var that = this;
+                $.ajax({
+                    url: "{:url('Advposition/get_advpost_list')}",
+                    type: 'post',
+                    dataType: 'json',
+                    async: false,
+                    data:{
+                        'pos_id' : that.pos_id,
+                        'keyword' : that.keyword
+                    },
+                    success:function (data) {
+                        that.pos_list = data.info.list.data;
+                        that.page_html = data.info.page;
+                    },
+                    error:function(e){
+                        layer.msg('网络错误数据拉取失败', {
+                            skin: 'layui-layer-huise'
+                        });
+                        return false;
+                    }
+                });
+            },
+            reset_search:function(){
+                var that = this;
+                that.pos_id = '';
+                that.keyword = '';
+                that.get_advpost_list();
+            },
+            add_post:function(){
+                layer.open({
+                    title:'添加广告位',
+                    type:2,
+                    closeBtn:1,
+                    area:['50%','50%'],
+                    content: "{:url('Advposition/add')}"
+                })
+            },
+            edit_pos:function(pos_id){
+                var toUrl = "{:url('Advposition/edit',['id'=>'pos_id'])}";
+                toUrl = toUrl.replace('pos_id',pos_id);
+                layer.open({
+                    title:'编辑广告位',
+                    type:2,
+                    closeBtn:1,
+                    area:['50%','50%'],
+                    content:toUrl
+                })
+            },
+            del_pos:function(pos_id){
+                if( !confirm('删除将把所属广告一并删除，请问是否确认删除') ){
+                    return false;
+                }
+                var that = this;
+                $.ajax({
+                    url: "{:url('Advposition/del_pos')}",
+                    type: 'post',
+                    dataType: 'json',
+                    data:{
+                        'pos_id' : pos_id,
+                    },
+                    success:function (data) {
+                        layer.msg(data.msg, {
+                            skin: 'layui-layer-huise'
+                        });
+                        if( data.status ){
+                            that.get_advpost_list();
+                        }
+                    },
+                    error:function(e){
+                        layer.msg('网络错误，操作失败', {
+                            skin: 'layui-layer-huise'
+                        });
+                        return false;
+                    }
+                });
+            }
+        }
+    });
+
+    //关闭所有二级窗口
+    function clearWin(){
+        vue_main.get_advpost_list();
+        layer.closeAll();
+    }
+</script>
+</body>
+</html>
