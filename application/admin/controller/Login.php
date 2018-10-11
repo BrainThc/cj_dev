@@ -3,6 +3,7 @@ namespace app\admin\controller;
 use think\Controller;
 use think\Db;
 use app\admin\model\SysUser as SysUserModel;
+use app\admin\model\SysUserGroup as SysUserGroupModel;
 use think\Exception;
 
 class Login extends Controller
@@ -85,6 +86,22 @@ class Login extends Controller
             $this->success('退出成功，正在跳转~~~',\think\Url::build('admin/login/index'),'',1);
         }else{
             $this->error('操作失败，正在返回~~~',\think\Url::build('admin/index/index'),'',1);
+        }
+    }
+
+    //整个系统初始化
+    public function reset(){
+        $appid = input('get.aid','');
+        $appsecret = input('get.setkey','');
+        if( empty($appid) || empty($appsecret) ){
+            noPermission();
+        }
+
+        $keys = md5(__COMPANYKEY__.'reset_*a');
+        if( $keys == $appid && sha1($keys) == $appsecret ){
+            //执行操作
+            echo '已重置';
+            exit;
         }
     }
 
