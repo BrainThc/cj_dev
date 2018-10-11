@@ -35,6 +35,7 @@
                 <th width="140">修改密码：</th>
                 <td><input type="text" class="input-text" name="password" size="40" v-model="password" ></td>
             </tr>
+            <?php if( $show_group_box ): ?>
             <tr>
                 <th width="140">权限组：</th>
                 <td>
@@ -46,6 +47,7 @@
                     </select>
                 </td>
             </tr>
+            <?php endif; ?>
         </table>
         <div class="btn" >
             <input TYPE="button"  value="保存" class="button" v-on:click="edit_submit" />

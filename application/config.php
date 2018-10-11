@@ -247,5 +247,12 @@ return [
         'imageW' => 80,
         'length' => 4   ,
         'reset' => true
+    ],
+    //资源路径
+    'view_replace_str'  => [
+        '__SYSJS__' => '/static/admin/js',
+        '__SYSCSS__' => '/static/admin/css',
+        '__SYSIMG__' => '/static/admin/images',
+        '__UPLOAD__' => '/static/plupload'
     ]
 ];

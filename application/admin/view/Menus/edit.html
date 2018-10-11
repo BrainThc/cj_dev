@@ -9,6 +9,10 @@
     <script type="text/javascript" src="__SYSJS__/my.js"></script>
     <script type="text/javascript" src="__JS__/vue.min.js" ></script>
     <script type="text/javascript" src="__JS__/layer/layer.js" ></script>
+    <!--图片上传资源文件-->
+    <script type="text/javascript" src="__UPLOAD__/plupload.full.min.js"></script>
+    <script type="text/javascript" src="__UPLOAD__/upload.js"></script>
+    <link rel="stylesheet" href="__UPLOAD__/css/plupload.css">
     <style>
         .pageTool{ text-align:center;}
         .pageTool ul{display:block; width:max-content; margin:0 auto;}
@@ -42,6 +46,22 @@
                 <th width="140">排序：</th>
                 <td ><input type="text" class="input-text" name="sequence" size="40" v-model="sequence" ></td>
             </tr>
+            <tr>
+                <th width="140">icon图标：</th>
+                <td>
+                    <div id="upload_main" >
+                        <div class="upload_box" >
+                            <input type="hidden" id="icon" v-model="menu_icon" class="hid-val-box" readonly />
+                            <div class="upload-title">上传图片</div>
+                            <!--<div class="upload-tips"><span>0</span> <span>*</span> <span>0</span></div>-->
+                            <div class="upload-view" id="icon_img" >
+                                <img v-bind:src="menu_icon" onerror="this.src='__UPLOAD__/images/upload_add.png'" >
+                            </div>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                </td>
+            </tr>
         </table>
         <div class="btn" >
             <input TYPE="button"  value="保存" class="button" v-on:click="edit_submit" />
@@ -59,12 +79,34 @@
             'pid' : "<?=$info['pid']?>",
             'sequence' : "<?=$info['sequence']?>",
             'menus_list' : [],
-            'menus_type_id' : "<?=$info['menus_type_id']?>"
+            'menus_type_id' : "<?=$info['menus_type_id']?>",
+            'menu_icon' : "<?=$info['menu_icon']?>"
         },
         mounted:function(){
             var that = this;
             that.get_menus_list();
             $('#main_vue').show();
+            //图片上传配置
+            $("#icon").WebUpload(
+                'menus',
+                function(respond){
+                    if( respond.status == '1' ){
+                        that.menu_icon = respond.info.file;
+                    }else {
+                        layer.msg('网络错误，图片上传失败', {
+                            skin: 'layui-layer-huise'
+                        });
+                        return false;
+                    }
+                },
+                function(errors) {
+                    if( errors.code == -600 ){
+                        alert('图片最大2M');
+                    }
+                });
+            $('#icon_img').click(function() {
+                $('#icon').click();
+            });
         },
         methods: {
             get_menus_list:function(type_id){
@@ -141,6 +183,7 @@
                         'menu_url' : that.menu_url,
                         'pid' : that.pid,
                         'sequence' : that.sequence,
+                        'menu_icon' : that.menu_icon
                     },
                     success: function (data) {
                         layer.msg(data.msg, {

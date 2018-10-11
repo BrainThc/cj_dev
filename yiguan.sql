@@ -164,7 +164,6 @@ CREATE TABLE IF NOT EXISTS `yg_images_upload`(
   `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '索引id',
   `user_type` int(11) NOT NULL COMMENT '0 会员用户 1后台',
   `user_id` int(11) NOT NULL COMMENT '用户id',
-  `file` text NOT NULL DEFAULT '' COMMENT '所在文件夹标识',
   `url` text NOT NULL DEFAULT '' COMMENT '图片路径',
   `add_time` int(10) NOT NULL DEFAULT 0 COMMENT '添加时间'
 ) ENGINE=MyISAM COMMENT '图片上传记录';

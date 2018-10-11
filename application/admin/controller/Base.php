@@ -75,6 +75,8 @@ class Base extends Controller
                     array('name'=>'删除导航','power'=>'menus_del','act'=>'Menus','op'=>'del_menu'),
                     array('name'=>'添加导航类型','power'=>'menus_type_create','act'=>'Menus','op'=>'add_menus_type')
                 )),
+                //客服配置
+
             )),
             //文章管理
             array('name'=>'文章管理','power'=>'article','act'=>'Article','child'=>array(
@@ -143,10 +145,12 @@ class Base extends Controller
                 )),
                 //权限组管理
                 array('name'=>'权限组管理','power'=>'sys_user_group','act'=>'Sysusergroup','op'=>'index','child'=>array(
-                    array('name'=>'添加权限组页','power'=>'sys_user_group_create_view','act'=>'Sysusergroup','op'=>'add','child'=>array()),
-                    array('name'=>'添加权限组','power'=>'sys_user_group_create','act'=>'Sysusergroup','op'=>'create_group'),
-                    array('name'=>'编辑权限组信息','power'=>'sys_user_group_update','act'=>'Sysusergroup','op'=>'update_group'),
-                    array('name'=>'更改权限配置','power'=>'sys_user_group_power_update','act'=>'Sysusergroup','op'=>'update_power'),
+                    array('name'=>'添加权限组页','power'=>'sys_user_group_create_view','act'=>'Sysusergroup','op'=>'add','child'=>array(
+                        array('name'=>'添加权限组','power'=>'sys_user_group_create','act'=>'Sysusergroup','op'=>'create_group')
+                    )),
+                    array('name'=>'编辑权限组信息','power'=>'sys_user_group_update_view','act'=>'Sysusergroup','op'=>'edit','child'=>array(
+                        array('name'=>'编辑权限组信息','power'=>'sys_user_group_update','act'=>'Sysusergroup','op'=>'update_group')
+                    )),
                     array('name'=>'禁用权限组','power'=>'sys_user_group_update','act'=>'Sysusergroup','op'=>'disable_group'),
                     array('name'=>'超级管理员初始化','power'=>'sys_user_group_default','act'=>'Sysusergroup','op'=>'default_super_group'),
                 ))

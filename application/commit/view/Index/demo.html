@@ -1,0 +1,50 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <title>Document</title>
+    <script type="text/javascript" src="__SYSJS__/jquery.min.js"></script>
+    <script type="text/javascript" src="__UPLOAD__/plupload.full.min.js"></script>
+    <script type="text/javascript" src="__UPLOAD__/upload.js"></script>
+    <link rel="stylesheet" href="__UPLOAD__/css/plupload.css">
+</head>
+<body>
+    <div id="upload_main" >
+        <div class="upload_box">
+            <input type="hidden" id="browse" name="files" class="hid-val-box" readonly />
+            <div class="upload-title">图片上传</div>
+            <div class="upload-tips"><span>100</span> <span>*</span> <span>100</span></div>
+            <div class="upload-view" id="browse_img" >
+            <img src="" alt="" onerror="this.src='__UPLOAD__/images/upload_add.png'" >
+            </div>
+            <div class="upload-del-box" id="start_upload" ><a href="javascript:void(0);" id="browse_img_del">删除</a></div>
+        </div>
+        <div class="clear"></div>
+    </div>
+</body>
+</html>
+<script>
+    $(document).ready(function(){
+        $("#browse").WebUpload('admin',successa,errorUp );
+        $('#browse_img').click(function() {
+            $('#browse').click();
+        });
+    });
+
+    function successa(respond){
+        if( respond.status == '1' ){
+            $('#'+respond.elementId).val(respond.info.file);
+            $('#'+respond.elementId+'_img img').attr('src',respond.info.file);
+        }else{
+            alert(respond.msg);
+        }
+    }
+
+    function errorUp(obj){
+        console.log(obj);
+        if( obj.code == -600 ){
+            alert('图片最大2M');
+        }
+    }
+
+
+</script>

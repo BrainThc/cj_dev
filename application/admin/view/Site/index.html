@@ -9,6 +9,10 @@
     <script type="text/javascript" src="__SYSJS__/my.js"></script>
     <script type="text/javascript" src="__JS__/vue.min.js" ></script>
     <script type="text/javascript" src="__JS__/layer/layer.js" ></script>
+    <!--图片上传资源文件-->
+    <script type="text/javascript" src="__UPLOAD__/plupload.full.min.js"></script>
+    <script type="text/javascript" src="__UPLOAD__/upload.js"></script>
+    <link rel="stylesheet" href="__UPLOAD__/css/plupload.css">
     <style>
         .pageTool{ text-align:center;}
         .pageTool ul{display:block; width:max-content; margin:0 auto;}
@@ -24,27 +28,59 @@
             <a  href="javascript:void(0);" v-on:click="getSiteList(nav.id)" >{{ nav.site_name }}</a>|
         </span>
     </div>
-    <form method='post'  id="form1" action="">
-        <table cellpadding=0 cellspacing=0 width="100%" class="table_form" >
-            <tr v-for="(site,index) in site_list" >
-                <th width="140">{{ site.site_name }}</th>
-                <td v-if=" site.site_type == 0 ">
-                    <input type="text" class="input-text"  name="" v-model="site.site_value" size="40"> {{ site.site_key }}
-                    <input type="button" class="button" v-if="site.site_value != site.default" v-on:click="update_site(index)" value="保存修改">
-                </td>
-                <td v-if=" site.site_type == 1 ">
-                    <div id="_aid_box" style="display:none;"></div>
-                    <input type="text" class="input-text" id="" name="" v-model="site.site_value" size="40">{{ site.site_key }}
-                    <input type="button" class="button" value="上传" onclick="javascript:swfupload('_uploadfile','','',1,1,0,10,'jpeg,jpg,png,gif',5,230,'',yesdo,nodo)" />
-                    <a href="javascript:void(0);" onclick="">预览</a>
-                    <input type="button" class="button" v-if="site.site_value != site.default" v-on:click="update_site(index)" value="保存修改">
-                </td>
-            </tr>
-        </table>
-        <div class="btn">
-            <input type="button"  value="保存" class="button" v-on:click="save_all" >
-        </div>
-    </form>
+    <table cellpadding=0 cellspacing=0 width="100%" class="table_form" >
+        <tr v-for="(site,index) in site_list" >
+            <th width="140">{{ site.site_name }}</th>
+            <td v-if=" site.site_type == 0 ">
+                <input type="text" class="input-text"  v-model="site.site_value" size="40"> {{ site.site_key }}
+                <input type="button" class="button" v-if="site.site_value != site.default" v-on:click="update_site(index)" value="保存修改">
+            </td>
+            <td v-if=" site.site_type == 1 ">
+                <div id="upload_main" >
+                    <div class="upload_box" style="width:300px; border:none;"  >
+                        <input type="hidden" id="logo" v-model="site.site_value" v-bind:data-id="index" class="hid-val-box" readonly />
+                        <div class="upload-title">上传图片</div>
+                        <div class="upload-view" id="logo_img"  >
+                            <img v-bind:src="site.site_value" onerror="this.src='__UPLOAD__/images/upload_add.png'" >
+                        </div>
+                        <div class="upload-del-box">
+                            <input type="button" class="button" v-if="site.site_value != site.default" v-on:click="update_site(index)" value="保存修改">
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+                <script>
+                    $(document).ready(function(){
+                        $("#logo").WebUpload(
+                            'logo',
+                            function(respond){
+                                if( respond.status == '1' ){
+                                    var list_index = $('#'+respond.elementId).attr('data-id');
+                                    vue_main.site_list[list_index].site_value=respond.info.file;
+                                }else {
+                                    layer.msg('网络错误，图片上传失败', {
+                                        skin: 'layui-layer-huise'
+                                    });
+                                    return false;
+                                }
+                            },
+                            function(errors) {
+                                if( errors.code == -600 ){
+                                alert('图片最大2M');
+                                }
+                            },'admin');
+                            $('#logo_img').click(function() {
+                                $('#logo').click();
+                            }
+                        );
+                    });
+                </script>
+            </td>
+        </tr>
+    </table>
+    <div class="btn">
+        <input type="button"  value="保存" class="button" v-on:click="save_all" >
+    </div>
 </div>
 <script>
     var vue_main = new Vue({
@@ -71,7 +107,7 @@
                     site_pid = 0;
                 }
                 $.ajax({
-                    url: "{:url('site/get_config_list')}?v="+Math.random(),
+                    url: "{:url('site/get_config_list')}",
                     type: 'POST',
                     dataType: 'json',
                     async: false,

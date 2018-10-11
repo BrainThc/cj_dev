@@ -166,6 +166,18 @@ class Sysuser extends Base
             noPermission();
             url();
         }
+        $groupModel = model('SysUserGroup');
+        //检查是否超级管理员
+        $show_group_box = true;
+        if( $groupModel->checkSuperGroup($info['group_id']) === true ){
+            $show_group_box = false;
+            //检查是否超级管理员自己
+            if( $this->sysUserId != $info['sys_user_id'] ){
+                noPermission();
+            }
+        }
+        $this->assign('show_group_box',$show_group_box);
+
         $tip_show = false;
         if( $info['status'] == SysUserModel::USER_DELETE ){
             $tip_show = true;
@@ -173,7 +185,6 @@ class Sysuser extends Base
         $this->assign('tipShow',$tip_show);
         $this->assign('info',$info);
         //获取所有权限组
-        $groupModel = model('SysUserGroup');
         $groupList = Db::table($groupModel->getTable())->where('status != 2')->select();
         $this->assign('groupList',$groupList);
         return $this->fetch();

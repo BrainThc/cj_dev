@@ -22,6 +22,23 @@ class SysUserGroup extends Model
         self::NORMAL_STATUS     => '正常',
         self::SUPER_STATUS      => '正常'
     );
+
+    //检查是否超级管理员
+    public function checkSuperGroup($group_id){
+        //获取所有权限组
+        $groupInfo = Db::table($this->getTable())
+            ->field('status')
+            ->where('group_id',$group_id)
+            ->find();
+        if( empty($groupInfo) ){
+            return false;
+        }
+        if( $groupInfo['status'] == self::SUPER_STATUS ){
+            return true;
+        }
+        return false;
+    }
+
     /**
      * 过滤菜单power参数
      * @param $menuList         菜单参数集 必须带 power 唯一参数

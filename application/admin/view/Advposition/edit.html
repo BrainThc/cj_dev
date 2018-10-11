@@ -9,6 +9,10 @@
     <script type="text/javascript" src="__SYSJS__/my.js"></script>
     <script type="text/javascript" src="__JS__/vue.min.js" ></script>
     <script type="text/javascript" src="__JS__/layer/layer.js" ></script>
+    <!--图片上传资源文件-->
+    <script type="text/javascript" src="__UPLOAD__/plupload.full.min.js"></script>
+    <script type="text/javascript" src="__UPLOAD__/upload.js"></script>
+    <link rel="stylesheet" href="__UPLOAD__/css/plupload.css">
     <style>
         .pageTool{ text-align:center;}
         .pageTool ul{display:block; width:max-content; margin:0 auto;}
@@ -51,8 +55,20 @@
                 </td>
             </tr>
             <tr>
-                <th width="140">占位图：</th>
-                <td><input type="file" class="input-text" name="image" size="40" v-model="image" ></td>
+                <th width="140" >占位图：</th>
+                <td>
+                    <div id="upload_main" >
+                        <div class="upload_box" v-bind:style="{ width: width/3 + 'px'}" >
+                            <input type="hidden" id="icon" v-model="image" class="hid-val-box" readonly />
+                            <div class="upload-title">上传图片</div>
+                            <div class="upload-tips"><span>{{ width }}</span> <span>*</span> <span>{{ height }}</span></div>
+                            <div class="upload-view" id="icon_img" v-bind:style="{ width: width/3 + 'px',height: height/3 +'px' }" >
+                                <img v-bind:src="image" alt="" onerror="this.src='__UPLOAD__/images/upload_add.png'" >
+                            </div>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                </td>
             </tr>
         </table>
         <div class="btn" >
@@ -77,6 +93,27 @@
         mounted:function(){
             var that = this;
             $('#main_vue').show();
+            //图片上传配置
+            $("#icon").WebUpload(
+                'adv',
+                function(respond){
+                    if( respond.status == '1' ){
+                        that.image = respond.info.file;
+                    }else {
+                        layer.msg('网络错误，图片上传失败', {
+                            skin: 'layui-layer-huise'
+                        });
+                        return false;
+                    }
+                },
+                function(errors) {
+                    if( errors.code == -600 ){
+                        alert('图片最大2M');
+                    }
+                });
+            $('#icon_img').click(function() {
+                $('#icon').click();
+            });
         },
         methods: {
             edit_submit:function(){

@@ -50,9 +50,9 @@
                         <input type="button" class="button" style="margin:0 auto;" value="管理广告" v-on:click="edit_center(pos.pos_id)">
                     </td>
                     <td align="left">{{ pos.pos_name }}</td>
-                    <td align="left">{{ pos.pos_desc }}</td>
                     <td align="center">{{ pos.pos_type }}</td>
                     <td align="center">{{ pos.pos_adv_num }}</td>
+                    <td align="left" style="width:600px;"><img style="width:90%; margin:10px auto;" v-bind:src="pos.image" alt="图片失效" ></td>
                     <td align="center">{{ pos.width }} * {{ pos.height }}</td>
                 </tr>
                 </tbody>
