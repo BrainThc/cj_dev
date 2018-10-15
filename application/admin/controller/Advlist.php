@@ -78,8 +78,11 @@ class Advlist extends Base
                 }else if( $v['start_time'] <= $t && $v['end_time'] >= $t  ){
                     $v['show_type'] = '生效中';
                 }
-                $v['start_date'] = date('Y-m-d H:i',$v['start_time']);
-                $v['end_date'] = date('Y-m-d H:i',$v['end_time']);
+                $v['start_date'] = empty($v['start_time']) ? '' : date('Y-m-d H:i',$v['start_time']);
+                $v['end_date'] = empty($v['end_time']) ? '' : date('Y-m-d H:i',$v['end_time']);
+                if( $v['start_date'] == '' && $v['end_date'] == '' ){
+                    $v['start_date'] = $v['end_date'] = '永久有效';
+                }
                 $list[$k] = $v;
             }
         }
@@ -176,8 +179,8 @@ class Advlist extends Base
         if( empty($info) ){
             noPermission();
         }
-        $info['start_time'] = date('Y-m-d H:i',$info['start_time']);
-        $info['end_time'] = date('Y-m-d H:i',$info['end_time']);
+        $info['start_time'] = empty($info['start_time']) ? '' : date('Y-m-d H:i',$info['start_time']);
+        $info['end_time'] = empty($info['end_time']) ? '' : date('Y-m-d H:i',$info['end_time']);
         $info['width'] = $pos_info['width'];
         $info['height'] = $pos_info['height'];
         $this->assign('info',$info);
