@@ -67,8 +67,8 @@
             window.location.href = '{:url("Index/index")}';
             return false;
         }else{
-            errReturn();
-            $('#verifyCode').val('');
+            // errReturn();
+            // $('#verifyCode').val('');
             // $('#verifyImage').attr('src','{:captcha_src()}?'+Math.random());
             $('#result').html(data.msg).show();
         }

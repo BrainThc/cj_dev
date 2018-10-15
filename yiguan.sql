@@ -151,6 +151,7 @@ CREATE TABLE IF NOT EXISTS `yg_adv_list`(
   `adv_title` varchar(255) NOT NULL COMMENT '广告标题',
   `adv_img` text NOT NULL COMMENT '图片地址',
   `adv_url` text NOT NULL COMMENT '跳转地址',
+  `sequence` tinyint(3) NOT NULL COMMENT '排序 由大到小',
   `start_time` int(10) NOT NULL DEFAULT 0 COMMENT '开始时间',
   `end_time` int(10) NOT NULL DEFAULT 0 COMMENT '结束时间',
   `add_time` int(10) NOT NULL DEFAULT 0 COMMENT '添加时间',

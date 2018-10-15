@@ -100,7 +100,6 @@ class Advposition extends Base
         $id = intval(input('param.id',0));
         if( $id <= 0 ){
             noPermission();
-            url();
         }
         $info = Db::table($this->advPositionModel->getTable())
             ->where('pos_id',$id)
@@ -109,7 +108,6 @@ class Advposition extends Base
 
         if(empty($info)){
             noPermission();
-            url();
         }
         $this->assign('info',$info);
         $this->assign('pos_type_list',AdvPostModel::$map_type);

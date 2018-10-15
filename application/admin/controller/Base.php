@@ -125,7 +125,19 @@ class Base extends Controller
                     )),
                     array('name'=>'删除广告位','power'=>'market_banner_post_del','act'=>'Advposition','op'=>'del_pos')
                 )),
-                array('name'=>'广告管理','power'=>'market_banner_content','act'=>'Advlist','op'=>'index')
+                //广告管理
+                array('name'=>'广告管理','power'=>'market_adv_content','act'=>'Advlist','op'=>'index','child'=>array(
+                    array('name'=>'广告内容编辑','power'=>'market_adv_content','act'=>'Advlist','op'=>'adv_list','child'=>array(
+                        array('name'=>'添加广告页','power'=>'market_adv_create_view','act'=>'Advlist','op'=>'add','child'=>array(
+                            array('name'=>'添加广告','power'=>'market_adv_create','act'=>'Advlist','op'=>'create_adv')
+                        )),
+                        array('name'=>'编辑广告页','power'=>'market_adv_update_view','act'=>'Advlist','op'=>'edit','child'=>array(
+                            array('name'=>'编辑广告','power'=>'market_adv_update','act'=>'Advlist','op'=>'update_adv')
+                        )),
+                        array('name'=>'编辑广告排序','power'=>'market_adv_sequence','act'=>'Advlist','op'=>'update_sequence'),
+                        array('name'=>'删除广告','power'=>'market_adv_del','act'=>'Advlist','op'=>'del_adv')
+                    ))
+                ))
             )),
             //模板配置管理
             array('name'=>'模板管理','power'=>'template','act'=>'Template','child'=>array(

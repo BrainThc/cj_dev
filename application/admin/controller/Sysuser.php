@@ -155,7 +155,6 @@ class Sysuser extends Base
         $id = intval(input('param.id',0));
         if( $id <= 0 ){
             noPermission();
-            url();
         }
         $info = Db::table($this->sysUserModel->getTable())
             ->field('sys_user_id,username,group_id,status')
@@ -164,7 +163,6 @@ class Sysuser extends Base
 
         if(empty($info)){
             noPermission();
-            url();
         }
         $groupModel = model('SysUserGroup');
         //检查是否超级管理员

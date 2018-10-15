@@ -23,7 +23,7 @@
         <tr>
             <td>
                 <input type="text" name="pos_id" v-model="pos_id" class="input-text" placeholder="广告位id" />
-                <input type="text" name="keyword" v-model="keyword" class="input-text" placeholder="账号关键词" />
+                <input type="text" name="keyword" v-model="keyword" class="input-text" placeholder="广告位关键词" />
                 <input type="button" value="搜索"  class="button" v-on:click="get_advpost_list" />
                 <input type="reset" value="重置" class="button" v-on:click="reset_search"  />
             </td>
@@ -47,7 +47,7 @@
                 <tr v-for="(pos,index) in pos_list">
                     <td align="center" >{{ pos.pos_id }}</td>
                     <td align="center">
-                        <input type="button" class="button" style="margin:0 auto;" value="管理广告" v-on:click="edit_center(pos.pos_id)">
+                        <input type="button" class="button" style="margin:0 auto;" value="管理广告" v-on:click="edit_center(index)">
                     </td>
                     <td align="left">{{ pos.pos_name }}</td>
                     <td align="center">{{ pos.pos_type }}</td>
@@ -57,9 +57,9 @@
                 </tr>
                 </tbody>
                 <tfoot>
-                <tr>
-                    <td colspan="4" class="pageTool" v-html="page_html" ></td>
-                </tr>
+                    <tr>
+                        <td colspan="4" class="pageTool" v-html="page_html" ></td>
+                    </tr>
                 </tfoot>
             </table>
         </div>
@@ -110,16 +110,19 @@
                 that.keyword = '';
                 that.get_advpost_list();
             },
-            edit_center: function (pos_id) {
-                var toUrl = "{:url('Advposition/edit',['id'=>'pos_id'])}";
+            edit_center: function (index) {
+                var that = this;
+                var pos_id = that.pos_list[index].pos_id;
+                var toUrl = "{:url('Advlist/adv_list',['id'=>'pos_id'])}";
                 toUrl = toUrl.replace('pos_id', pos_id);
-                layer.open({
-                    title: '编辑广告位',
-                    type: 2,
-                    closeBtn: 1,
-                    area: ['50%', '50%'],
-                    content: toUrl
-                })
+                location = toUrl;
+                // layer.open({
+                //     title: that.pos_list[index].pos_name,
+                //     type: 2,
+                //     closeBtn: 1,
+                //     area: ['100%', '100%'],
+                //     content: toUrl
+                // })
             }
         }
     });
