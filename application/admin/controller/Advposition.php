@@ -26,19 +26,25 @@ class Advposition extends Base
     //获取所有广告位
     public function get_advpost_list(){
         $where = [];
+        $page_param = [];
         $where['status'] = ['=',1];
         $keyword = trim(input('post.keyword',''));
-        if( !empty($keyword) )
-            $where['pos_name'] = ['like',$keyword];
+        if( !empty($keyword) ) {
+            $where['pos_name'] = ['like', "%{$keyword}%"];
+            $page_param['keyword'] = $keyword;
+        }
 
         $pos_id = intval(input('post.pos_id',0));
-        if( $pos_id > 0 )
-            $where['pos_id'] = ['=',$pos_id];
-
+        if( $pos_id > 0 ) {
+            $where['pos_id'] = ['=', $pos_id];
+            $page_param['pos_id'] = $pos_id;
+        }
+        $cont = input('post.cont_type','advposition');
+        $page = intval(input('page',1));
         $list = Db::table($this->advPositionModel->getTable())
             ->where($where)
             ->order('pos_id','asc')
-            ->paginate(15);
+            ->paginate(15,false,['page'=>$page,'path'=>url('admin/'.$cont.'/index',$page_param)]);
 
         if( !empty($list) ){
             foreach( $list as $k => $v ){
@@ -50,8 +56,8 @@ class Advposition extends Base
 
         $info['list'] = $list;
         //分页工具
-        $page = $list->render();
-        $info['page'] = empty($page) ? '' : $page;
+        $pageHtml = $list->render();
+        $info['page'] = empty($pageHtml) ? '' : $pageHtml;
         returnJson(true,'success',$info);
     }
 

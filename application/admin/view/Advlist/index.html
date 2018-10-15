@@ -39,7 +39,7 @@
                     <th align="left">广告位标题</th>
                     <th align="center">广告类型</th>
                     <th align="center">广告展示数</th>
-                    <th align="center">广告位描述</th>
+                    <th align="center">占位图</th>
                     <th align="center">尺寸</th>
                 </tr>
                 </thead>
@@ -58,7 +58,7 @@
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td colspan="4" class="pageTool" v-html="page_html" ></td>
+                        <td colspan="7" class="pageTool" v-html="page_html" ></td>
                     </tr>
                 </tfoot>
             </table>
@@ -73,6 +73,7 @@
             'pos_id' : "<?=input('pos_id','')?>",
             'keyword' : "<?=input('keyword','')?>",
             'page_html' : '',
+            'page' : "<?=input('page',1)?>"
         },
         mounted:function(){
             var that = this;
@@ -89,8 +90,10 @@
                     dataType: 'json',
                     async: false,
                     data: {
+                        'cont_type' : 'advlist',
                         'pos_id': that.pos_id,
-                        'keyword': that.keyword
+                        'keyword': that.keyword,
+                        'page' : that.page
                     },
                     success: function (data) {
                         that.pos_list = data.info.list.data;
@@ -116,13 +119,6 @@
                 var toUrl = "{:url('Advlist/adv_list',['id'=>'pos_id'])}";
                 toUrl = toUrl.replace('pos_id', pos_id);
                 location = toUrl;
-                // layer.open({
-                //     title: that.pos_list[index].pos_name,
-                //     type: 2,
-                //     closeBtn: 1,
-                //     area: ['100%', '100%'],
-                //     content: toUrl
-                // })
             }
         }
     });

@@ -39,7 +39,7 @@
                             <option value="<?=$group['group_id']?>" ><?=$group['group_name']?></option>
                             <?php } ?>
                         </select>
-                        <input type="button" value="搜索"  class="button" v-on:click="get_user_list" />
+                        <input type="button" value="搜索"  class="button" v-on:click="search" />
                         <input type="reset" value="重置" class="button" v-on:click="reset_search"  />
                     </td>
                 </tr>
@@ -71,7 +71,7 @@
                         </tbody>
                         <tfoot>
                         <tr>
-                            <td colspan="4" class="pageTool" v-html="page_html" ></td>
+                            <td colspan="5" class="pageTool" v-html="page_html" ></td>
                         </tr>
                         </tfoot>
                     </table>
@@ -88,6 +88,7 @@
                     'group_id' : "<?=input('group_id','')?>",
                     'status' : "<?=input('status','')?>",
                     'page_html' : '',
+                    'page' : "<?=input('get.page',1)?>"
                 },
                 mounted:function(){
                     var that = this;
@@ -107,7 +108,8 @@
                                 'sys_user_id' : that.sys_user_id,
                                 'keyword' : that.keyword,
                                 'group_id' : that.group_id,
-                                'status' : that.status
+                                'status' : that.status,
+                                'page' : that.page
                             },
                             success:function (data) {
                                 that.user_list = data.info.list.data;
@@ -120,6 +122,11 @@
                                 return false;
                             }
                         });
+                    },
+                    search:function(){
+                        var that = this;
+                        that.page = 1;
+                        that.get_user_list();
                     },
                     reset_search:function(){
                         var that = this;

@@ -33,31 +33,37 @@ class Sysuser extends Base
 
     public function get_user_list(){
         $where = [];
+        $page_param = [];
         //id筛选
         $sys_user_id = input('post.sys_user_id','');
         if( $sys_user_id != '' ){
             $where['sys_user_id'] = ['=',$sys_user_id];
+            $page_param['sys_user_id'] = $sys_user_id;
         }
         //账号筛选
         $keyword = input('post.keyword','');
         if( $keyword != '' ){
             $where['username'] = ['like',"%{$keyword}%"];
+            $page_param['keyword'] = $keyword;
         }
         //权限组筛选
-        $group_id = input('post.group_id',0);
-        if( intval($group_id) > 0 ){
+        $group_id = intval(input('post.group_id',0));
+        $page_param['group_id'] = $group_id;
+        if( $group_id > 0 ){
             $where['group_id'] = $group_id;
         }
         //用户状态筛选
-        $status = input('post.status','');
-        if( !empty($status) && isset(SysUserModel::$map_status[$status]) ){
+        $status = input('post.status',0);
+        $page_param['status'] = $status;
+        if( isset(SysUserModel::$map_status[$status]) ){
             $where['status'] = SysUserModel::$map_status[$status]['value'];
         }
+        $page = intval(input('page',1));;
         $userList = Db::table($this->sysUserModel->getTable())
             ->where($where)
             ->order('sys_user_id','asc')
-            ->paginate(15);
-
+            ->paginate(15,false,['page'=>$page,'path'=>url('admin/sysuser/index',$page_param)]);
+        $info['sd'] = $page_param;
         if( !empty($userList) ){
             foreach( $userList as $k => $v ){
                 $v['last_date'] = date('Y-m-d H:i:s',$v['last_time']);
@@ -67,8 +73,8 @@ class Sysuser extends Base
         }
         $info['list'] = $userList;
         //分页工具
-        $page = $userList->render();
-        $info['page'] = empty($page) ? '' : $page;
+        $pageHtml = $userList->render();
+        $info['page'] = empty($pageHtml) ? '' : $pageHtml;
         returnJson(true,'success',$info);
     }
 

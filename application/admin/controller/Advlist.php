@@ -46,22 +46,27 @@ class Advlist extends Base
         if( empty($data['pos_id']) || intval($data['pos_id']) <= 0 ){
             returnJson(false,'参数错误');
         }
-
+        $where = [];
+        $page_param = [];
+        $page = empty($data['page']) ? 1 : intval($data['page']);
         $where['pos_id'] = ['=',intval($data['pos_id'])];
+        $page_param['id'] = $data['pos_id'];
 
         $adv_id = empty($data['adv_id']) ? 0 : intval($data['adv_id']);
         if( $adv_id > 0 ){
             $where['adv_id'] = ['=',$adv_id];
+            $page_param['adv_id'] = $adv_id;
         }
 
         $keyword = empty($data['keyword']) ? '' : trim($data['keyword']);
         if( !empty($keyword) ){
             $where['adv_title'] = ['like',"%{$keyword}%"];
+            $page_param['keyword'] = $keyword;
         }
         $list = Db::table($this->advListModel->getTable())
             ->where($where)
-            ->order('sequence desc,start_time desc')
-            ->paginate(15);
+            ->order('start_time desc,sequence desc')
+            ->paginate(10,false,['page'=>$page,'path'=>url('admin/advlist/adv_list',$page_param)]);
 
         $info['list'] = $list;
         $t = time();
@@ -86,9 +91,9 @@ class Advlist extends Base
                 $list[$k] = $v;
             }
         }
-        $page = $list->render();
-        $page = empty($page) ? '' : $page;
-        $info['page'] = $page;
+        $pageHtml = $list->render();
+        $pageHtml = empty($pageHtml) ? '' : $pageHtml;
+        $info['page'] = $pageHtml;
         returnJson(false,'success',$info);
     }
 

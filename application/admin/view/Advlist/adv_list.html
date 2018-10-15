@@ -20,7 +20,7 @@
 <div id="result" class="result none"></div>
 <div class="mainbox" id="main_vue" >
     <div class="mainnav_title" style="border:none; margin-top:10px;" >
-        <input type="button" class="button" value="返回广告位列表" onclick="history.go(-1);">
+        <input type="button" class="button" value="返回广告位列表" onclick="location = '<?=url('advlist/index')?>'">
     </div>
     <div class="mainnav_title">
         <a  href="javascript:void(0);" v-on:click="add_adv" >添加广告</a>
@@ -72,7 +72,7 @@
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td colspan="4" class="pageTool" v-html="page_html" ></td>
+                        <td colspan="9" class="pageTool" v-html="page_html" ></td>
                     </tr>
                 </tfoot>
             </table>
@@ -88,6 +88,7 @@
             'keyword' : "<?=input('keyword','')?>",
             'page_html' : '',
             'adv_list' : [],
+            'page' : "<?=input('get.page',1)?>"
         },
         mounted:function(){
             var that = this;
@@ -106,7 +107,8 @@
                     data: {
                         'pos_id' : that.pos_id,
                         'adv_id': that.adv_id,
-                        'keyword': that.keyword
+                        'keyword': that.keyword,
+                        'page' : that.page
                     },
                     success: function (data) {
                         that.adv_list = data.info.list.data;

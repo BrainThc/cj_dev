@@ -71,8 +71,9 @@
                 el: '#main_vue',
                 data:{
                     'group_list' : [],
-					'keyword' : '',
+					'keyword' : "<?=input('keyword','')?>",
 					'page_html' : '',
+					'page' : "<?=input('page',1)?>",
                 },
                 mounted:function(){
                     var that = this;
@@ -88,7 +89,7 @@
                             type: 'POST',
                             dataType: 'json',
                             async: false,
-                            data:{'keyword' : that.keyword},
+                            data:{'keyword' : that.keyword,'page':that.page},
                             success:function (data) {
                                 that.group_list = data.info.list.data;
                                 that.page_html = data.info.page;
@@ -103,6 +104,7 @@
 					},
                     search:function(){
                         var that = this;
+                        that.page = 1;
                         that.get_group_list();
                     },
 					get_group_list_reset:function(){

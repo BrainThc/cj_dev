@@ -50,15 +50,18 @@ class Sysusergroup extends Base
     public function get_group_list(){
         $groupModel = $this->groupModel;
         $where = [];
+        $page_param = [];
         //权限组名关键词搜索
         $keyword = input('post.keyword','');
         if( $keyword != '' ){
             $where['group_name'] = ['like',"%{$keyword}%"];
+            $page_param['keyword'] = $keyword;
         }
+        $page = intval(input('page',1));;
         $list = Db::table($groupModel->getTable())
             ->where($where)
             ->order('group_id','asc')
-            ->paginate(15);
+            ->paginate(15,false,['page'=>$page,'path'=>url('admin/sysusergroup/index',$page_param)]);
 
         if( !empty($list) ){
             foreach( $list as $k => $v ){
