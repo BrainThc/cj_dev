@@ -97,9 +97,12 @@ class Base extends Controller
                         array('name'=>'添加文章','power'=>'article_create','act'=>'Article','op'=>'create_article')
                     )),
                     array('name'=>'编辑文章页','power'=>'article_create_view','act'=>'Article','op'=>'edit','child'=>array(
-                        array('name'=>'编辑栏目','power'=>'article_update','act'=>'Article','op'=>'update_article')
+                        array('name'=>'编辑文章','power'=>'article_update','act'=>'Article','op'=>'update_article')
                     )),
+                    array('name'=>'编辑文章排序','power'=>'article_sequence','act'=>'Article','op'=>'set_sequence'),
                     array('name'=>'文章推荐设置','power'=>'article_recomm','act'=>'Article','op'=>'set_recomm'),
+                    array('name'=>'文章审核','power'=>'article_status','act'=>'Article','op'=>'set_status'),
+                    array('name'=>'文章 可读/ 不可读','power'=>'article_read','act'=>'Article','op'=>'set_read'),
                     array('name'=>'删除/恢复文章','power'=>'article_deleted','act'=>'Article','op'=>'set_deleted'),
                 )),
             )),

@@ -441,8 +441,7 @@
 
     <div class="copyright">
         <a title="官方网站" href="http://www.ieconn.com">一贯科技后台管理系统</a>
-        <span style="display:none;">V<?php echo THINK_VERSION; ?></span>
-        <span>V1.0.0</span>
+        <span>V<?php echo THINK_VERSION; ?></span>
         <span>別看了！小心我找女王大人收拾你</span>
     </div>
     <?php if(\think\App::$debug) { ?>
