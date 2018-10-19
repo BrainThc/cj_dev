@@ -30,23 +30,7 @@ class Upload extends Controller
 
             //图片记录
             $info['file'] = str_replace("\\","/",__UPLOAD_PATH__.$fileType.DS.$fileSave->getSaveName());
-            //图片提交记录用于图库
-            $userType = input('get.utype','user');
-            $userId = intval(input('get.uid','0'));
-            switch($userType){
-                case 'admin' :
-                    $userId = session('sys_user')['sys_user_id'];
-                    $userType = 1;
-                    break;
-                default :
-                    $userType = 0;
-                    break;
-            }
-            $data['user_type'] = $userType;
-            $data['user_id'] = $userId;
-            $data['url'] = $info['file'];
-            $data['add_time'] = time();
-            Db::table('yg_images_upload')->insert($data);
+
 
         }catch( Exception $e ){
             $info = [];
