@@ -13,22 +13,26 @@ CREATE TABLE IF NOT EXISTS `yg_sys_user` (
   `login_count` int(11) NOT NULL COMMENT '登录次数',
   `last_ip` varchar(15) NOT NULL COMMENT '注册ip',
   `last_time` int(10) NOT NULL DEFAULT 0 COMMENT '上一次登录时间',
-  `desc` varchar(255) NOT NULL COMMENT '账号备注',
+  `desc` varchar(255) NOT NULL COMMENT '账号备注'
 ) ENGINE=InnoDB COMMENT '管理员表';
 
 /*添加索引*/
 ALTER TABLE  `yg_sys_user` ADD INDEX (  `group_id` );
 
+
+INSERT INTO `yg_sys_user` (`sys_user_id`, `username`, `password`, `keyCode`, `group_id`, `status`, `reg_ip`, `reg_time`, `login_count`, `last_ip`, `last_time`, `desc`) VALUES
+(1, 'admin', '4b6ce2f7db3cf15316614c102bb69bc4', 'd8d784', 1, 1, '0', 0, 32, '127.0.0.1', 1539741596, '')
+
 /**
 token秘钥表
  */
-CREATE TABLE IF NOT EXISTS `yg_sys_user_token`(
-)
+-- CREATE TABLE IF NOT EXISTS `yg_sys_user_token`(
+-- )
 
 /**
 用户操作记录表
  */
-CREATE TABLE IF NOT EXISTS `yg_sys_user_log`(
+CREATE TABLE IF NOT EXISTS `yg_sys_user_log` (
   `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '索引id',
   `sys_user_id` int(11) NOT NULL COMMENT '管理员id',
   `type` varchar(11) NOT NULL COMMENT '操作类型',
@@ -48,6 +52,10 @@ CREATE TABLE IF NOT EXISTS `yg_sys_user_group`(
   `add_time` int(10) NOT NULL DEFAULT 0 COMMENT '添加时间',
   `edit_time` int(10) NOT NULL DEFAULT 0 COMMENT '修改时间'
 ) ENGINE=InnoDB COMMENT '管理员权限组';
+
+
+INSERT INTO `yg_sys_user_group` (`group_id`, `group_name`, `value`, `status`, `add_time`, `edit_time`) VALUES
+(1, '超级管理员', 'home,home_show,site,site_config,site_config_create,site_config_update,site_config_update_all,menus,menus_create_view,menus_create,menus_update_view,menus_update,menus_sequence,menus_del,menus_type_create,article,article_cate,article_cate_create_view,article_cate_create,article_cate_update_view,article_cate_update,article_cate_sequence,article_cate_del,article_list,article_create_view,article_create,article_create_view,article_update,article_recomm,article_deleted,goods,goods_list,order,order_list,market,market_banner_pos,market_banner_post_create_view,market_banner_post_create,market_banner_post_update_view,market_banner_post_update,market_banner_post_del,market_adv_content,market_adv_content,market_adv_create_view,market_adv_create,market_adv_update_view,market_adv_update,market_adv_sequence,market_adv_del,template,template_pc,template_wap,sys_user,sys_user_list,sys_user_create_view,sys_user_create,sys_user_update_view,sys_user_update,sys_user_del,sys_user_group,sys_user_group_create_view,sys_user_group_create,sys_user_group_update_view,sys_user_group_update,sys_user_group_update,sys_user_group_default,log,sys_user_log', 2, 1537281475, 1539570998)
 
 /**
 系统配置表
@@ -87,7 +95,7 @@ CREATE TABLE IF NOT EXISTS `yg_menus_type`(
   `desc` text NOT NULL DEFAULT '' COMMENT '描述',
   `sequence` tinyint(3) NOT NULL COMMENT '排序 由大到小',
   `add_time` int(10) NOT NULL DEFAULT 0 COMMENT '添加时间',
-  'edit_time' int(10) NOT NULL DEFAULT 0 COMMENT '修改时间'
+  `edit_time` int(10) NOT NULL DEFAULT 0 COMMENT '修改时间'
 ) ENGINE=InnoDB COMMENT '导航菜单类型';
 
 /**
