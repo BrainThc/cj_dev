@@ -7,7 +7,7 @@
         var func   = typeof(arguments[1]) == 'undefined' ? '' : arguments[1];
         var error_func   = typeof(arguments[2]) == 'undefined' ? '' : arguments[2];
         var _utype   = typeof(arguments[3]) == 'undefined' ? 'user' : arguments[3];
-        var _uid   = typeof(arguments[4]) == 'undefined' ? 'user' : arguments[4];
+        var _uid   = typeof(arguments[4]) == 'undefined' ? 0 : arguments[4];
         var that   = this;
         var _id    = that.attr('id');
         var uploader = null;
@@ -18,7 +18,7 @@
                 runtimes : 'html5,flash,silverlight,html4',
                 browse_button : _id, // you can pass an id...
                 container: document.getElementById('upload_main'), // ... or DOM Element itself
-                url : '/api/upload/index.html?dir='+dir+'&utype='+_utype+'&uid='+_uid,
+                url : 'http://yiguan2.com/api.php/upload/index.html?dir='+dir+'&utype='+_utype+'&uid='+_uid,
                 flash_swf_url : '/static/plupload/Moxie.swf',
                 silverlight_xap_url : '/static/plupload/Moxie.xap',
                 filters : {
