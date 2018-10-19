@@ -442,7 +442,7 @@
     <div class="copyright">
         <a title="官方网站" href="http://www.ieconn.com">一贯科技后台管理系统</a>
         <span>V<?php echo THINK_VERSION; ?></span>
-        <span>別看了！小心我找女王大人收拾你</span>
+        <span>如有其它问题请联系客服</span>
     </div>
     <?php if(\think\App::$debug) { ?>
     <script>
