@@ -133,6 +133,7 @@ class Advlist extends Base
             if( empty($info) )
                 throw new Exception('参错错误');
 
+            $t = time();
             $insertData['pos_id'] = $info['pos_id'];
             $insertData['adv_img'] = empty($data['adv_img']) ? '' : trim($data['adv_img']);
             if( empty($insertData['adv_img']) )
@@ -143,7 +144,8 @@ class Advlist extends Base
             $insertData['adv_title'] = empty($data['adv_title']) ? '' : trim($data['adv_title']);
             $insertData['start_time'] = empty($data['start_time']) ? 0 : strtotime($data['start_time']);
             $insertData['end_time'] = empty($data['end_time']) ? 0 : strtotime($data['end_time']);
-
+            $insertData['add_time'] = $t;
+            $insertData['edit_time'] = $t;
             Db::startTrans();
             if( Db::table($this->advListModel->getTable())->insert($insertData) === false )
                 throw new Exception('网络错误，添加失败');
@@ -229,7 +231,7 @@ class Advlist extends Base
             $updateData['adv_title'] = empty($data['adv_title']) ? '' : trim($data['adv_title']);
             $updateData['start_time'] = empty($data['start_time']) ? 0 : strtotime($data['start_time']);
             $updateData['end_time'] = empty($data['end_time']) ? 0 : strtotime($data['end_time']);
-
+            $updateData['edit_time'] = time();
             Db::startTrans();
             $updateState = Db::table($this->advListModel->getTable())->where($where)->update($updateData);
             if( empty($updateState) )
