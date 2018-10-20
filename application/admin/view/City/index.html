@@ -16,6 +16,7 @@
             .li-box ul{ float:left; width:200px; height:325px; overflow:hidden; overflow-y:scroll; border:1px solid #ccc;}
             .li-box li{width:100%; height:25px; line-height:25px;  text-indent:10px;}
             .li-box li:hover{background:#eee;}
+            .li-box li a{float:right; cursor:pointer; color:#ccc;}
             .li-box .active{ background:#00b7ee !important; color:#ffffff;}
             .input-box{ height:30px; width:100%; overflow:hidden; margin:10px auto; }
             .input-box input{ height:30px; line-height:30px; text-align:center; width:100%; margin:0; padding:0; }
@@ -25,13 +26,13 @@
         <div id="result" class="result none"></div>
         <div class="mainbox" id="main_vue">
             <div id="nav" class="mainnav_title">
-                <span>省市区</span>
+                <span>省市区管理</span>
             </div>
             <div class="li-box" id="province" >
                 <div class="title">省份</div>
                 <ul>
                     <li style="text-align:center;" v-if="prov_list.length == 0 " >数据拉取中...</li>
-                    <li v-bind:class="[ ( prov_change == prov.id ) ? 'active' : '']" v-for="(prov,index) in prov_list" v-on:click="get_city_list(prov.id,'prov')" >{{ prov.name }}</li>
+                    <li v-bind:class="[ ( prov_change == prov.id ) ? 'active' : '']" v-for="(prov,index) in prov_list" v-on:click="get_city_list(prov.id,'prov')" >{{ prov.name }} <a href="javascript:void(0);" v-on:click="del_city" >删除</a></li>
                 </ul>
                 <div class="input-box" >
                     <input type="text" v-model="new_prov" placeholder="填写省份名">
@@ -44,7 +45,7 @@
                 <div class="title">城市</div>
                 <ul>
                     <li style="text-align:center;" v-if="city_list.length == 0 " >没有内容</li>
-                    <li v-bind:class="[ ( city_change == city.id ) ? 'active' : '']" v-for="(city,index) in city_list" v-on:click="get_city_list(city.id,'city')" >{{ city.name }}</li>
+                    <li v-bind:class="[ ( city_change == city.id ) ? 'active' : '']" v-for="(city,index) in city_list" v-on:click="get_city_list(city.id,'city')" >{{ city.name }} <a href="javascript:void(0);" v-on:click="del_city" >删除</a></li>
                 </ul>
                 <div class="input-box" >
                     <input type="text" v-model="new_city" placeholder="填写城市名">
@@ -57,7 +58,7 @@
                 <div class="title">区域</div>
                 <ul>
                     <li style="text-align:center;" v-if="area_list.length == 0 " >没有内容</li>
-                    <li v-bind:class="[ ( area_change == area.id ) ? 'active' : '']" v-for="(area,index) in area_list" >{{ area.name }}</li>
+                    <li v-bind:class="[ ( area_change == area.id ) ? 'active' : '']" v-for="(area,index) in area_list" >{{ area.name }} <a href="javascript:void(0);" v-on:click="del_city" >删除</a></li>
                 </ul>
                 <div class="input-box" >
                     <input type="text" v-model="new_area" placeholder="填写区域名">
@@ -189,7 +190,7 @@
                             break;
                     }
                     $.ajax({
-                        url: "{:url('City/add_city')}",
+                        url: "{:url('City/create_city')}",
                         type: 'post',
                         dataType: 'json',
                         data: {
@@ -215,6 +216,16 @@
                             return false;
                         }
                     });
+                },
+                del_city:function(city_id){
+                    var that = this;
+                    if( !confirm('是否确认删除') ){
+                        return false;
+                    }
+                    layer.msg('暂时不允许删除', {
+                        skin: 'layui-layer-huise'
+                    });
+                    return false;
                 }
             }
         });

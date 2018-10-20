@@ -78,9 +78,8 @@ class Base extends Controller
                 //客服配置
                 //省市区管理
                 array('name'=>'地区管理','power'=>'city','act'=>'City','op'=>'index','child'=>array(
-                    array('name'=>'添加区域','power'=>'menus_create','act'=>'Menus','op'=>'create_menu'),
-                    array('name'=>'编辑区域','power'=>'menus_update','act'=>'Menus','op'=>'update_menu'),
-                    array('name'=>'删除区域','power'=>'menus_sequence','act'=>'Menus','op'=>'update_sequence')
+                    array('name'=>'添加区域','power'=>'city_create','act'=>'City','op'=>'create_city'),
+                    array('name'=>'删除区域','power'=>'city_del','act'=>'City','op'=>'del_city'),
                 )),
             )),
             //文章管理
@@ -114,7 +113,10 @@ class Base extends Controller
             //商品管理
             array('name'=>'商品管理','power'=>'goods','act'=>'Goods','child'=>array(
                 //商品列表
-                array('name'=>'商品列表','power'=>'goods_list','act'=>'Goods','op'=>'lists')
+                array('name'=>'商品列表','power'=>'goods_list','act'=>'Goods','op'=>'index'),
+                array('name'=>'商品分类','power'=>'goods_cate','act'=>'Goodscate','op'=>'index'),
+                array('name'=>'分类属性','power'=>'category_attribute','act'=>'Cateattribute','op'=>'index'),
+                array('name'=>'品牌管理','power'=>'goods_brand','act'=>'Brand','op'=>'index')
             )),
             //订单管理
             array('name'=>'订单管理','power'=>'order','act'=>'Order','child'=>array(

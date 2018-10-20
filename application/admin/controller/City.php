@@ -19,7 +19,7 @@ class City extends Base
         returnJson(true,'success',$list);
     }
 
-    public function add_city(){
+    public function create_city(){
         $data = input('post.');
         $pid = empty($data['pid']) ? 0 : intval($data['pid']);
         try{
