@@ -189,3 +189,13 @@ CREATE TABLE IF NOT EXISTS `yg_mobild_code`(
  `finished_time` int(10) NOT NULL COMMENT '失效时间',
  `add_ip` varchar(50) NOT NULL COMMENT '添加ip'
 ) ENGINE=MyISAM COMMENT '手机验证码表';
+
+/**
+ *  省市区表
+ */
+CREATE TABLE IF NOT EXISTS `yg_city` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '索引id',
+  `pid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '父级id' ,
+  `name` varchar(50) NOT NULL DEFAULT '' COMMENT '城市名',
+) ENGINE=MyISAM  COMMENT '省市区表' ;
+

@@ -76,7 +76,12 @@ class Base extends Controller
                     array('name'=>'添加导航类型','power'=>'menus_type_create','act'=>'Menus','op'=>'add_menus_type')
                 )),
                 //客服配置
-
+                //省市区管理
+                array('name'=>'地区管理','power'=>'city','act'=>'City','op'=>'index','child'=>array(
+                    array('name'=>'添加区域','power'=>'menus_create','act'=>'Menus','op'=>'create_menu'),
+                    array('name'=>'编辑区域','power'=>'menus_update','act'=>'Menus','op'=>'update_menu'),
+                    array('name'=>'删除区域','power'=>'menus_sequence','act'=>'Menus','op'=>'update_sequence')
+                )),
             )),
             //文章管理
             array('name'=>'文章管理','power'=>'article','act'=>'Article','child'=>array(
