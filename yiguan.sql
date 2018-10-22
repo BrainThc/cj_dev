@@ -197,5 +197,18 @@ CREATE TABLE IF NOT EXISTS `yg_city` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '索引id',
   `pid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '父级id' ,
   `name` varchar(50) NOT NULL DEFAULT '' COMMENT '城市名',
-) ENGINE=MyISAM  COMMENT '省市区表' ;
+) ENGINE=InnoDB  COMMENT '省市区表' ;
 
+/**
+ * 商品分类表
+ */
+CREATE TABLE IF NOT EXISTS `yg_goods_category` (
+  `cate_id` int(10) NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '索引id',
+  `cate_name` varchar(50) NOT NULL DEFAULT '' COMMENT '分类名',
+  `pid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '父级id' ,
+  `sequence` tinyint(3) NOT NULL DEFAULT '0' COMMENT '排序 ',
+  `cate_icon` text NOT NULL DEFAULT '' COMMENT '分类icon',
+  `description` varchar(255) NOT NULL DEFAULT '' COMMENT '分类描述',
+  `add_time` int(10) NOT NULL DEFAULT 0 COMMENT '添加时间',
+  `edit_time` int(10) NOT NULL DEFAULT 0 COMMENT '修改时间'
+) ENGINE=InnoDB  COMMENT '商品分类表' ;
