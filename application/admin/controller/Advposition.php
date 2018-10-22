@@ -148,7 +148,8 @@ class Advposition extends Base
             $insertData['edit_time'] = $t;
 
             Db::startTrans();
-            if( Db::table($this->advPositionModel->getTable())->where($where)->update($insertData) === false )
+            $updateState = Db::table($this->advPositionModel->getTable())->where($where)->update($insertData);
+            if( empty($updateState) )
                 throw new Exception('网络错误，保存失败');
 
             //添加日志
@@ -191,7 +192,8 @@ class Advposition extends Base
             }
 
             Db::startTrans();
-            if( Db::table($this->advPositionModel->getTable())->where($where)->update($insertData) === false )
+            $updateState = Db::table($this->advPositionModel->getTable())->where($where)->update($insertData);
+            if( empty($updateState) )
                 throw new Exception('网络错误，操作失败');
 
             //添加日志

@@ -13,7 +13,7 @@ class Cateattribute extends Base
     }
 
     public function index(){
-        echo '分类属性';
+        return $this->fetch();
     }
 
 

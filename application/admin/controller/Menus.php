@@ -177,7 +177,8 @@ class Menus extends Base
             $updateData['edit_time'] = $t;
             Db::startTrans();
 
-            if( Db::table($this->menusModel->getTable())->where($where)->update($updateData) === false )
+            $updateState = Db::table($this->menusModel->getTable())->where($where)->update($updateData);
+            if( empty($updateState) )
                 throw new Exception('网络错误，保存失败');
 
             //添加日志
