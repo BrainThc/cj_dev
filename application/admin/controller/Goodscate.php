@@ -176,7 +176,6 @@ class Goodscate extends Base
             returnJson(false,$e->getMessage());
         }
         returnJson(true,'修改成功');
-
     }
 
 }

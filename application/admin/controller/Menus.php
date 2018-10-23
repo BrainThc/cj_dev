@@ -284,10 +284,11 @@ class Menus extends Base
             if( Db::table($this->menusTypeModel->getTable())->insert($insertData) === false )
                 throw new Exception('网络错误，操作失败');
 
-                //添加日志
+            //添加日志
             $logModel = model('Log');
             if( $logModel->note(LogModel::INSERT,'添加导航类型：'.$insertData['type_name']) === false )
                 throw new Exception('网络错误，操作失败');
+
             Db::commit();
         }catch( Exception $e ){
             Db::rollback();

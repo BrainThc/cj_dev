@@ -53,17 +53,16 @@ class Sysuser extends Base
             $where['group_id'] = $group_id;
         }
         //用户状态筛选
-        $status = input('post.status',0);
-        $page_param['status'] = $status;
+        $status = input('post.status','');
         if( isset(SysUserModel::$map_status[$status]) ){
             $where['status'] = SysUserModel::$map_status[$status]['value'];
+            $page_param['status'] = $status;
         }
         $page = intval(input('page',1));;
         $userList = Db::table($this->sysUserModel->getTable())
             ->where($where)
             ->order('sys_user_id','asc')
             ->paginate(15,false,['page'=>$page,'path'=>url('admin/sysuser/index',$page_param)]);
-        $info['sd'] = $page_param;
         if( !empty($userList) ){
             foreach( $userList as $k => $v ){
                 $v['last_date'] = date('Y-m-d H:i:s',$v['last_time']);
