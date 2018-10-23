@@ -189,6 +189,15 @@ class Base extends Controller
                     array('name'=>'超级管理员初始化','power'=>'sys_user_group_default','act'=>'Sysusergroup','op'=>'default_super_group'),
                 ))
             )),
+            //留言管理
+            array('name'=>'留言','power'=>'message','act'=>'Message','child'=>array(
+                //留言
+                array('name'=>'留言管理','power'=>'message','act'=>'Message','op'=>'index','child'=>array(
+                    array('name'=>'查看留言','power'=>'message_read','act'=>'Message','op'=>'read'),
+                    array('name'=>'回复留言','power'=>'message_reply','act'=>'Message','op'=>'do_reply'),
+                    array('name'=>'删除留言回复','power'=>'message_reply_del','act'=>'Message','op'=>'del_reply')
+                ))
+            )),
             //日志
             array('name'=>'日志','power'=>'log','act'=>'Log','child'=>array(
                 //操作日志
