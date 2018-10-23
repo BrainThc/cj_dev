@@ -200,6 +200,43 @@ CREATE TABLE IF NOT EXISTS `yg_city` (
 ) ENGINE=InnoDB  COMMENT '省市区表' ;
 
 /**
+ * 留言主表
+ */
+CREATE TABLE IF NOT EXISTS `yg_message_list` (
+  `mess_id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '索引id',
+  `author_id` int(11) NOT NULL COMMENT '作者id 0 为游客',
+  `author_type` tinyint(1) NOT NULL DEFAULT 0 COMMENT '作者类型 0 会员 1管理员',
+  `author_name` varchar(255) NOT NULL DEFAULT '' COMMENT '作者',
+  `title` varchar(255) NOT NULL DEFAULT '' COMMENT '标题',
+  `email` varchar(255) NOT NULL DEFAULT '' COMMENT '邮箱',
+  `contant` varchar(255) NOT NULL DEFAULT '' COMMENT '联系电话',
+  `wechat` varchar(255) NOT NULL DEFAULT '' COMMENT '微信账号',
+  `qq` varchar(255) NOT NULL DEFAULT '' COMMENT 'qq',
+  `content` text NOT NULL DEFAULT '' COMMENT '留言内容',
+  `remark` text NOT NULL DEFAULT '' COMMENT '备注',
+  `read_status` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否已读 0 否 1 是',
+  `reply_status` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否已回复 0 否 1 是',
+  `author_read_status` tinyint(1) NOT NULL DEFAULT 0 COMMENT '作者是否已读 0 否 1 是',
+  `add_time` int(10) NOT NULL DEFAULT 0 COMMENT '添加时间',
+  `edit_time` int(10) NOT NULL DEFAULT 0 COMMENT '修改时间'
+) ENGINE=InnoDB  COMMENT '留言主表';
+
+/**
+ * 留言回复表
+ */
+CREATE TABLE IF NOT EXISTS `yg_message_reply` (
+  `reply_id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '索引id',
+  `mess_id` int(11) NOT NULL DEFAULT 0 COMMENT '跟随的留言id',
+  `author_id` int(11) NOT NULL COMMENT '作者id',
+  `author_type` tinyint(1) NOT NULL DEFAULT 0 COMMENT '作者类型 0 会员 1管理员',
+  `mess_title` varchar(255) NOT NULL DEFAULT '' COMMENT '标题',
+  `content` text NOT NULL DEFAULT '' COMMENT '回复内容',
+  `add_time` int(10) NOT NULL DEFAULT 0 COMMENT '添加时间',
+  `edit_time` int(10) NOT NULL DEFAULT 0 COMMENT '修改时间'
+) ENGINE=InnoDB  COMMENT '留言回复表' ;
+
+
+/**
  * 商品分类表
  */
 CREATE TABLE IF NOT EXISTS `yg_goods_category` (
