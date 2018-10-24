@@ -19,7 +19,8 @@ class Upload extends Controller
         $_file = request()->file('file');
         try{
             if( empty($_file) )
-                throw new Exception('fail');
+                include Config::get('exception_tmpl');
+                exit;
 
             $fileType = input('get.dir','user');
 
