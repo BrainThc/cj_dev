@@ -250,7 +250,7 @@ class Base extends Controller
                         foreach( $value['child'] as $k => $v ){
                             if( in_array($v['power'],$this->arr_limits) ){
                                 $is_act = ( $op == $v['op'] && $act == $v['act'] ) ? 'on' : '';
-                                $menuHtml .= '<dd id="nav_'.($k+1).'" class="'.$is_act.'"><span op="'.$v['act'].'" act="'.$v['op'].'" onclick="menuLeftAction('.($k+1).',\''.url($v['act'].'/'.$v['op']).'\')"><a href="'.url($v['act'].'/'.$v['op']).'" target="main" >'.$v['name'].'</a></span></dd>';
+                                $menuHtml .= '<dd id="nav_'.($k+1).'" class="'.$is_act.' left_nav"><span op="'.$v['act'].'" act="'.$v['op'].'" onclick="menuLeftAction('.($k+1).',\''.url($v['act'].'/'.$v['op']).'\')"><a href="'.url($v['act'].'/'.$v['op']).'" target="main" >'.$v['name'].'</a></span></dd>';
                             }
                         }
                     }

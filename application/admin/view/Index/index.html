@@ -120,7 +120,7 @@ function menuAction(n,act){
         dataType: 'json',
         success: function(data){
 			$('#menuListBox').html(data.info);
-            $('#nav_1 a').click();
+            $('.left_nav').eq(0).find('a').click();
 		},
     });
 }
@@ -130,10 +130,8 @@ function menuLeftAction(n,url){
     $('#nav_'+n).addClass('on');
     window.main.location.href= url;
 }
-$('#nav_1 a').click();
+$('.left_nav').eq(0).find('a').click();
 </script>
 <!--帮助手册-->
-
-
 </body>
 </html> 
