@@ -18,7 +18,7 @@
                 runtimes : 'html5,flash,silverlight,html4',
                 browse_button : _id, // you can pass an id...
                 container: document.getElementById('upload_main'), // ... or DOM Element itself
-                url : 'http://yiguan2.com/api.php/upload/index.html?dir='+dir+'&utype='+_utype+'&uid='+_uid,
+                url : 'http://p.yiguan2.com/?dir='+dir+'&utype='+_utype+'&uid='+_uid,
                 flash_swf_url : '/static/plupload/Moxie.swf',
                 silverlight_xap_url : '/static/plupload/Moxie.xap',
                 filters : {
