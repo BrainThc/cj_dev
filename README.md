@@ -16,6 +16,10 @@ appsecret = d490d8569f6514a242b7ca40ede64c67a539de6f;
 
 ##入口文件
 
+public index.php
+
+含二级域名配置
+
 >后台配置
 
 默认超级管理员账号：admin  
