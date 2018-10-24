@@ -16,10 +16,11 @@ appsecret = d490d8569f6514a242b7ca40ede64c67a539de6f;
 
 ##入口文件
 
->路径 public
+>后台配置
 
-客户端入口   index.php
+默认超级管理员账号：admin  
 
-后台入口     p.php
+密码：123456
 
-接口入口     api.php
+第一次登需要初始化管理员权限
+
