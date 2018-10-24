@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS `yg_sys_user_group`(
 
 
 INSERT INTO `yg_sys_user_group` (`group_id`, `group_name`, `value`, `status`, `add_time`, `edit_time`) VALUES
-(1, '超级管理员', 'home,home_show,site,site_config,site_config_create,site_config_update,site_config_update_all,menus,menus_create_view,menus_create,menus_update_view,menus_update,menus_sequence,menus_del,menus_type_create,article,article_cate,article_cate_create_view,article_cate_create,article_cate_update_view,article_cate_update,article_cate_sequence,article_cate_del,article_list,article_create_view,article_create,article_create_view,article_update,article_recomm,article_deleted,goods,goods_list,order,order_list,market,market_banner_pos,market_banner_post_create_view,market_banner_post_create,market_banner_post_update_view,market_banner_post_update,market_banner_post_del,market_adv_content,market_adv_content,market_adv_create_view,market_adv_create,market_adv_update_view,market_adv_update,market_adv_sequence,market_adv_del,template,template_pc,template_wap,sys_user,sys_user_list,sys_user_create_view,sys_user_create,sys_user_update_view,sys_user_update,sys_user_del,sys_user_group,sys_user_group_create_view,sys_user_group_create,sys_user_group_update_view,sys_user_group_update,sys_user_group_update,sys_user_group_default,log,sys_user_log', 2, 1537281475, 1539570998)
+(1, '超级管理员', 'home,home_show,sys_user,sys_user_group,sys_user_group_update_view,sys_user_group_update,sys_user_group_update,sys_user_group_default,log,sys_user_log', 2, 1537281475, 1539570998)
 
 /**
 系统配置表
