@@ -129,8 +129,8 @@ CREATE TABLE IF NOT EXISTS `yg_article`(
   `status` tinyint(2) NOT NULL DEFAULT 2 COMMENT '文章状态 1已审核 2审核中 0审核失败',
   `is_show` tinyint(2) NOT NULL DEFAULT 1 COMMENT '是否显示 1显示 0隐藏',
   `deleted` tinyint(2) NOT NULL DEFAULT 0 COMMENT '是否已删除 1已删除 0未删除',
+  `admin_id` int(11) NOT NULL DEFAULT 0 COMMENT '管理员id',
   `add_time` int(10) NOT NULL DEFAULT 0 COMMENT '添加时间',
-  `admin_id` int(10) NOT NULL DEFAULT 0 COMMENT '管理员id',
   `edit_time` int(10) NOT NULL DEFAULT 0 COMMENT '编辑时间'
 ) ENGINE=InnoDB COMMENT '文章表';
 
@@ -194,8 +194,8 @@ CREATE TABLE IF NOT EXISTS `yg_mobild_code`(
  *  省市区表
  */
 CREATE TABLE IF NOT EXISTS `yg_city` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '索引id',
-  `pid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '父级id' ,
+  `id` int(11) unsigned NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '索引id',
+  `pid` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '父级id' ,
   `name` varchar(50) NOT NULL DEFAULT '' COMMENT '城市名',
 ) ENGINE=InnoDB  COMMENT '省市区表' ;
 
@@ -240,12 +240,99 @@ CREATE TABLE IF NOT EXISTS `yg_message_reply` (
  * 商品分类表
  */
 CREATE TABLE IF NOT EXISTS `yg_goods_category` (
-  `cate_id` int(10) NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '索引id',
+  `cate_id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '索引id',
   `cate_name` varchar(50) NOT NULL DEFAULT '' COMMENT '分类名',
-  `pid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '父级id' ,
+  `pid` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '父级id' ,
   `sequence` tinyint(3) NOT NULL DEFAULT '0' COMMENT '排序 ',
   `cate_icon` text NOT NULL DEFAULT '' COMMENT '分类icon',
   `description` varchar(255) NOT NULL DEFAULT '' COMMENT '分类描述',
   `add_time` int(10) NOT NULL DEFAULT 0 COMMENT '添加时间',
   `edit_time` int(10) NOT NULL DEFAULT 0 COMMENT '修改时间'
 ) ENGINE=InnoDB  COMMENT '商品分类表' ;
+
+/**
+ * 商品属性类目
+ */
+CREATE TABLE IF NOT EXISTS `yg_goods_category_prop` (
+  `prop_id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '属性类目id',
+  `cate_id` int(11) NOT NULL COMMENT '分类id',
+  `prop_name` varchar(255) NOT NULL DEFAULT '' COMMENT '属性类目名',
+  `description` varchar(255) NOT NULL DEFAULT '' COMMENT '类目备注',
+  `status` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否已删除 0 否 1 是',
+  `add_time` int(10) NOT NULL DEFAULT 0 COMMENT '添加时间',
+  `edit_time` int(10) NOT NULL DEFAULT 0 COMMENT '修改时间'
+) ENGINE=InnoDB  COMMENT '商品分类属性类目表';
+
+/**
+ * 商品销售属性值表
+ */
+CREATE TABLE IF NOT EXISTS `yg_goods_category_prop_val` (
+  `prop_val_id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '属性值id',
+  `prop_id` int(11) NOT NULL DEFAULT '' COMMENT '属性类目id',
+  `value` varchar(255) NOT NULL DEFAULT '' COMMENT '属性值名',
+  `val_type` tinyint(1) NOT NULL DEFAULT 0 COMMENT '显示类型 0 文字 1 图片 2 颜色',
+  `val_img` text NOT NULL DEFAULT '' COMMENT '属性值图片',
+  `description` varchar(255) NOT NULL DEFAULT '' COMMENT '属性值备注 或 说明',
+  `status` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否已删除 0 否 1 是',
+  `add_time` int(10) NOT NULL DEFAULT 0 COMMENT '添加时间',
+  `edit_time` int(10) NOT NULL DEFAULT 0 COMMENT '修改时间'
+) ENGINE=InnoDB  COMMENT '商品分类属性值表';
+
+/**
+ * 商品表
+ */
+CREATE TABLE IF NOT EXISTS `yg_goods` (
+  `goods_id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '商品id',
+  `goods_name` varchar(255) NOT NULL COMMENT '商品名',
+  `brand_id` int(11) NOT NULL DEFAULT 0 COMMENT '品牌id',
+  `goods_cate` int(11) NOT NULL DEFAULT 0 COMMENT '商品分类cate_id',
+  `goods_price` double(11,2) NOT NULL DEFAULT 0 COMMENT '商品基础价格',
+  `goods_number` varchar(100) NOT NULL DEFAULT '' COMMENT '商品货号',
+  `sequence` tinyint(3) NOT NULL DEFAULT 0 COMMENT '排序',
+  `verify_status` tinyint(2) NOT NULL DEFAULT 0 COMMENT '审核状态 0 未通过 1 通过',
+  `sales_status` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否上架 0 否 1 是',
+  `recommend` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否推荐 0 否 1 是',
+  `deleted` tinyint(1) NOT NULL DEFAULT 0 COMMENT '是否删除 0 否 1 是',
+  `add_time` int(10) NOT NULL DEFAULT 0 COMMENT '添加时间',
+  `edit_time` int(10) NOT NULL DEFAULT 0 COMMENT '修改时间'
+) ENGINE=InnoDB COMMENT '商品表';
+
+/**
+ * 商品sku表
+ */
+CREATE TABLE IF NOT EXISTS `ys_goods_item` (
+  `item_id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT 'sku_id',
+  `goods_id` int(11) NOT NULL COMMENT '商品id',
+  `item_price` double(11,2) NOT NULL COMMENT 'sku价格',
+  `item_image` text NOT NULL DEFAULT '' COMMENT 'SKU 商品图片',
+  `item_number` varchar(100) NOT NULL DEFAULT '' COMMENT 'SKU商品货号',
+  `sales_status` tinyint(1) NOT NULL DEFAULT 0 COMMENT 'sku状态 0 未上架 1已上架 ',
+  `deleted` tinyint(1) NOT NULL DEFAULT 0 COMMENT '删除状态 0 未删除 1已删除 ',
+  `edit_time` int(10) NOT NULL DEFAULT 0 COMMENT '编辑时间',
+  `add_time` int(10) NOT NULL DEFAULT 0 COMMENT '添加时间'
+) ENGINE=InnoDB COMMENT '商品sku表';
+
+/**
+ * 商品信息
+ */
+CREATE TABLE IF NOT EXISTS `ys_goods_info` (
+  `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '索引id',
+  `goods_id` int(11) NOT NULL COMMENT '主商品索引id',
+  `list_image` text NOT NULL DEFAULT '' COMMENT '列表图',
+  `images_list` text NOT NULL DEFAULT '' COMMENT '展示图列表 第一张为默认显示图',
+  `goods_details` text NOT NULL DEFAULT '' COMMENT '商品详情',
+  `edit_time` int(10) NOT NULL DEFAULT 0 COMMENT '编辑时间',
+  `add_time` int(10) NOT NULL DEFAULT 0 COMMENT '添加时间'
+) ENGINE=InnoDB COMMENT '商品图片信息';
+
+/**
+ * 商品sku属性表
+ */
+CREATE TABLE IF NOT EXISTS `yg_goods_item_prop`(
+  `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY COMMENT '索引id',
+  `goods_id` int(11) NOT NULL COMMENT '主商品索引id',
+  `item_id` int(11) NOT NULL COMMENT 'sku商品id',
+  `prop_val_id` int(11) NOT NULL COMMENT '属性值索引id',
+  `edit_time` int(10) NOT NULL DEFAULT 0 COMMENT '添加时间',
+  `add_time` int(10) NOT NULL DEFAULT 0 COMMENT '编辑时间'
+) ENGINE=InnoDB COMMENT '商品sku属性表';
