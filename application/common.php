@@ -48,11 +48,10 @@ function returnJson($bool=false,$desc='fail',$data=[]){
 function noPermission(){
     $_postData = input('post.');
     $_getData = input('get.');
-    $msg = 'You do not have permission';
     if( ( isset($_postData) && !empty($_postData) ) || ( isset($_getData['v']) && !empty($_getData['v']) ) ){
-        returnJson(false,$msg);
+        returnJson(false,think\config::get('no_permission_msg'));
     }else{
-        echo $msg;
+        include think\config::get('no_permission_tmpl');
         exit;
     }
 }

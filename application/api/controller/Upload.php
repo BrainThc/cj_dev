@@ -3,6 +3,7 @@ namespace app\api\controller;
 use think\Controller;
 use think\Db;
 use think\Exception;
+use think\Config;
 
 class Upload extends Controller
 {
@@ -17,11 +18,10 @@ class Upload extends Controller
 
     public function index(){
         $_file = request()->file('file');
+        if( empty($_file) ){
+            exit;
+        }
         try{
-            if( empty($_file) )
-                include Config::get('exception_tmpl');
-                exit;
-
             $fileType = input('get.dir','user');
 
             //图片保存路径
