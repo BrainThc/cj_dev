@@ -17,15 +17,23 @@ define('SCHEME',$_SERVER['REQUEST_SCHEME'].'://');
 define('DOMAIN','yiguan2.com');
 //域名绑定配置
 $domain_config = array(
+    //PC端
     SCHEME.'www.'.DOMAIN => array(
         'model' => 'index',
     ),
+    //WAP端
+    SCHEME.'m.'.DOMAIN => array(
+        'model' => 'index',
+    ),
+    //总后台
     SCHEME.'g.'.DOMAIN => array(
         'model' => 'admin',
     ),
+    //接口
     SCHEME.'a.'.DOMAIN => array(
         'model' => 'api',
     ),
+    //资源库 仅限文件上传接口 和 图片读取
     SCHEME.'p.'.DOMAIN => array(
         'model' => 'api/upload/index',
     )
@@ -42,6 +50,8 @@ define('BIND_MODULE',$model);
 if(isset($_SERVER['HTTP_ORIGIN'])){
     if(in_array($_SERVER['HTTP_ORIGIN'], $allow_origin_config)){
         header('Access-Control-Allow-Origin:'.$_SERVER['HTTP_ORIGIN']);
+    }else{
+        exit;
     }
 }
 // 加载框架引导文件
