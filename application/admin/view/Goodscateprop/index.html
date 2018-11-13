@@ -35,9 +35,9 @@
                 <tbody v-for="(cate,index) in cate_list" >
                 <tr>
                     <td align='center'>{{ cate.cate_id }}</td>
-                    <td><span v-html="cate.tree"></span><a href="javascript:void(0);" v-on:click="edit_cate(cate.cate_id)" >{{ cate.cate_name }}</a></td>
+                    <td><span v-html="cate.tree"></span><a href="javascript:void(0);" v-on:click="set_prop(cate.cate_id)" >{{ cate.cate_name }}</a></td>
                     <td align='center'>
-                        <a href="javascript:void(0);" v-on:click="edit_cate(cate.cate_id)">编辑</a>
+                        <a href="javascript:void(0);" v-on:click="set_prop(cate.cate_id)">编辑</a>
                     </td>
                 </tr>
                 </tbody>
@@ -100,56 +100,14 @@
                 }
                 that.cate_list = cate_list;
             },
-            update_sequence:function(index){
-                var that = this;
-                if( isNaN(that.cate_list[index].sequence) ){
-                    layer.msg('排序必须是数字', {
-                        skin: 'layui-layer-huise'
-                    });
-                    return false;
-                }
-                if(!confirm('是否确认修改')){
-                    return false;
-                }
-                $.ajax({
-                    url: "{:url('Goodscate/update_sequence')}",
-                    type: 'post',
-                    dataType: 'json',
-                    data:that.cate_list[index],
-                    success:function (data) {
-                        layer.msg(data.msg, {
-                            skin: 'layui-layer-huise'
-                        });
-                        if( data.status == 1 ){
-                            that.get_cate_list();
-                        }
-                    },
-                    error:function(e){
-                        layer.msg('网络错误，操作失败', {
-                            skin: 'layui-layer-huise'
-                        });
-                        that.get_cate_list();
-                        return false;
-                    }
-                });
-            },
-            add_cate:function(){
-                layer.open({
-                    title:'添加栏目',
-                    type:2,
-                    closeBtn:1,
-                    area:['50%','80%'],
-                    content: "{:url('Goodscate/add')}"
-                })
-            },
-            edit_cate:function(cate_id){
-                var toUrl = "{:url('Goodscate/edit',['id'=>'cate_id'])}";
+            set_prop:function(cate_id){
+                var toUrl = "{:url('Goodscateprop/prop_set',['id'=>'cate_id'])}";
                 toUrl = toUrl.replace('cate_id',cate_id);
                 layer.open({
-                    title:'编辑栏目',
+                    title:'属性设置',
                     type:2,
                     closeBtn:1,
-                    area:['50%','80%'],
+                    area:['80%','80%'],
                     content:toUrl
                 })
             },
