@@ -113,7 +113,11 @@ class Base extends Controller
             //商品管理
             array('name'=>'商品管理','power'=>'goods','act'=>'Goods','child'=>array(
                 //商品列表
-                array('name'=>'商品列表','power'=>'goods_list','act'=>'Goods','op'=>'index'),
+                array('name'=>'商品列表','power'=>'goods_list','act'=>'Goods','op'=>'index','child'=>array(
+                    array('name'=>'添加商品页','power'=>'goods_create_view','act'=>'Goods','op'=>'add','child'=>array(
+                        array('name'=>'添加商品','power'=>'goods_create','act'=>'Goods','op'=>'create')
+                    ))
+                )),
                 //商品分类
                 array('name'=>'商品分类','power'=>'goods_cate','act'=>'Goodscate','op'=>'index','child'=>array(
                     array('name'=>'添加商品分类页','power'=>'goods_cate_create_view','act'=>'Goodscate','op'=>'add','child'=>array(
@@ -126,7 +130,16 @@ class Base extends Controller
                     array('name'=>'删除商品分类','power'=>'goods_cate_del','act'=>'Goodscate','op'=>'del_cate')
                 )),
                 //分类属性
-                array('name'=>'分类属性','power'=>'category_attribute','act'=>'Cateattribute','op'=>'index'),
+                array('name'=>'分类属性管理','power'=>'goods_cate_prop','act'=>'Goodscateprop','op'=>'index','child'=>array(
+                    array('name'=>'管理分类属性','power'=>'goods_cate_prop_set','act'=>'Goodscateprop','op'=>'prop_set','child'=>array(
+                        array('name'=>'添加属性类型','power'=>'goods_cate_prop_create','act'=>'Goodscateprop','op'=>'create_prop'),
+                        array('name'=>'编辑属性类型','power'=>'goods_cate_prop_update','act'=>'Goodscateprop','op'=>'update_prop'),
+                        array('name'=>'删除属性类型','power'=>'goods_cate_prop_del','act'=>'Goodscateprop','op'=>'del_prop'),
+                        array('name'=>'添加属性值','power'=>'goods_cate_prop_val_create','act'=>'Goodscateprop','op'=>'create_prop_val'),
+                        array('name'=>'编辑属性值','power'=>'goods_cate_prop_val_update','act'=>'Goodscateprop','op'=>'update_prop_val'),
+                        array('name'=>'删除属性值','power'=>'goods_cate_prop_val_del','act'=>'Goodscateprop','op'=>'del_val')
+                    ))
+                )),
                 //品牌管理
                 array('name'=>'品牌管理','power'=>'goods_brand','act'=>'Brand','op'=>'index')
             )),
