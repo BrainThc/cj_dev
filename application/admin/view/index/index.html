@@ -1,0 +1,137 @@
+{__NOLAYOUT__}<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<script type="text/javascript" src="__SYSJS__/jquery.min.js"></script>
+<script type="text/javascript" src="__SYSJS__/jquery.artDialog.js?skin=blue"></script>
+<script type="text/javascript" src="__SYSJS__/iframeTools.js"></script>
+<link rel='stylesheet' type='text/css' href='__SYSCSS__/style.css'>
+<title>管理后台主页</title>
+</head>
+<body style="background:#E2E9EA">
+<div id="header" class="header">
+	<div class="logo"><a href="" onclick="return false;"><img src="__SYSIMG__/admin_logo.png" width="180"></a></div>
+	<div class="nav f_r"> <a href="javascript:void(0);" onclick="gocacheurl();"></a>&nbsp;&nbsp;</div>
+	<div class="nav">&nbsp;&nbsp;&nbsp;&nbsp;<i>|</i> 欢迎你！{:session('sys_user')['group_name']} ：{:session('sys_user')['username']}  <i>|</i> [<a href="{:url('login/signOut')}" >退出</a>]  <i>|</i> <a href="{:url('Sysuser/updateLoginCache')}" >刷新状态</a> <a href="<?=__HOME__?>" target="_blank">浏览站点</a> </div>
+
+	<div class="topmenu">
+		<ul id="menuTopBox">
+			{$homeMenuTop}
+		</ul>
+	</div>
+	<div class="header_footer"></div>
+</div>
+<div id="Main_content">
+	<div id="MainBox" >
+	    <div class="main_box">
+			<iframe name="main" id="Main" src='' frameborder="false" scrolling="auto"  width="100%" height="auto" allowtransparency="true"></iframe>
+		</div>
+    </div>
+	<div id="leftMenuBox">
+    	<div id="leftMenu">
+			<div style="padding-left:12px;_padding-left:10px;">				
+				<dl id="menuListBox">
+					{$homeMenuLeft}
+				</dl>
+			</div>
+		</div>
+		<div id="Main_drop">
+			<a  href="javascript:toggleMenu(1);" class="on"><img src="__SYSIMG__/admin_barclose.gif" width="11" height="60" border="0"  /></a>
+			<a  href="javascript:toggleMenu(0);" class="off" style="display:none;"><img src="__SYSIMG__/admin_baropen.gif" width="11" height="60" border="0"  /></a>
+		</div>
+    </div>
+</div>
+<div id="footer" class="footer" >
+<!--浏览器版本控制-->
+<div class="footer_ie">你还在用落后的<strong style="color:#F60">IE <!--[if IE 6]>6<![endif]--><!--[if IE 7]>7<![endif]--><!--[if IE 8]>8<![endif]--></strong>？？OUT啦 为了体验<strong style="color:#F00">HTML5</strong> 感快<a href="http://windows.microsoft.com/zh-cn/internet-explorer/ie-10-worldwide-languages" target="_blank">升级IE</a>或使用<a href="http://www.liebao.cn" target="_blank">猎豹浏览器</a>吧！！</div>
+<span id="run"></span>
+</div>
+<style>
+.footer_ie{
+display:none; 
+display:block \9; /*IE8 背景变红色*/
+}
+</style>
+<script language="JavaScript">
+if(!Array.prototype.map)
+Array.prototype.map = function(fn,scope) {
+  var result = [],ri = 0;
+  for (var i = 0,n = this.length; i < n; i++){
+	if(i in this){
+	  result[ri++]  = fn.call(scope ,this[i],i,this);
+	}
+  }
+return result;
+};
+var getWindowWH = function(){
+	  return ["Height","Width"].map(function(name){
+	  return window["inner"+name] ||
+		document.compatMode === "CSS1Compat" && document.documentElement[ "client" + name ] || document.body[ "client" + name ]
+	});
+}
+window.onload = function (){
+	if(!+"\v1" && !document.querySelector) { //IE6 IE7
+	 document.body.onresize = resize;
+	} else { 
+	  window.onresize = resize;
+	}
+	function resize() {
+		wSize();
+		return false;
+	}
+}
+function wSize(){
+	var str=getWindowWH();
+	var strs= new Array();
+	strs=str.toString().split(","); //字符串分割
+	var h = strs[0] - 95-30;
+	$('#leftMenu').height(h);
+	$('#Main').height(h); 
+}
+wSize();
+
+function gocacheurl(){
+	mainurl = window.main.locationhref;
+	window.main.location.href= "&forward="+encodeURIComponent(mainurl);
+}
+
+function toggleMenu(doit){
+	if(doit==1){
+		$('#Main_drop a.on').hide();
+		$('#Main_drop a.off').show();
+		$('#MainBox .main_box').css('margin-left','24px');
+		$('#leftMenu').hide();
+	}else{
+		$('#Main_drop a.off').hide();
+		$('#Main_drop a.on').show();
+		$('#leftMenu').show();
+		$('#MainBox .main_box').css('margin-left','224px');
+	}
+}
+
+//菜单选中
+function menuAction(n,act){
+    $('#menuTopBox li span').removeClass('current');
+    $('#menu_'+n+' span').addClass('current');
+    $.ajax({
+        type: 'POST',
+        url: "{:url('Index/get_menu_left_html')}",
+		data:{ act : act},
+        dataType: 'json',
+        success: function(data){
+			$('#menuListBox').html(data.info);
+            $('.left_nav').eq(0).find('a').click();
+		},
+    });
+}
+
+function menuLeftAction(n,url){
+    $('#menuListBox dd').removeClass('on');
+    $('#nav_'+n).addClass('on');
+    window.main.location.href= url;
+}
+$('.left_nav').eq(0).find('a').click();
+</script>
+<!--帮助手册-->
+</body>
+</html> 
