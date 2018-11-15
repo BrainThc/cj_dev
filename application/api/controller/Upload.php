@@ -25,7 +25,7 @@ class Upload extends Controller
             $fileType = input('get.dir','user');
 
             //图片保存路径
-            $fileSave = $_file->validate(['size'=>'2097152','ext'=>'jpg,png,gif'])->move(__UPLOAD_SAVE_PATH__.$fileType);
+            $fileSave = $_file->validate(['size'=>'2097152','ext'=>'jpg,jpeg,png,gif,ico'])->move(__UPLOAD_SAVE_PATH__.$fileType);
             if( $fileSave === false )
                 throw new Exception($_file->getError());
 
