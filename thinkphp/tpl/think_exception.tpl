@@ -440,7 +440,7 @@
     <?php } ?>
 
     <div class="copyright">
-        <a title="官方网站" href="http://www.ieconn.com">一贯科技后台管理系统</a>
+        <a title="官方网站">CJ后台管理系统</a>
         <span>V<?php echo THINK_VERSION; ?></span>
         <span>如有其它问题请联系客服</span>
     </div>
