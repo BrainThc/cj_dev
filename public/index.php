@@ -14,7 +14,7 @@
 // 定义应用目录
 define('APP_PATH', __DIR__ . '/../application/');
 define('SCHEME',$_SERVER['REQUEST_SCHEME'].'://');
-define('DOMAIN','yiguan2.com');
+define('DOMAIN','tancj.com');
 //域名绑定配置
 $domain_config = array(
     //PC端
