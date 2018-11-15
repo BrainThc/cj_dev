@@ -139,11 +139,11 @@
         mounted:function(){
             var that = this;
             //获取列表
-            that.get_article_list();
+            that.get_goods_list();
             $('#main_vue').show();
         },
         methods:{
-            get_article_list:function(){
+            get_goods_list:function(){
                 var that = this;
                 that.load_status = false;
                 $.ajax({
