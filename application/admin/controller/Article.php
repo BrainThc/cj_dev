@@ -125,6 +125,8 @@ class Article extends Base
                     throw new Exception('栏目不存在');
 
             }
+            //icon
+            $insertData['icon'] = empty($data['icon']) ? '' : trim($data['icon']);
             //关键词
             $insertData['keyword'] = empty($data['keyword']) ? '' : trim($data['keyword']);
             //描述

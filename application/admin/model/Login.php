@@ -28,7 +28,7 @@ class Login extends Model
         $sysUserGroup = model('SysUserGroup');
         $groupValue = Db::table($sysUserGroup->getTable())->field('value,group_name,status')->where('group_id',$userInfo['group_id'])->find();
         $is_super = false;
-        if( empty($groupValue) ){
+        if( empty($groupValue) || $groupValue['status'] == SysUserGroupModel::DISABLE_STATUS ){
             $sysData['sys_user_power'] = [];
         }else {
             $sysData['group_name'] = $groupValue['group_name'];
