@@ -1,301 +1,305 @@
-<!DOCTYPE>
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf8" />
-    <title>导航管理</title>
-    <link rel="stylesheet" type="text/css" href="__SYSCSS__/style.css" />
-    <script type="text/javascript" src="__SYSJS__/jquery.min.js"></script>
-    <script type="text/javascript" src="__SYSJS__/jquery.artDialog.js?skin=blue"></script>
-    <script type="text/javascript" src="__SYSJS__/my.js"></script>
-    <script type="text/javascript" src="__JS__/vue.min.js" ></script>
-    <script type="text/javascript" src="__JS__/layer/layer.js" ></script>
-    <style>
-        .pageTool{ text-align:center;}
-        .pageTool ul{display:block; width:max-content; margin:0 auto;}
-        .pageTool li{float:left; margin:0 10px;}
-        #main_vue{display:none;}
-    </style>
-</head>
-<body width="100%">
-<div id="result" class="result none"></div>
-<div class="mainbox" id="main_vue">
-    <div id="nav" class="mainnav_title">
-        <span v-for="(type,index) in menus_type" >
-            <a v-on:click="get_menus_list(type.id)" v-if="!update_type_status"  href="javascript:void(0);" >{{ type.type_name }}</a>
-            <!--<a href="javascript:void(0);" v-if="update_type_status" ><input class="input-text" type="text" v-model="type.type_name" /></a>-->
-            |
-        </span>
+{extend name="base" /}
+{block name="title" }导航管理{/block}
+{block name="static_link" }
+<script src="__JS__/vue.min.js"></script>
+{/block}
+{block name="body"}
+<div class="mainbox" id="main_vue" v-cloak>
+    <ul class="layui-nav">
+        <li v-bind:class="type.id == menus_type_id ? 'layui-nav-item layui-this' : 'layui-nav-item'" v-for="(type,index) in menus_type" >
+            <a :href="'?typeId='+type.id" v-if="!update_type_status"  >{{ type.type_name }}</a>
+        </li>
         <!--<input type="button"  v-on:click="update_type"  v-if="!update_type_status" class="button" value="修改导航类型" />-->
         <!--<input type="button"  v-on:click="update_type" class="button" v-if="update_type_status" value="保存" />-->
         <!--<input type="button"  v-on:click="add_type" class="button" v-if="!add_type_status" value="添加导航类型" />-->
         <!--<input type="button"  v-on:click="add_type" class="button" v-if="add_type_status" value="添加" />-->
         <!--<input type="text" class="input-text"  v-if="add_type_status" v-model="new_type_name" placeholder="请填写类型名" />-->
-    </div>
-    <div class="mainnav_title">
-        <a  href="javascript:void(0);" v-on:click="add_menu" >添加导航</a>
-    </div>
-    <div class="pad-lr-10">
-        <div class="table-list">
-            <table width="100%" cellspacing="0">
-                <thead>
-                <tr>
-                    <th width="40">排序</th>
-                    <th width="40">id</th>
-                    <th>栏目名</th>
-                    <th>跳转地址</th>
-                    <th width="220">管理操作</th>
-                </tr>
-                </thead>
-                <tbody v-for="(menus,index) in menus_list" >
-                <tr>
-                    <td width='40' align='center'>
-                        <input type='text' size='3' v-model="menus.sequence" class='input-text-c' >
-                        <input v-if="menus.sequence != menus.oldSequence" type="button" v-on:click="update_sequence(index)" class="button" style="margin:0;" value="保存">
-                    </td>
-                    <td align='center'>{{ menus.id }}</td>
-                    <td><span v-html="menus.tree"></span><a href="javascript:void(0);" v-on:click="edit_menu(menus.id)" >{{ menus.menu_name }}</a></td>
-                    <td>{{ menus.menu_url }}</td>
-                    <td align='center'>
-                        <a href="javascript:void(0);" v-on:click="edit_menu(menus.id)">编辑</a>
-                        <a href="javascript:void(0);" v-on:click="del_cate(menus.id)">删除</a>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-
+    </ul>
+    <div class="layui-fluid" >
+        <div class="layui-card">
+            <div class="layui-card-body">
+                <!--<button class="layui-btn layui-btn-sm layui-btn-primary" id="btn-refresh">刷新表格</button>-->
+                <table id="menus_list" class="layui-table" lay-filter="menus_list"></table>
+            </div>
         </div>
     </div>
 </div>
+<!-- 操作模板 -->
+<script type="text/html" id="toolbarTpl">
+    <button class="layui-btn layui-btn-sm" lay-event="add" >添加导航</button>
+    <button class="layui-btn layui-btn-sm" lay-event="btn-expand" >全部展开</button>
+    <button class="layui-btn layui-btn-sm" lay-event="btn-fold">全部折叠</button>
+</script>
+<script type="text/html" id="ctrlTpl">
+    <button class="layui-btn layui-btn-xs" style="margin:0;" lay-event="detail" >详情</button>
+    <button class="layui-btn layui-btn-danger layui-btn-xs" style="margin:0;" lay-event="deleted" >{{ d.is_deleted ? '恢复' : '删除' }}</button>
+</script>
 <script>
-    var vue_main = new Vue({
-        el: '#main_vue',
-        data:{
-            'menus_type_id' : 0,
-            'menus_type' : [],
-            'menus_list' : [],
-            'add_type_status' : false,
-            'new_type_name' : '',
-            'update_type_status' : false,
-        },
-        mounted:function(){
-            var that = this;
-            that.get_menus_type();
-            that.menus_type_id = that.menus_type[0].id;
-            that.get_menus_list();
-            $('#main_vue').show();
-        },
-        methods:{
-            get_menus_type:function(){
-                var that = this;
-                $.ajax({
-                    url: "{:url('Menus/get_menus_type')}?v="+Math.random(),
-                    type: 'get',
-                    dataType: 'json',
-                    async: false,
-                    success:function (data) {
-                        if(data.status){
-                            that.menus_type = data.info;
-                        }else{
-                            layer.msg(data.msg, {
-                                skin: 'layui-layer-huise'
-                            });
-                        }
-                    },
-                    error:function(e){
-                        layer.msg('网络错误数据拉取失败', {
-                            skin: 'layui-layer-huise'
-                        });
-                        return false;
-                    }
-                });
-            },
-            get_menus_list:function(type_id){
-                var that = this;
-                if( typeof(type_id) != 'undefined' ){
-                    that.menus_type_id = type_id;
+    var menus_type_id = getUrlParam('typeId',0);
+    var getMenusTypeAPI = "{:url('Menus/get_menus_type')}",
+    getMenusListAPI = "{:url('Menus/get_menus_list')}",
+    addViewUrl = "{:url('Menus/add')}",
+    detailViewUrl = "{:url('Menus/edit')}",
+    deletedAPI = "{:url('Menus/del_menu')}";
+    var loadList;
+    layui.config({
+        base: '/static/layui/modules/'
+    }).extend({
+        treetable: 'treetable-lay/treetable'
+    }).use(['layer', 'table', 'treetable'], function () {
+        var $ = layui.jquery;
+        var table = layui.table;
+        var layer = layui.layer;
+        var treetable = layui.treetable;
+        loadList = function(){
+            // 渲染表格
+            layer.load(2);
+            treetable.render({
+                treeColIndex: 1,
+                treeSpid: 0,
+                treeParentKey: 'id',
+                treeChildKey: 'pid',
+                elem: '#menus_list',
+                urlType: 'post',
+                url: getMenusListAPI,
+                urlParam:{
+                    'type' : menus_type_id
+                },
+                toolbar: '#toolbarTpl',
+                cols: [[
+                    {field: 'id', title: '导航id', width: 80},
+                    {field: 'menu_name', title: '分类名'},
+                    {field: 'menu_url', title: '链接'},
+                    {field: 'sequence', title: '排序', width: 80},
+                    {field: 'id', title: '操作', width: 200, templet: '#ctrlTpl'}
+                ]],
+                done: function () {
+                    console.log(menus_type_id);
+                    layer.closeAll('loading');
                 }
-                $.ajax({
-                    url: "{:url('Menus/get_menus_list')}",
-                    type: 'post',
-                    dataType: 'json',
-                    async: false,
-                    data:{
-                        type:that.menus_type_id
-                    },
-                    success:function (data) {
-                        if(data.status){
-                            //区分层级
-                            that.set_tree(data.info);
-                        }else{
-                            layer.msg(data.msg, {
-                                skin: 'layui-layer-huise'
-                            });
-                        }
-                    },
-                    error:function(e){
-                        layer.msg('网络错误数据拉取失败', {
-                            skin: 'layui-layer-huise'
-                        });
-                        return false;
-                    }
-                });
+            });
+        }
+        var vue_main = new Vue({
+            el: '#main_vue',
+            data:{
+                'menus_type_id' : menus_type_id,
+                'menus_type' : [],
+                'add_type_status' : false,
+                'new_type_name' : '',
+                'update_type_status' : false,
             },
-            set_tree:function(menus_list){
+            mounted:function(){
                 var that = this;
-                var nbsp = '';
-                for( var i = 0; i < menus_list.length; i++ ){
-                    menus_list[i].oldSequence = menus_list[i].sequence;
-                    menus_list[i].tree = '';
-                    nbsp = '';
-                    if( menus_list[i].pNum > 0 ){
-                        menus_list[i].tree += '├';
-                        for( var t = 0; t < menus_list[i].pNum; t++ ){
-                            nbsp += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
-                            menus_list[i].tree += '─';
-                        }
-                        menus_list[i].tree = nbsp+menus_list[i].tree;
-                    }
+                that.get_menus_type();
+                if(that.menus_type_id == 0){
+                    that.menus_type_id = that.menus_type[0].id;
+                    menus_type_id = that.menus_type[0].id;
                 }
-                that.menus_list = menus_list;
+                that.get_menus_list();
             },
-            update_sequence:function(index){
-                var that = this;
-                if( isNaN(that.menus_list[index].sequence) ){
-                    layer.msg('排序必须是数字', {
-                        skin: 'layui-layer-huise'
-                    });
-                    return false;
-                }
-                if(!confirm('是否确认修改')){
-                    return false;
-                }
-                $.ajax({
-                    url: "{:url('Menus/update_sequence')}",
-                    type: 'post',
-                    dataType: 'json',
-                    data:that.menus_list[index],
-                    success:function (data) {
-                        layer.msg(data.msg, {
-                            skin: 'layui-layer-huise'
-                        });
-                        that.get_menus_list();
-                    },
-                    error:function(e){
-                        layer.msg('网络错误，操作失败', {
-                            skin: 'layui-layer-huise'
-                        });
-                        that.get_menus_list();
-                        return false;
-                    }
-                });
-            },
-            del_cate:function(menu_id){
-                if(!confirm('是否确认删除')){
-                    return false;
-                }
-                var that = this;
-                $.ajax({
-                    url: "{:url('Menus/del_menu')}",
-                    type: 'post',
-                    dataType: 'json',
-                    data:{ id:menu_id },
-                    success:function (data) {
-                        layer.msg(data.msg, {
-                            skin: 'layui-layer-huise'
-                        });
-                        if(data.status){
-                            that.get_menus_list();
-                        }
-                    },
-                    error:function(e){
-                        layer.msg('网络错误，操作失败', {
-                            skin: 'layui-layer-huise'
-                        });
-                        return false;
-                    }
-                });
-            },
-            add_menu:function(){
-                var that = this;
-                var toUrl = "{:url('Menus/add',['typeId'=>'type_id'])}";
-                toUrl = toUrl.replace('type_id',that.menus_type_id);
-                layer.open({
-                    title:'添加导航',
-                    type:2,
-                    closeBtn:1,
-                    area:['60%','60%'],
-                    content: toUrl
-                })
-            },
-            edit_menu:function(menu_is){
-                var toUrl = "{:url('Menus/edit',['id'=>'menu_is'])}";
-                toUrl = toUrl.replace('menu_is',menu_is);
-                layer.open({
-                    title:'编辑导航',
-                    type:2,
-                    closeBtn:1,
-                    area:['60%','60%'],
-                    content:toUrl
-                })
-            },
-            //添加导航类型
-            add_type:function(){
-                var that = this;
-                //添加操作
-                if( that.add_type_status ){
-                    that.add_type_status = false;
-                    if( that.new_type_name == '' ){
-                        layer.msg('添加取消', {
-                            skin: 'layui-layer-huise'
-                        });
-                        return false;
-                    }
-                    if( !confirm('是否确认添加') ){
-                        return false;
-                    }
+            methods:{
+                get_menus_type:function(){
+                    var that = this;
                     $.ajax({
-                        url: "{:url('Menus/add_menus_type')}",
-                        type: 'post',
+                        url: getMenusTypeAPI+"?v="+Math.random(),
+                        type: 'get',
                         dataType: 'json',
-                        data:{
-                            type_name: that.new_type_name
-                        },
-                        success:function (data) {
-                            layer.msg(data.msg, {
-                                skin: 'layui-layer-huise'
-                            });
-                            if(data.status){
-                                that.get_menus_type();
+                        async: false,
+                        success:function (res) {
+                            if(!res.code){
+                                that.menus_type = res.data;
+                            }else{
+                                layer.msg(res.msg, {
+                                    skin: 'layui-layer-huise'
+                                });
                             }
                         },
                         error:function(e){
-                            layer.msg('网络错误，操作失败', {
+                            layer.msg('网络错误数据拉取失败', {
                                 skin: 'layui-layer-huise'
                             });
                             return false;
                         }
                     });
-                }else{
-                    that.new_type_name = '';
-                    that.add_type_status = true;
-                }
-            },
-            update_type:function(){
-                var that = this;
-                if( that.update_type_status ){
-                    that.update_type_status = false;
-                }else{
-                    that.update_type_status = true;
+                },
+                get_menus_list:function(){
+                    loadList();
+                },
+                update_sequence:function(index){
+                    var that = this;
+                    if( isNaN(that.menus_list[index].sequence) ){
+                        layer.msg('排序必须是数字', {
+                            skin: 'layui-layer-huise'
+                        });
+                        return false;
+                    }
+                    if(!confirm('是否确认修改')){
+                        return false;
+                    }
+                    $.ajax({
+                        url: "{:url('Menus/update_sequence')}",
+                        type: 'post',
+                        dataType: 'json',
+                        data:that.menus_list[index],
+                        success:function (data) {
+                            layer.msg(data.msg, {
+                                skin: 'layui-layer-huise'
+                            });
+                            that.get_menus_list();
+                        },
+                        error:function(e){
+                            layer.msg('网络错误，操作失败', {
+                                skin: 'layui-layer-huise'
+                            });
+                            that.get_menus_list();
+                            return false;
+                        }
+                    });
+                },
+                //添加导航类型
+                add_type:function(){
+                    var that = this;
+                    //添加操作
+                    if( that.add_type_status ){
+                        that.add_type_status = false;
+                        if( that.new_type_name == '' ){
+                            layer.msg('添加取消', {
+                                skin: 'layui-layer-huise'
+                            });
+                            return false;
+                        }
+                        if( !confirm('是否确认添加') ){
+                            return false;
+                        }
+                        $.ajax({
+                            url: "{:url('Menus/add_menus_type')}",
+                            type: 'post',
+                            dataType: 'json',
+                            data:{
+                                type_name: that.new_type_name
+                            },
+                            success:function (data) {
+                                layer.msg(data.msg, {
+                                    skin: 'layui-layer-huise'
+                                });
+                                if(!data.code){
+                                    that.get_menus_type();
+                                }
+                            },
+                            error:function(e){
+                                layer.msg('网络错误，操作失败', {
+                                    skin: 'layui-layer-huise'
+                                });
+                                return false;
+                            }
+                        });
+                    }else{
+                        that.new_type_name = '';
+                        that.add_type_status = true;
+                    }
+                },
+                update_type:function(){
+                    var that = this;
+                    if( that.update_type_status ){
+                        that.update_type_status = false;
+                    }else{
+                        that.update_type_status = true;
+                    }
                 }
             }
-        }
+        });
+
+
+        //头部按钮事件
+        table.on('toolbar(menus_list)', function(obj) {
+            var data = obj.data;
+            var layEvent = obj.event;
+            switch( layEvent ){
+                case 'add' :
+                    layer.open({
+                        title:'添加分类',
+                        type:2,
+                        shadeClose: true,
+                        closeBtn:1,
+                        area:['80%','80%'],
+                        content:addViewUrl+"?typeId="+menus_type_id,
+                        success:function (layero,index){
+                            //子窗口操作
+                            // LayuiOpenView = window[layero.find('iframe')[0]['name']];
+                        }
+                    });
+                    break;
+                case 'btn-expand' :
+                    treetable.expandAll('#menus_list');
+                    break;
+                case 'btn-fold' :
+                    treetable.foldAll('#menus_list');
+                    break;
+                default :
+                    return false;
+                    break;
+            }
+            return false;
+        });
+
+        //列表项事件
+        table.on('tool(menus_list)', function(obj) {
+            var data = obj.data;
+            var layEvent = obj.event;
+            switch(layEvent) {
+                case 'detail' ://详情
+                    layer.open({
+                        title:'编辑分类',
+                        type:2,
+                        shadeClose: true,
+                        closeBtn:1,
+                        area:['80%','80%'],
+                        content:detailViewUrl+"?id="+data.id,
+                        success:function (layero,index){
+                            //子窗口操作
+                            // LayuiOpenView = window[layero.find('iframe')[0]['name']];
+                        }
+                    });
+                    break;
+                case 'deleted' ://删除
+                    layer.confirm("是否确认删除！删除后不可恢复", {
+                        btn: ["确定","取消"] //按钮
+                    }, function(){
+                        $.ajax({
+                            url: deletedAPI,
+                            type: 'post',
+                            dataType: 'json',
+                            data:{ id:data.id },
+                            success:function (res) {
+                                layer.msg(res.msg, {
+                                    time: 1000
+                                }, function(){
+                                    if( !res.code ){
+                                        loadList(menus_type_id);
+                                    }
+                                });
+                            },
+                            error:function(e){
+                                layer.msg('网络错误', {
+                                    skin: 'layui-layer-huise'
+                                });
+                            }
+                        });
+                        return false;
+                    });
+                    break;
+                default :
+                    return false;
+                    break;
+            }
+            return false;
+        });
     });
 
     //关闭所有二级窗口
     function clearWin(){
-        vue_main.get_menus_list();
+        loadList();
         layer.closeAll();
     }
 </script>
-</body>
-</html>
+{/block}

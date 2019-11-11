@@ -1,16 +1,10 @@
 <?php
 namespace app\admin\controller;
-use think\Db;
 use app\admin\model\Log as LogModel;
 use think\Exception;
 
 class City extends Base
 {
-    public function index()
-    {
-        return $this->fetch();
-    }
-
     //获取地区列表
     public function get_city_list(){
         $pid = input('post.pid',0);
@@ -30,16 +24,14 @@ class City extends Base
             $where['name'] = trim($data['name']);
             $where['pid'] = $pid;
             $cityModel = model('City');
-            $checkInfo = Db::table($cityModel->getTable())
-                ->where($where)
-                ->find();
+            $checkInfo = $cityModel->where($where)->find();
             if( !empty($checkInfo) )
                 throw new Exception(' 该类型 '.$where['name'].' 已存在');
 
             //添加操作
-            Db::startTrans();
+            $cityModel->startTrans();
             $insertData = $where;
-            if( Db::table($cityModel->getTable())->insert($insertData) === false )
+            if( $cityModel->insert($insertData) === false )
                 throw new Exception('网络错误，添加失败');
 
             //记录日志
@@ -47,9 +39,9 @@ class City extends Base
             if( $logModel->note(LogModel::INSERT,'添加地区：'.$insertData['name']) === false )
                 throw new Exception('网络错误，添加失败');
 
-            Db::commit();
+            $cityModel->commit();
         }catch( Exception $e ){
-            Db::rollback();
+            $cityModel->rollback();
             returnJson(false,$e->getMessage());
         }
         returnJson(true,'添加成功');

@@ -1,75 +1,92 @@
-<!DOCTYPE>
-<html>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf8" />
-    <title>广告位管理</title>
-    <link rel="stylesheet" type="text/css" href="__SYSCSS__/style.css" />
-    <script type="text/javascript" src="__SYSJS__/jquery.min.js"></script>
-    <script type="text/javascript" src="__SYSJS__/jquery.artDialog.js?skin=blue"></script>
-    <script type="text/javascript" src="__SYSJS__/my.js"></script>
-    <script type="text/javascript" src="__JS__/vue.min.js" ></script>
-    <script type="text/javascript" src="__JS__/layer/layer.js" ></script>
-    <style>
-        .pageTool{ text-align:center;}
-        .pageTool ul{display:block; width:max-content; margin:0 auto;}
-        .pageTool li{float:left; margin:0 10px;}
-        #main_vue{display:none;}
-    </style>
-</head>
-<body width="100%">
-<div id="result" class="result none"></div>
-<div class="mainbox" id="main_vue" >
-    <div id="nav" class="mainnav_title">
-        <a  href="javascript:void(0);" v-on:click="add_post">添加广告位</a>|
-    </div>
-    <table  class="search_table" width="100%">
-        <tr>
-            <td>
-                <input type="text" name="pos_id" v-model="pos_id" class="input-text" placeholder="广告位id" />
-                <input type="text" name="keyword" v-model="keyword" class="input-text" placeholder="广告位关键词" />
-                <input type="button" value="搜索"  class="button" v-on:click="get_advpost_list" />
-                <input type="reset" value="重置" class="button" v-on:click="reset_search"  />
-            </td>
-        </tr>
-    </table>
-    <form name="myform" action="" method="post">
-        <div class="table-list">
-            <table width="100%" cellspacing="0">
-                <thead>
-                <tr>
-                    <th width="60" >广告位id</th>
-                    <th align="left">广告位标题</th>
-                    <th align="left">广告位描述</th>
-                    <th align="center">广告类型</th>
-                    <th align="center">广告展示数</th>
-                    <th align="center">尺寸</th>
-                    <th>操作</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr v-for="(pos,index) in pos_list">
-                    <td align="center" >{{ pos.pos_id }}</td>
-                    <td align="left">{{ pos.pos_name }}</td>
-                    <td align="left">{{ pos.pos_desc }}</td>
-                    <td align="center">{{ pos.pos_type }}</td>
-                    <td align="center">{{ pos.pos_adv_num }}</td>
-                    <td align="center">{{ pos.width }} * {{ pos.height }}</td>
-                    <td align="center">
-                        <a href="javascript:void(0);" v-on:click="edit_pos(pos.pos_id)">编辑</a> |
-                        <a href="javascript:void(0);" v-on:click="del_pos(pos.pos_id)">删除</a>
-                    </td>
-                </tr>
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <td colspan="7" class="pageTool" v-html="page_html" ></td>
-                    </tr>
-                </tfoot>
-            </table>
+{extend name="base" /}
+{block name="title" }广告位管理{/block}
+{block name="static_link" }
+<script src="__JS__/vue.min.js"></script>
+<!--图片上传资源文件-->
+<script type="text/javascript" src="__UPLOAD__/plupload.full.min.js"></script>
+<script type="text/javascript" src="__UPLOAD__/upload.js"></script>
+<link rel="stylesheet" href="__UPLOAD__/css/plupload.css">
+{/block}
+{block name="body" }
+<div class="layui-fluid" >
+    <div class="layui-card">
+        <div class="layui-card-body"  >
+            <form class="layui-form" action="" id="form" >
+                <div class="layui-form-item">
+                    <label class="layui-form-label">广告位id</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="pos_id" value="<?=isset($_GET['pos_id']) ? $_GET['pos_id'] : '';?>" placeholder="广告位id" autocomplete="off" class="layui-input">
+                    </div>
+                    <label class="layui-form-label">关键词</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="keyword" value="<?=isset($_GET['keyword']) ? $_GET['keyword'] : '';?>" placeholder="广告位关键词" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn" lay-submit lay-filter="formDemo">搜索</button>
+                        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                    </div>
+                </div>
+            </form>
         </div>
-    </form>
+    </div>
 </div>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <table id="adv_box" lay-filter="adv"></table>
+        </div>
+    </div>
+</div>
+<!-- 操作模板 -->
+<script type="text/html" id="toolbarTpl" >
+    <button class="layui-btn layui-btn-sm" lay-event="add" >添加广告位</button>
+</script>
+<!-- 操作模板 -->
+<script type="text/html" id="ctrlTpl">
+    <button class="layui-btn layui-btn-xs" lay-event="detail"  >编辑</button>
+    <button class="layui-btn layui-btn-danger layui-btn-xs" style="margin:0;" lay-event="deleted" >{{ d.is_deleted ? '恢复' : '禁用' }}</button>
+</script>
 <script>
+    var getAdvPostListApi = "{:url('adv_position/get_advpost_list')}";
+    var addViewUrl = "{:url('adv_position/add')}";
+    var editViewUrl = "{:url('adv_position/edit',['id'=>'pos_id'])}";
+    var table = layui.table;
+    //执行渲染
+    table.render({
+        id:'adv_box',
+        elem: '#adv_box',
+        height: 'auto', //容器高度
+        url: getAdvPostListApi,
+        page: true,
+        toolbar: '#toolbarTpl',
+        cols: [[
+            {field: 'pos_id', title: '广告位id', width: 100},
+            {field: 'pos_name', title: '广告位标题'},
+            {field: 'pos_type', title: '广告类型',width:100,align:'center'},
+            {field: 'pos_adv_num', title: '广告展示数',width:100,align:'center'},
+            {field: 'size', title: '尺寸',width:200,align:'center'},
+            {field: 'pos_id', title: '操作', width: 200, templet: '#ctrlTpl'}
+        ]]
+    });
+
+    var form = layui.form;
+    layui.use('form', function(){
+        form.on('submit', function(data){
+            searchData = data.field;
+            //上述方法等价于
+            table.reload('adv_box', {
+                where: searchData,
+                page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+            });
+            return false;
+        });
+        form.render();
+    });
+
     var vue_main = new Vue({
         el: '#main_vue',
         data:{
@@ -82,8 +99,7 @@
         mounted:function(){
             var that = this;
             //获取列表
-            that.get_advpost_list();
-            $('#main_vue').show();
+            // that.get_advpost_list();
         },
         methods:{
             get_advpost_list:function(){
@@ -99,9 +115,9 @@
                         'keyword' : that.keyword,
                         'page' : that.page
                     },
-                    success:function (data) {
-                        that.pos_list = data.info.list.data;
-                        that.page_html = data.info.page;
+                    success:function (res) {
+                        that.pos_list = res.data.list.data;
+                        that.page_html = res.data.page;
                     },
                     error:function(e){
                         layer.msg('网络错误数据拉取失败', {
@@ -110,21 +126,6 @@
                         return false;
                     }
                 });
-            },
-            reset_search:function(){
-                var that = this;
-                that.pos_id = '';
-                that.keyword = '';
-                that.get_advpost_list();
-            },
-            add_post:function(){
-                layer.open({
-                    title:'添加广告位',
-                    type:2,
-                    closeBtn:1,
-                    area:['70%','70%'],
-                    content: "{:url('Advposition/add')}"
-                })
             },
             edit_pos:function(pos_id){
                 var toUrl = "{:url('Advposition/edit',['id'=>'pos_id'])}";
@@ -149,11 +150,11 @@
                     data:{
                         'pos_id' : pos_id,
                     },
-                    success:function (data) {
-                        layer.msg(data.msg, {
+                    success:function (res) {
+                        layer.msg(res.msg, {
                             skin: 'layui-layer-huise'
                         });
-                        if( data.status ){
+                        if( !res.code ){
                             that.get_advpost_list();
                         }
                     },
@@ -168,11 +169,90 @@
         }
     });
 
+    //头部按钮事件
+    table.on('toolbar(adv)', function(obj) {
+        var data = obj.data;
+        var layEvent = obj.event;
+        switch( layEvent ){
+            case 'add' :
+                layer.open({
+                    title:'添加广告位',
+                    type:2,
+                    shadeClose: true,
+                    closeBtn:1,
+                    area:['80%','80%'],
+                    content:addViewUrl,
+                    success:function (layero,index){
+                        //子窗口操作
+                        // LayuiOpenView = window[layero.find('iframe')[0]['name']];
+                    }
+                });
+                break;
+            default :
+                return false;
+                break;
+        }
+        return false;
+    });
+
+    table.on('tool(adv)', function(obj) {
+        var data = obj.data;
+        var layEvent = obj.event;
+        switch(layEvent) {
+            case 'detail' ://详情
+                console.log(data.pos_id);
+                var url = editViewUrl;
+                url = url.replace('pos_id',data.pos_id);
+                layer.open({
+                    title:'编辑广告位',
+                    type:2,
+                    shadeClose: true,
+                    closeBtn:1,
+                    area:['80%','80%'],
+                    content:url,
+                    success:function (layero,index){
+                        //子窗口操作
+                        // LayuiOpenView = window[layero.find('iframe')[0]['name']];
+                    }
+                });
+                break;
+            case 'deleted' ://删除
+                layer.confirm("删除将把所属广告一并删除，请问是否确认删除", {
+                    btn: ["确定","取消"] //按钮
+                }, function(){
+                    $.ajax({
+                        url: deletedAPI,
+                        type: 'post',
+                        dataType: 'json',
+                        data:{ id:data.id },
+                        success:function (res) {
+                            layer.msg(res.msg, {
+                                time: 1000
+                            }, function(){
+                                if( !res.code ){
+                                    loadList(menus_type_id);
+                                }
+                            });
+                        },
+                        error:function(e){
+                            layer.msg('网络错误', {
+                                skin: 'layui-layer-huise'
+                            });
+                        }
+                    });
+                    return false;
+                });
+                break;
+            default :
+                return false;
+                break;
+        }
+        return false;
+    });
     //关闭所有二级窗口
     function clearWin(){
         vue_main.get_advpost_list();
         layer.closeAll();
     }
 </script>
-</body>
-</html>
+{/block}

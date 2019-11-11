@@ -1,0 +1,204 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf8" />
+    <title>商品分类管理</title>
+    <link rel="stylesheet" type="text/css" href="__SYSCSS__/style.css" />
+    <script type="text/javascript" src="__SYSJS__/jquery.min.js"></script>
+    <script type="text/javascript" src="__SYSJS__/jquery.artDialog.js?skin=blue"></script>
+    <script type="text/javascript" src="__SYSJS__/my.js"></script>
+    <script type="text/javascript" src="__JS__/vue.min.js" ></script>
+    <script type="text/javascript" src="__JS__/layer/layer.js" ></script>
+    <!--图片上传资源文件-->
+    <script type="text/javascript" src="__UPLOAD__/plupload.full.min.js"></script>
+    <script type="text/javascript" src="__UPLOAD__/upload.js"></script>
+    <link rel="stylesheet" href="__UPLOAD__/css/plupload.css">
+    <style>
+        .pageTool{ text-align:center;}
+        .pageTool ul{display:block; width:max-content; margin:0 auto;}
+        .pageTool li{float:left; margin:0 10px;}
+        #main_vue{display:none;}
+    </style>
+</head>
+<body width="100%">
+<div id="result" class="result none"></div>
+<div class="mainbox" id="main_vue" >
+    <div class="table-list">
+        <table cellpadding=0 cellspacing=0 width="100%" class="table_form" >
+            <tr>
+                <th width="140">分类名：</th>
+                <td ><input type="text" class="input-text" name="cate_name" size="40" v-model="cate_name" ></td>
+            </tr>
+            <tr>
+                <th width="140">分类描述：</th>
+                <td>
+                    <textarea style="width:320px; height:100px; resize:none"  v-model="desc" ></textarea>
+                </td>
+            </tr>
+            <tr>
+                <th width="140">父级导航：</th>
+                <td>
+                    <select name="pid" v-model="pid" >
+                        <option value="0">为一级分类</option>
+                        <option v-for="(cate,index) in cate_list" v-bind:value="cate.cate_id" v-html="cate.cate_name"></option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <th width="140">排序：</th>
+                <td ><input type="text" class="input-text" name="sequence" size="40" v-model="sequence" ></td>
+            </tr>
+            <tr>
+                <th width="140">icon图标：</th>
+                <td>
+                    <div id="upload_main" >
+                        <div class="upload_box" >
+                            <input type="hidden" id="icon" v-model="cate_icon" class="hid-val-box" readonly />
+                            <div class="upload-title">上传图片</div>
+                            <!--<div class="upload-tips"><span>0</span> <span>*</span> <span>0</span></div>-->
+                            <div class="upload-view" id="icon_img" >
+                                <img v-bind:src="cate_icon" onerror="this.src='__UPLOAD__/images/upload_add.png'" >
+                            </div>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <div class="btn" >
+            <input TYPE="button"  value="添加" class="button" v-on:click="add_submit" />
+            <input TYPE="reset"  value="重置" class="button" />
+            <input TYPE="button"  value="返回" class="button" onclick="parent.window.clearWin();" />
+        </div>
+    </div>
+</div>
+<script>
+    var vue_main = new Vue({
+        el: '#main_vue',
+        data:{
+            'cate_name' : '',
+            'desc' : '',
+            'pid' : 0,
+            'sequence' : 0,
+            'cate_list' : [],
+            'cate_icon' : ''
+        },
+        mounted:function(){
+            var that = this;
+            that.get_menus_list();
+            $('#main_vue').show();
+            //图片上传配置
+            $("#icon").WebUpload(
+                'menus',
+                function(respond){
+                    if( respond.status == '1' ){
+                        that.cate_icon = respond.info.file;
+                    }else {
+                        layer.msg('网络错误，图片上传失败', {
+                            skin: 'layui-layer-huise'
+                        });
+                        return false;
+                    }
+                },
+                function(errors) {
+                    if( errors.code == -600 ){
+                        alert('图片最大2M');
+                    }
+                });
+            $('#icon_img').click(function() {
+                $('#icon').click();
+            });
+        },
+        methods: {
+            get_menus_list:function(){
+                var that = this;
+                $.ajax({
+                    url: "{:url('Goodscate/get_cate_list')}?v="+Math.random(),
+                    type: 'get',
+                    dataType: 'json',
+                    async: false,
+                    success:function (data) {
+                        if(data.status){
+                            //区分层级
+                            that.set_tree(data.info);
+                        }else{
+                            layer.msg(data.msg, {
+                                skin: 'layui-layer-huise'
+                            });
+                        }
+                    },
+                    error:function(e){
+                        layer.msg('网络错误数据拉取失败', {
+                            skin: 'layui-layer-huise'
+                        });
+                        return false;
+                    }
+                });
+            },
+            set_tree:function(cate_list){
+                var that = this;
+                var nbsp = '';
+                for( var i = 0; i < cate_list.length; i++ ){
+                    cate_list[i].oldSequence = cate_list[i].sequence;
+                    cate_list[i].tree = '';
+                    nbsp = '';
+                    if( cate_list[i].pNum > 0 ){
+                        cate_list[i].tree += '├';
+                        for( var t = 0; t < cate_list[i].pNum; t++ ){
+                            nbsp += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+                            cate_list[i].tree += '─';
+                        }
+                        cate_list[i].tree = nbsp+cate_list[i].tree;
+                        cate_list[i].cate_name = cate_list[i].tree+cate_list[i].cate_name;
+                    }
+                }
+                that.cate_list = cate_list;
+            },
+            add_submit:function(){
+                var that = this;
+                if( that.menu_name == '' ){
+                    layer.msg('导航名不能为空', {
+                        skin: 'layui-layer-huise'
+                    });
+                    return false;
+                }
+                if( that.menus_type_id == '' || that.menus_type_id == 0 ){
+                    layer.msg('页面错误，请重新进入', {
+                        skin: 'layui-layer-huise'
+                    });
+                    return false;
+                }
+                $.ajax({
+                    url: "{:url('Goodscate/create_cate')}",
+                    type: 'post',
+                    dataType: 'json',
+                    data:{
+                        'cate_name' : that.cate_name,
+                        'desc' : that.desc,
+                        'pid' : that.pid,
+                        'sequence' : that.sequence,
+                        'cate_icon' : that.cate_icon
+                    },
+                    success: function (data) {
+                        layer.msg(data.msg, {
+                            skin: 'layui-layer-huise'
+                        });
+                        if( data.status == 1 ){
+                            setTimeout(function(){
+                                parent.window.clearWin();
+                            },500);
+                        }
+                    },
+                    error: function (e) {
+                        layer.msg('网络错误,添加失败', {
+                            skin: 'layui-layer-huise'
+                        });
+                        return false;
+                    }
+                });
+            }
+        }
+    });
+</script>
+</body>
+</html>

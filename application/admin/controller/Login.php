@@ -83,9 +83,9 @@ class Login extends Controller
         $loginModel->signOut();
         $userId = session('sys_user_id');
         if( empty($userId) ){
-            $this->success('退出成功，正在跳转~~~',\think\Url::build('admin/login/index'),'',1);
+            $this->success('退出成功，正在跳转~~~',url('login/index'),'',1);
         }else{
-            $this->error('操作失败，正在返回~~~',\think\Url::build('admin/index/index'),'',1);
+            $this->error('操作失败，正在返回~~~',url('index/index'),'',1);
         }
     }
 

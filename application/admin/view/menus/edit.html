@@ -1,210 +1,175 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf8" />
-    <title>导航管理</title>
-    <link rel="stylesheet" type="text/css" href="__SYSCSS__/style.css" />
-    <script type="text/javascript" src="__SYSJS__/jquery.min.js"></script>
-    <script type="text/javascript" src="__SYSJS__/jquery.artDialog.js?skin=blue"></script>
-    <script type="text/javascript" src="__SYSJS__/my.js"></script>
-    <script type="text/javascript" src="__JS__/vue.min.js" ></script>
-    <script type="text/javascript" src="__JS__/layer/layer.js" ></script>
-    <!--图片上传资源文件-->
-    <script type="text/javascript" src="__UPLOAD__/plupload.full.min.js"></script>
-    <script type="text/javascript" src="__UPLOAD__/upload.js"></script>
-    <link rel="stylesheet" href="__UPLOAD__/css/plupload.css">
-    <style>
-        .pageTool{ text-align:center;}
-        .pageTool ul{display:block; width:max-content; margin:0 auto;}
-        .pageTool li{float:left; margin:0 10px;}
-        #main_vue{display:none;}
-    </style>
-</head>
-<body width="100%">
-<div id="result" class="result none"></div>
-<div class="mainbox" id="main_vue" >
-    <div class="table-list">
-        <table cellpadding=0 cellspacing=0 width="100%" class="table_form" >
-            <tr>
-                <th width="140">导航名：</th>
-                <td ><input type="text" class="input-text" name="menu_name" size="40" v-model="menu_name" ></td>
-            </tr>
-            <tr>
-                <th width="140">跳转地址：</th>
-                <td ><input type="text" class="input-text" name="menu_url" size="40" v-model="menu_url" ></td>
-            </tr>
-            <tr>
-                <th width="140">父级导航：</th>
-                <td>
-                    <select name="pid" v-model="pid" >
-                        <option value="0">为一级导航</option>
-                        <option v-for="(menus,index) in menus_list" v-bind:value="menus.id" v-html="menus.menu_name"></option>
-                    </select>
-                </td>
-            </tr>
-            <tr>
-                <th width="140">排序：</th>
-                <td ><input type="text" class="input-text" name="sequence" size="40" v-model="sequence" ></td>
-            </tr>
-            <tr>
-                <th width="140">icon图标：</th>
-                <td>
-                    <div id="upload_main" >
+{extend name="base" /}
+{block name="title" }导航管理{/block}
+{block name="static_link" }
+<script src="__JS__/vue.min.js"></script>
+<!--图片上传资源文件-->
+<script type="text/javascript" src="__UPLOAD__/plupload.full.min.js"></script>
+<script type="text/javascript" src="__UPLOAD__/upload.js"></script>
+<link rel="stylesheet" href="__UPLOAD__/css/plupload.css">
+{/block}
+{block name="body" }
+<div class="layui-fluid" >
+    <div class="layui-card" id="main_vue" >
+        <div class="layui-card-body">
+            <form class="layui-form" >
+                <div class="layui-form-item">
+                    <label class="layui-form-label">导航名：</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="menu_name" value="{$info.menu_name}" required  lay-verify="required" placeholder="导航名" autocomplete="off" class="layui-input" >
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">跳转链接：</label>
+                    <div class="layui-input-block" >
+                        <input type="text" name="menu_url" value="{$info.menu_url}" placeholder="跳转链接" autocomplete="off" class="layui-input" >
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">父级导航：</label>
+                    <div class="layui-input-inline" >
+                        <select name="pid" id="menus_box" lay-search >
+                        </select>
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">(支持输入搜索)</div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">排序：</label>
+                    <div class="layui-input-inline">
+                        <input type="number" min="0" max="255" name="sequence" value="{$info.sequence}"  placeholder="0-255" value="0" required autocomplete="off" class="layui-input" onkeyup="checkSort(this)" onblur="alidateFloatEmpty(this)" >
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">( 0-255 排序由大都小排列)</div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">icon图标：</label>
+                    <div class="layui-input-block" id="upload_main" >
                         <div class="upload_box" >
-                            <input type="hidden" id="icon" v-model="menu_icon" class="hid-val-box" readonly />
+                            <input type="hidden" name="menu_icon" value="{$info.menu_icon}"  id="icon" class="hid-val-box" readonly />
                             <div class="upload-title">上传图片</div>
                             <!--<div class="upload-tips"><span>0</span> <span>*</span> <span>0</span></div>-->
                             <div class="upload-view" id="icon_img" >
-                                <img v-bind:src="menu_icon" onerror="this.src='__UPLOAD__/images/upload_add.png'" >
+                                <img src="{$info.menu_icon}" onerror="this.src='__UPLOAD__/images/upload_add.png'" >
                             </div>
                         </div>
                         <div class="clear"></div>
                     </div>
-                </td>
-            </tr>
-        </table>
-        <div class="btn" >
-            <input TYPE="button"  value="保存" class="button" v-on:click="edit_submit" />
-            <input TYPE="button"  value="返回" class="button" onclick="parent.window.clearWin();" />
+                </div>
+                <div id="layui_bottom_btn_box">
+                    <div class="btn-box" >
+                        <div class="layui-input-block">
+                            <button class="layui-btn" lay-submit lay-filter="formSubmit">保存</button>
+                            <button type="reset" class="layui-btn layui-btn-primary"  value="返回" onclick="parent.window.clearWin();" >返回</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 <script>
-    var vue_main = new Vue({
-        el: '#main_vue',
-        data:{
-            'menu_id' : "<?=$info['id']?>",
-            'menu_name' : "<?=$info['menu_name']?>",
-            'menu_url' : "<?=$info['menu_url']?>",
-            'pid' : "<?=$info['pid']?>",
-            'sequence' : "<?=$info['sequence']?>",
-            'menus_list' : [],
-            'menus_type_id' : "<?=$info['menus_type_id']?>",
-            'menu_icon' : "<?=$info['menu_icon']?>"
-        },
-        mounted:function(){
-            var that = this;
-            that.get_menus_list();
-            $('#main_vue').show();
-            //图片上传配置
-            $("#icon").WebUpload(
-                'menus',
-                function(respond){
-                    if( respond.status == '1' ){
-                        that.menu_icon = respond.info.file;
-                    }else {
-                        layer.msg('网络错误，图片上传失败', {
-                            skin: 'layui-layer-huise'
-                        });
-                        return false;
-                    }
-                },
-                function(errors) {
-                    if( errors.code == -600 ){
-                        alert('图片最大2M');
-                    }
+    var menu_id = "{$info.id}";
+    var menus_type_id = "{$info.menus_type_id}";
+    var getMenusListApi = "{:url('Menus/get_menus_list')}";
+    var updateApi = "{url:('Menus/update_menu')}";
+    var form = layui.form;
+    //图片上传配置
+    $("#icon").WebUpload(
+        'menus',
+        function(respond){
+            if(!respond.code){
+                $('#icon').val(respond.data.file);
+                $('#icon_img img').attr('src',respond.data.file);
+            }else {
+                layer.msg('网络错误，图片上传失败', {
+                    skin: 'layui-layer-huise'
                 });
-            $('#icon_img').click(function() {
-                $('#icon').click();
-            });
-        },
-        methods: {
-            get_menus_list:function(type_id){
-                var that = this;
-                if( typeof(type_id) != 'undefined' ){
-                    that.menus_type_id = type_id;
-                }
-                $.ajax({
-                    url: "{:url('Menus/get_menus_list')}",
-                    type: 'post',
-                    dataType: 'json',
-                    async: false,
-                    data:{
-                        type:that.menus_type_id
-                    },
-                    success:function (data) {
-                        if(data.status){
-                            //区分层级
-                            that.set_tree(data.info);
-                        }else{
-                            layer.msg(data.msg, {
-                                skin: 'layui-layer-huise'
-                            });
-                        }
-                    },
-                    error:function(e){
-                        layer.msg('网络错误数据拉取失败', {
-                            skin: 'layui-layer-huise'
-                        });
-                        return false;
-                    }
-                });
-            },
-            set_tree:function(menus_list){
-                var that = this;
-                var nbsp = '';
-                for( var i = 0; i < menus_list.length; i++ ){
-                    menus_list[i].oldSequence = menus_list[i].sequence;
-                    menus_list[i].tree = '';
-                    nbsp = '';
-                    if( menus_list[i].pNum > 0 ){
-                        menus_list[i].tree += '├';
-                        for( var t = 0; t < menus_list[i].pNum; t++ ){
-                            nbsp += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
-                            menus_list[i].tree += '─';
-                        }
-                        menus_list[i].tree = nbsp+menus_list[i].tree;
-                        menus_list[i].menu_name = menus_list[i].tree+menus_list[i].menu_name;
-                    }
-                }
-                that.menus_list = menus_list;
-            },
-            edit_submit:function(){
-                var that = this;
-                if( that.menu_name == '' ){
-                    layer.msg('导航名不能为空', {
-                        skin: 'layui-layer-huise'
-                    });
-                    return false;
-                }
-                if( that.menus_type_id == '' || that.menus_type_id == 0 ){
-                    layer.msg('页面错误，请重新进入', {
-                        skin: 'layui-layer-huise'
-                    });
-                    return false;
-                }
-                $.ajax({
-                    url: "{:url('Menus/update_menu')}",
-                    type: 'post',
-                    dataType: 'json',
-                    data:{
-                        'menu_id' : that.menu_id,
-                        'menu_name' : that.menu_name,
-                        'menu_url' : that.menu_url,
-                        'pid' : that.pid,
-                        'sequence' : that.sequence,
-                        'menu_icon' : that.menu_icon
-                    },
-                    success: function (data) {
-                        layer.msg(data.msg, {
-                            skin: 'layui-layer-huise'
-                        });
-                        if( data.status == 1 ){
-                            setTimeout(function(){
-                                parent.window.clearWin();
-                            },500);
-                        }
-                    },
-                    error: function (e) {
-                        layer.msg('网络错误,添加失败', {
-                            skin: 'layui-layer-huise'
-                        });
-                        return false;
-                    }
-                });
+                return false;
             }
+        },
+        function(errors) {
+            if( errors.code == -600 ){
+                alert('图片最大2M');
+            }
+        });
+    $('#icon_img').click(function() {
+        $('#icon').click();
+    });
+    $(document).ready(function(){
+        get_menus_list();
+    });
+    function get_menus_list(){
+        $.ajax({
+            url: getMenusListApi,
+            type: 'post',
+            dataType: 'json',
+            data:{
+                type:menus_type_id,
+                showType:'tree_list',
+            },
+            success:function (res) {
+                if(!res.code){
+                    //区分层级 + 分层标题处理
+                    res.data = setTreeGrid(res.data);
+                    $('select[name=pid]').append('<option value="0">为顶级分类</option>');
+                    var selected = '';
+                    for( var l = 0; l < res.data.length; l++ ){
+                        if( menus_type_id == res.data[l].id ){
+                            selected = 'selected';
+                        }
+                        $('select[name=pid]').append('<option value="'+res.data[l].id+'" '+selected+' >'+res.data[l].name+'</option>');
+                    }
+                    form.render();
+                }else{
+                    layer.msg(res.msg, {
+                        skin: 'layui-layer-huise'
+                    });
+                }
+            },
+            error:function(e){
+                layer.msg('网络错误数据拉取失败', {
+                    skin: 'layui-layer-huise'
+                });
+                return false;
+            }
+        });
+    }
+
+    //监听提交
+    form.on('submit(formSubmit)', function(data){
+        data.field.menu_id = menu_id;
+        if( data.field.menu_name == '' ){
+            layer.msg('导航名不能为空', {
+                skin: 'layui-layer-huise'
+            });
+            return false;
         }
+        if( data.field.menus_type_id == '' || data.field.menus_type_id == 0 ){
+            layer.msg('页面错误，请重新进入', {
+                skin: 'layui-layer-huise'
+            });
+            return false;
+        }
+        $.ajax({
+            url: updateApi,
+            type: 'post',
+            dataType: 'json',
+            data:data.field,
+            success: function (res) {
+                layer.msg(res.msg, {
+                    time: 500
+                }, function(){
+                    if(!res.code){
+                        parent.window.clearWin();
+                    }
+                });
+            },
+            error: function (e) {
+                layer.msg('网络错误,添加失败', {
+                    skin: 'layui-layer-huise'
+                });
+                return false;
+            }
+        });
+        return false;
     });
 </script>
-</body>
-</html>
+{/block}

@@ -10,7 +10,7 @@ use think\Exception;
  * Class Sysusergroup
  * @package app\admin\controller
  */
-class Advposition extends Base
+class AdvPosition extends Base
 {
 
     public function _initialize()
@@ -19,53 +19,52 @@ class Advposition extends Base
         $this->advPositionModel = model('AdvPosition');
     }
 
-    public function index(){
-        return $this->fetch();
-    }
-
     //获取所有广告位
     public function get_advpost_list(){
         $where = [];
         $page_param = [];
         $where['status'] = ['=',1];
-        $keyword = trim(input('post.keyword',''));
-        if( !empty($keyword) ) {
+        if( isset($this->in_data['keyword']) && !empty($this->in_data['keyword']) ) {
+            $keyword = trim($this->in_data['keyword']);
             $where['pos_name'] = ['like', "%{$keyword}%"];
             $page_param['keyword'] = $keyword;
         }
-
-        $pos_id = intval(input('post.pos_id',0));
-        if( $pos_id > 0 ) {
+        if( isset($this->in_data['pos_id']) && !empty($this->in_data['pos_id']) ) {
+            $pos_id = intval($this->in_data['pos_id']);
             $where['pos_id'] = ['=', $pos_id];
             $page_param['pos_id'] = $pos_id;
         }
         $cont = input('post.cont_type','advposition');
         $page = intval(input('page',1));
-        $list = Db::table($this->advPositionModel->getTable())
+        $size = 10;
+        $pageLimit = (($page - 1) * $size).','.$size;
+        $list = $this->advPositionModel->where($where)
+            ->order('pos_id','asc')
+            ->limit($pageLimit)->select();
+        $count = $this->advPositionModel->field('count(*)')
             ->where($where)
             ->order('pos_id','asc')
-            ->paginate(15,false,['page'=>$page,'path'=>url('admin/'.$cont.'/index',$page_param)]);
-
+            ->count();
         if( !empty($list) ){
             foreach( $list as $k => $v ){
                 $v['pos_type'] = AdvPostModel::$map_type[$v['pos_type']];
                 $v['pos_adv_num'] = $v['pos_adv_num'] > 0 ? $v['pos_adv_num'] : '无限制';
+                $v['size'] = $v['width'].' * '.$v['height'];
                 $list[$k] = $v;
             }
         }
 
-        $info['list'] = $list;
         //分页工具
-        $pageHtml = $list->render();
-        $info['page'] = empty($pageHtml) ? '' : $pageHtml;
-        returnJson(true,'success',$info);
+//        $pageHtml = $list->render();
+//        $info['page'] = empty($pageHtml) ? '' : $pageHtml;
+        returnJson(true,'success',$list,['count'=>$count]);
     }
 
     //添加广告位页
-    public function add(){
-        $this->assign('pos_type_list',AdvPostModel::$map_type);
-        return $this->fetch();
-    }
+//    public function add(){
+//        $this->assign('pos_type_list',AdvPostModel::$map_type);
+//        return $this->fetch();
+//    }
 
     //添加广告位
     public function create_pos(){
@@ -107,17 +106,15 @@ class Advposition extends Base
         if( $id <= 0 ){
             noPermission();
         }
-        $info = Db::table($this->advPositionModel->getTable())
-            ->where('pos_id',$id)
-            ->where('status',1)
-            ->find();
-
+        $where['status'] = 1;
+        $where['pos_id'] = $id;
+        $info = $this->advPositionModel->where($where)->find();
         if(empty($info)){
             noPermission();
         }
         $this->assign('info',$info);
         $this->assign('pos_type_list',AdvPostModel::$map_type);
-        return $this->fetch();
+        return $this->fetch($this->_act.'/'.$this->_op);
     }
 
     //添加广告位

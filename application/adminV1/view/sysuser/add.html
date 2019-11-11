@@ -1,0 +1,115 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf8" />
+    <title>管理员管理</title>
+    <link rel="stylesheet" type="text/css" href="__SYSCSS__/style.css" />
+    <script type="text/javascript" src="__SYSJS__/jquery.min.js"></script>
+    <script type="text/javascript" src="__SYSJS__/jquery.artDialog.js?skin=blue"></script>
+    <script type="text/javascript" src="__SYSJS__/my.js"></script>
+    <script type="text/javascript" src="__JS__/vue.min.js" ></script>
+    <script type="text/javascript" src="__JS__/layer/layer.js" ></script>
+    <style>
+        .pageTool{ text-align:center;}
+        .pageTool ul{display:block; width:max-content; margin:0 auto;}
+        .pageTool li{float:left; margin:0 10px;}
+        #main_vue{display:none;}
+    </style>
+</head>
+<body width="100%">
+<div id="result" class="result none"></div>
+<div class="mainbox" id="main_vue" >
+    <div class="table-list">
+        <table cellpadding=0 cellspacing=0 width="100%" class="table_form" >
+            <tr>
+                <th width="140">账号：</th>
+                <td ><input type="text" class="input-text" name="group_name" size="40" v-model="username" ></td>
+            </tr>
+            <tr>
+                <th width="140">密码：</th>
+                <td><input type="text" class="input-text" name="password" size="40" v-model="password" ></td>
+            </tr>
+            <tr>
+                <th width="140">权限组：</th>
+                <td>
+                    <select name="group_id" v-model="group_id" >
+                        <option value="">请选择</option>
+                        <?php foreach( $groupList as $list){ ?>
+                        <option value="<?=$list['group_id']?>"><?=$list['group_name']?></option>
+                        <?php }?>
+                    </select>
+                </td>
+            </tr>
+        </table>
+        <div class="btn" >
+            <input TYPE="button"  value="添加" class="button" v-on:click="add_submit" />
+            <input TYPE="reset"  value="重置" class="button" />
+            <input TYPE="button"  value="返回" class="button" onclick="parent.window.clearWin();" />
+        </div>
+    </div>
+</div>
+<script>
+    var vue_main = new Vue({
+        el: '#main_vue',
+        data:{
+            'username' : '',
+            'password' : '',
+            'group_id' : '',
+        },
+        mounted:function(){
+            var that = this;
+            $('#main_vue').show();
+        },
+        methods: {
+            add_submit:function(){
+                var that = this;
+                if( that.username == '' ){
+                    layer.msg('账号不能为空', {
+                        skin: 'layui-layer-huise'
+                    });
+                    return false;
+                }
+                if( that.password == '' ){
+                    layer.msg('密码不能为空', {
+                        skin: 'layui-layer-huise'
+                    });
+                    return false;
+                }
+                if( that.group_id == '' ){
+                    layer.msg('请选择权限组', {
+                        skin: 'layui-layer-huise'
+                    });
+                    return false;
+                }
+                $.ajax({
+                    url: "{:url('Sysuser/create_user')}",
+                    type: 'post',
+                    dataType: 'json',
+                    data:{
+                        'username' : that.username,
+                        'password' : that.password,
+                        'group_id' : that.group_id,
+                    },
+                    success: function (data) {
+                        layer.msg(data.msg, {
+                            skin: 'layui-layer-huise'
+                        });
+                        if( data.status == 1 ){
+                            setTimeout(function(){
+                                parent.window.clearWin();
+                            },1000);
+                        }
+                    },
+                    error: function (e) {
+                        layer.msg('网络错误,提交失败', {
+                            skin: 'layui-layer-huise'
+                        });
+                        return false;
+                    }
+                });
+            }
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf8" />
+    <title>留言管理</title>
+    <link rel="stylesheet" type="text/css" href="__SYSCSS__/style.css" />
+    <script type="text/javascript" src="__SYSJS__/jquery.min.js"></script>
+    <script type="text/javascript" src="__SYSJS__/jquery.artDialog.js?skin=blue"></script>
+    <script type="text/javascript" src="__SYSJS__/my.js"></script>
+    <script type="text/javascript" src="__JS__/layer/layer.js" ></script>
+    <style>
+        .pageTool{ text-align:center;}
+        .pageTool ul{display:block; width:max-content; margin:0 auto;}
+        .pageTool li{float:left; margin:0 10px;}
+    </style>
+</head>
+<body width="100%">
+<div id="result" class="result none"></div>
+<div class="mainbox" id="main_vue" >
+    <form action="?" method="get">
+        <table  class="search_table" width="100%">
+            <tr>
+                <td>
+                    <input type="text" name="id" value="<?=input('id','')?>" class="input-text" placeholder="留言id" />
+                    <select name="readStatus" >
+                        <option value="-1" >阅读状态</option>
+                        <?php foreach( $statusReadList as $key => $status ){ ?>
+                        <option value="<?=$key?>" <?=( $key == input('readStatus','-1') ) ? 'selected' : '';?> ><?=$status['name']?></option>
+                        <?php } ?>
+                    </select>
+                    <select name="replyStatus">
+                        <option value="-1" >回复状态</option>
+                        <?php foreach( $statusReplyList as $key => $status ){ ?>
+                        <option value="<?=$key?>" <?=( $key == input('replyStatus','-1') ) ? 'selected' : '';?> ><?=$status['name']?></option>
+                        <?php } ?>
+                    </select>
+                    <input type="submit" value="搜索"  class="button" />
+                    <input type="reset" value="重置" class="button"onclick="location='<?=url('message/index')?>'"  />
+                </td>
+            </tr>
+        </table>
+    </form>
+    <form name="myform" action="" method="post">
+        <div class="table-list">
+            <table width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th align="left">标题</th>
+                        <th>阅读状态</th>
+                        <th>回复状态</th>
+                        <th>留言时间</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php foreach( $list as $key => $mess){ ?>
+                    <tr>
+                        <td align="center"><?=$mess['mess_id']?></td>
+                        <td align="left"><?=$mess['title']?></td>
+                        <td align="center"><?=$statusReadList[$mess['read_status']]['name']?></td>
+                        <td align="center"><?=$statusReplyList[$mess['reply_status']]['name']?></td>
+                        <td align="center"><?=date('Y-m-d H:i:s',$mess['add_time'])?></td>
+                        <td align="center">
+                            <a href="<?=url('Message/read',['id'=>$mess['mess_id']])?>" >查看</a>
+                        </td>
+                    </tr>
+                    <?php } ?>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="5" class="pageTool" ><?=$page?></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </form>
+</div>
+<script>
+    //关闭所有二级窗口
+    function clearWin(){
+        layer.closeAll();
+    }
+</script>
+</body>
+</html>

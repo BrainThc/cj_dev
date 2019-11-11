@@ -1,0 +1,133 @@
+<!DOCTYPE>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf8" />
+    <title>广告位管理</title>
+    <link rel="stylesheet" type="text/css" href="__SYSCSS__/style.css" />
+    <script type="text/javascript" src="__SYSJS__/jquery.min.js"></script>
+    <script type="text/javascript" src="__SYSJS__/jquery.artDialog.js?skin=blue"></script>
+    <script type="text/javascript" src="__SYSJS__/my.js"></script>
+    <script type="text/javascript" src="__JS__/vue.min.js" ></script>
+    <script type="text/javascript" src="__JS__/layer/layer.js" ></script>
+    <style>
+        .pageTool{ text-align:center;}
+        .pageTool ul{display:block; width:max-content; margin:0 auto;}
+        .pageTool li{float:left; margin:0 10px;}
+        #main_vue{display:none;}
+    </style>
+</head>
+<body width="100%">
+<div id="result" class="result none"></div>
+<div class="mainbox" id="main_vue" >
+    <table  class="search_table" width="100%">
+        <tr>
+            <td>
+                <input type="text" name="pos_id" v-model="pos_id" class="input-text" placeholder="广告位id" />
+                <input type="text" name="keyword" v-model="keyword" class="input-text" placeholder="广告位关键词" />
+                <input type="button" value="搜索"  class="button" v-on:click="get_advpost_list" />
+                <input type="reset" value="重置" class="button" v-on:click="reset_search"  />
+            </td>
+        </tr>
+    </table>
+    <form name="myform" action="" method="post">
+        <div class="table-list">
+            <table width="100%" cellspacing="0">
+                <thead>
+                <tr>
+                    <th style="width:100px;" >广告位id</th>
+                    <th style="width:100px;" >管理界面</th>
+                    <th align="left">广告位标题</th>
+                    <th align="center">广告类型</th>
+                    <th align="center">广告展示数</th>
+                    <th align="center">占位图</th>
+                    <th align="center">尺寸</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr v-for="(pos,index) in pos_list">
+                    <td align="center" >{{ pos.pos_id }}</td>
+                    <td align="center">
+                        <input type="button" class="button" style="margin:0 auto;" value="管理广告" v-on:click="edit_center(index)">
+                    </td>
+                    <td align="left">{{ pos.pos_name }}</td>
+                    <td align="center">{{ pos.pos_type }}</td>
+                    <td align="center">{{ pos.pos_adv_num }}</td>
+                    <td align="left" style="width:600px;"><img style="width:90%; margin:10px auto;" v-bind:src="pos.image" alt="图片失效" ></td>
+                    <td align="center">{{ pos.width }} * {{ pos.height }}</td>
+                </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="7" class="pageTool" v-html="page_html" ></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </form>
+</div>
+<script>
+    var vue_main = new Vue({
+        el: '#main_vue',
+        data:{
+            'pos_list' : [],
+            'pos_id' : "<?=input('pos_id','')?>",
+            'keyword' : "<?=input('keyword','')?>",
+            'page_html' : '',
+            'page' : "<?=input('page',1)?>"
+        },
+        mounted:function(){
+            var that = this;
+            //获取列表
+            that.get_advpost_list();
+            $('#main_vue').show();
+        },
+        methods: {
+            get_advpost_list: function () {
+                var that = this;
+                $.ajax({
+                    url: "{:url('Advposition/get_advpost_list')}",
+                    type: 'post',
+                    dataType: 'json',
+                    async: false,
+                    data: {
+                        'cont_type' : 'advlist',
+                        'pos_id': that.pos_id,
+                        'keyword': that.keyword,
+                        'page' : that.page
+                    },
+                    success: function (data) {
+                        that.pos_list = data.info.list.data;
+                        that.page_html = data.info.page;
+                    },
+                    error: function (e) {
+                        layer.msg('网络错误数据拉取失败', {
+                            skin: 'layui-layer-huise'
+                        });
+                        return false;
+                    }
+                });
+            },
+            reset_search: function () {
+                var that = this;
+                that.pos_id = '';
+                that.keyword = '';
+                that.get_advpost_list();
+            },
+            edit_center: function (index) {
+                var that = this;
+                var pos_id = that.pos_list[index].pos_id;
+                var toUrl = "{:url('Advlist/adv_list',['id'=>'pos_id'])}";
+                toUrl = toUrl.replace('pos_id', pos_id);
+                location = toUrl;
+            }
+        }
+    });
+
+    //关闭所有二级窗口
+    function clearWin(){
+        vue_main.get_advpost_list();
+        layer.closeAll();
+    }
+</script>
+</body>
+</html>

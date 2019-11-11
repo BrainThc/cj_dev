@@ -95,9 +95,9 @@
                         'keyword': that.keyword,
                         'page' : that.page
                     },
-                    success: function (data) {
-                        that.pos_list = data.info.list.data;
-                        that.page_html = data.info.page;
+                    success: function (res) {
+                        that.pos_list = res.data.list.data;
+                        that.page_html = res.data.page;
                     },
                     error: function (e) {
                         layer.msg('网络错误数据拉取失败', {

@@ -189,7 +189,7 @@ select{ vertical-align:middle;background:none repeat scroll 0 0 #F9F9F9;border-c
 
 .login_box  {width:511px;height:243px;margin:170px auto 0 auto;background:url(../images/admin_logo_bg.png) no-repeat;color:#FFF;}
 .login_title {height:40px;margin:0px 10px;line-height:40px;border-bottom:1px solid #7FA0CE;text-align:center;color:#fff;font-family:'Microsoft YaHei';font-size:14px;font-weight:bold;}
-.login_left {float:left;width:210px;padding:45px 0 0 30px;line-height:22px;}
+.login_left {float:left;width:210px;padding:6px 0 0 30px;line-height:22px;}
 .login_right  {float:right;width:240px;}
 .login_form ul li {line-height:26px;padding:3px; vertical-align:middle;}
 .login_form ul li label {float:left;width:50px;height:23px;line-height:22px;}

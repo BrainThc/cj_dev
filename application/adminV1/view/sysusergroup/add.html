@@ -1,0 +1,139 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf8" />
+    <title>管理员权限组管理</title>
+    <link rel="stylesheet" type="text/css" href="__SYSCSS__/style.css" />
+    <script type="text/javascript" src="__SYSJS__/jquery.min.js"></script>
+    <script type="text/javascript" src="__SYSJS__/jquery.artDialog.js?skin=blue"></script>
+    <script type="text/javascript" src="__SYSJS__/my.js"></script>
+    <script type="text/javascript" src="__JS__/vue.min.js" ></script>
+    <script type="text/javascript" src="__JS__/layer/layer.js" ></script>
+    <style>
+        .pageTool{ text-align:center;}
+        .pageTool ul{display:block; width:max-content; margin:0 auto;}
+        .pageTool li{float:left; margin:0 10px;}
+        #main_vue{display:none;}
+        input[type="checkbox"]{margin:0 5px;}
+    </style>
+</head>
+<body width="100%">
+<div id="result" class="result none"></div>
+<div class="mainbox" id="main_vue" >
+    <div class="table-list">
+        <form method='post' id="form1" action="?">
+            <table cellpadding=0 cellspacing=0 width="100%" class="table_form" >
+                <tr>
+                    <th width="140">权限组名</th>
+                    <td ><input type="text" class="input-text" name="group_name" size="40" ></td>
+                </tr>
+                <tr>
+                    <th width="140">权限设置</th>
+                    <td>
+                        <table v-html="group_html" id="power_table" border="1">
+                        </table>
+                    </td>
+                </tr>
+            </table>
+            <div class="btn" >
+                <input TYPE="submit"  value="添加" class="button" />
+                <input TYPE="reset"  value="重置" class="button" />
+                <input TYPE="button"  value="返回" class="button" onclick="parent.window.clearWin();" />
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    var vue_main = new Vue({
+        el: '#main_vue',
+        data:{
+            'group_list' : [],
+            'group_html' : ''
+        },
+        mounted:function(){
+            var that = this;
+            //获取列表
+            that.get_group_list();
+            $('#main_vue').show();
+        },
+        methods: {
+            get_group_list: function () {
+                var that = this;
+                $.ajax({
+                    url: "{:url('Sysusergroup/get_power_list')}?v="+Math.random(),
+                    type: 'GET',
+                    dataType: 'json',
+                    async: false,
+                    success: function (data) {
+                        that.group_list = data.info;
+                        that.set_group_html(that.group_list,true);
+                    },
+                    error: function (e) {
+                        layer.msg('网络错误数据拉取失败', {
+                            skin: 'layui-layer-huise'
+                        });
+                        return false;
+                    }
+                });
+            },
+            set_group_html:function(group_list,isTop){
+                var that = this;
+                if( typeof(isTop) == 'undefined' ){
+                    isTop = false;
+                }else{
+                    isTop = true;
+                }
+                var _long = group_list.length;
+                for( var s = 0; s < _long; s++){
+                    if( isTop ){
+                        that.group_html += '<tr><td><input type="checkbox" name="group_power[]"  value="'+group_list[s].power+'" />'+group_list[s].name+'</td><td>';
+                    }else{
+                        that.group_html += '<input type="checkbox" name="group_power[]" value="'+group_list[s].power+'" />'+group_list[s].name;
+                    }
+                    if( typeof(group_list[s].child) != 'undefined' ){
+                        if( !isTop ){
+                            that.group_html += '【';
+                        }
+                        that.set_group_html(group_list[s].child);
+                        if( !isTop ){
+                            that.group_html += '】';
+                        }
+                    }
+                    if( isTop ){
+                        that.group_html += '</td></tr>';
+                    }
+                }
+            }
+        }
+    });
+
+    $('#form1').submit(function(){
+        $.ajax({
+            url: "{:url('Sysusergroup/create_group')}?v="+Math.random(),
+            type: 'POST',
+            dataType: 'json',
+            data: $(this).serialize(),
+            success: function (data) {
+                layer.msg(data.msg, {
+                    skin: 'layui-layer-huise'
+                });
+                if( data.status == 1){
+                    setTimeout(function(){
+                        parent.window.clearWin();
+                    },1000);
+                }
+                return false;
+            },
+            error: function (e) {
+                layer.msg('网络错误,提交失败', {
+                    skin: 'layui-layer-huise'
+                });
+                return false;
+            }
+        });
+        return false;
+    });
+
+</script>
+</body>
+</html>

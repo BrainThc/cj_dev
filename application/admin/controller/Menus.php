@@ -1,6 +1,5 @@
 <?php
 namespace app\admin\controller;
-use think\Db;
 use app\admin\model\Log as LogModel;
 use think\Exception;
 
@@ -18,35 +17,49 @@ class Menus extends Base
         $this->menusTypeModel = model('MenusType');
     }
 
-    public function index(){
-        return $this->fetch();
-    }
-
     //获取所有导航类型列表
     public function get_menus_type(){
         //获取所有菜单类型
-        $type_list = Db::table($this->menusTypeModel->getTable())->select();
+        $type_list =$this->menusTypeModel->select();
         returnJson(true,'success',$type_list);
     }
 
     //获取所有导航列表
     public function get_menus_list(){
         //获取所有导航内容
-        $type = intval(input('post.type',0));
-        if( $type > 0 ){
-            $where['menus_type_id'] = ['=',$type];
+        $data = input('post.',0);
+        $where['is_deleted'] = ['=',0];
+        if( isset($data['type']) && !empty($data['type']) ){
+            $where['menus_type_id'] = ['=',$data['type']];
         }
-        $where['pid'] = ['=',0];
-        $nav_all = Db::table($this->menusModel->getTable())
+        if(isset($data['pid'])){//获取某父级下的子级
+            $where['pid'] = $data['pid'];
+            $whereOr['id'] = $data['pid'];
+        }
+        $menus_all = $this->menusModel
             ->where($where)
             ->order('sequence','desc')
             ->select();
-        //配置树状结构
-        $nav_list = $this->menusModel->getMenuTree($nav_all,$type);
-        $menus_all = [];
-        $menus_all = $this->set_menu_list($nav_list,0,$menus_all);
-
-        returnJson(true,'success',$menus_all);
+        if( !empty($menus_all) ){
+            foreach( $menus_all as $k => $v ){
+                $v['name'] = $v['menu_name'];
+                $v['value'] = $v['id'];
+                $cateAll[$k] = $v;
+            }
+        }
+        $geType = empty($data['showType']) ? 'list' : $data['showType'];
+        switch( $geType ){
+            case 'tree' ://普通多维树状数组
+                $list = setTree($menus_all);
+                break;
+            case 'tree_list' ://一维数组分层列表 (注意占用进程资源问题)
+                $list = setTreeList(setTree($menus_all));
+                break;
+            default ://不作处理
+                $list = $menus_all;
+                break;
+        }
+        returnJson(true,'success',$list);
     }
 
     public function set_menu_list($list,$pNum,$menus_all){
@@ -58,6 +71,8 @@ class Menus extends Base
             }
         }
         foreach( $menus_all as $key => $menus ){
+            $menus['name'] = $menus['menu_name'];
+            $menus['value'] = $menus['id'];
             if( isset($menus['child'])){
                 unset($menus['child']);
             }
@@ -90,7 +105,7 @@ class Menus extends Base
 
             $insertData['menus_type_id'] = intval($data['menus_type_id']);
             //检查类型是否存在
-            $checkState = Db::table($this->menusTypeModel->getTable())
+            $checkState = $this->menusTypeModel
                 ->where('id',$insertData['menus_type_id'])
                 ->find();
             if( empty($checkState) )
@@ -103,8 +118,8 @@ class Menus extends Base
             $t = time();
             $insertData['add_time'] = $t;
             $insertData['edit_time'] = $t;
-            Db::startTrans();
-            if( Db::table($this->menusModel->getTable())->insert($insertData) === false )
+            $this->menusModel->startTrans();
+            if( $this->menusModel->insert($insertData) === false )
                 throw new Exception('网络错误，添加失败');
 
             //添加日志
@@ -112,9 +127,9 @@ class Menus extends Base
             if( $logModel->note(LogModel::INSERT,'添加导航菜单：'.$insertData['menu_name']) === false )
                 throw new Exception('网络错误，添加失败');
 
-            Db::commit();
+            $this->menusModel->commit();
         }catch( Exception $e ){
-            Db::rollback();
+            $this->menusModel->rollback();
             returnJson(false,$e->getMessage());
         }
         returnJson(true,'添加成功');
@@ -127,9 +142,7 @@ class Menus extends Base
             noPermission();
 
         $where['id'] = ['=',$ids];
-        $info = Db::table($this->menusModel->getTable())
-            ->where($where)
-            ->find();
+        $info = $this->menusModel->where($where)->find();
         if( empty($info) )
             noPermission();
 
@@ -146,9 +159,7 @@ class Menus extends Base
 
             $where['id'] = ['=',$data['menu_id']];
             //检查是否存在
-            $info = Db::table($this->menusModel->getTable())
-                ->where($where)
-                ->find();
+            $info = $this->menusModel->where($where)->find();
             if( empty($info) )
                 throw new Exception('参数错误');
 
@@ -161,9 +172,7 @@ class Menus extends Base
             if( !empty($data['menus_type_id']) && intval($data['menus_type_id']) > 0 ) {
                 $updateData['menus_type_id'] = intval($data['menus_type_id']);
                 //检查类型是否存在
-                $checkState = Db::table($this->menusTypeModel->getTable())
-                    ->where('id', $updateData['menus_type_id'])
-                    ->find();
+                $checkState = $this->menusTypeModel->where('id', $updateData['menus_type_id'])->find();
                 if (empty($checkState))
                     throw new Exception('导航类型不存在');
 
@@ -175,9 +184,9 @@ class Menus extends Base
             $updateData['sequence'] = empty($data['sequence']) ? 0 : $data['sequence'];
             $t = time();
             $updateData['edit_time'] = $t;
-            Db::startTrans();
+            $this->menusModel->startTrans();
 
-            $updateState = Db::table($this->menusModel->getTable())->where($where)->update($updateData);
+            $updateState = $this->menusModel->where($where)->update($updateData);
             if( empty($updateState) )
                 throw new Exception('网络错误，保存失败');
 
@@ -186,9 +195,9 @@ class Menus extends Base
             if( $logModel->note(LogModel::UPDATES,'编辑导航菜单：'.$info['menu_name']) === false )
                 throw new Exception('网络错误，保存失败');
 
-            Db::commit();
+            $this->menusModel->commit();
         }catch( Exception $e ){
-            Db::rollback();
+            $this->menusModel->rollback();
             returnJson(false,$e->getMessage());
         }
         returnJson(true,'保存成功');
@@ -204,13 +213,13 @@ class Menus extends Base
             $menu_id = intval($data['id']);
             $where['id'] = ['=',$menu_id];
             //检查栏目是否存在
-            $info = Db::table($this->menusModel->getTable())->where($where)->find();
+            $info = $this->menusModel->where($where)->find();
             if( empty($info) )
                 throw new Exception('参数错误');
 
             $updateData['sequence'] = empty($data['sequence']) ? 0 : intval($data['sequence']);
-            Db::startTrans();
-            $updateState = Db::table($this->menusModel->getTable())->where($where)->update($updateData);
+            $this->menusModel->startTrans();
+            $updateState = $this->menusModel->where($where)->update($updateData);
             if( empty($updateState) )
                 throw new Exception('网络错误，保存失败');
 
@@ -219,9 +228,9 @@ class Menus extends Base
             if( $logModel->note(LogModel::UPDATES,'修改 “'.$info['menu_name'].'” 导航排序') === false )
                 throw new Exception('网络错误，操作失败');
 
-            Db::commit();
+            $this->menusModel->commit();
         }catch( Exception $e ){
-            Db::rollback();
+            $this->menusModel->rollback();
             returnJson(false,$e->getMessage());
         }
         returnJson(true,'修改成功');
@@ -238,12 +247,13 @@ class Menus extends Base
 
             $where['id'] = ['=',$data['id']];
             //检查是否存在
-            $info = Db::table($this->menusModel->getTable())->where($where)->find();
+            $info = $this->menusModel->where($where)->find();
             if( empty($info) )
                 throw new Exception('参数错误');
 
-            Db::startTrans();
-            $status = Db::table($this->menusModel->getTable())->where($where)->delete();
+            $this->menusModel->startTrans();
+            $updateData['is_deleted'] = 1;
+            $status = $this->menusModel->where($where)->update($updateData);
             if( empty($status) )
                 throw new Exception('网络错误，操作失败');
 
@@ -252,9 +262,9 @@ class Menus extends Base
             if( $logModel->note(LogModel::DEL,'删除导航：'.$info['menu_name']) === false )
                 throw new Exception('网络错误，操作失败');
 
-            Db::commit();
+            $this->menusModel->commit();
         }catch( Exception $e ){
-            Db::rollback();
+            $this->menusModel->rollback();
             returnJson(false,$e->getMessage());
         }
         returnJson(true,'删除成功');
@@ -270,7 +280,7 @@ class Menus extends Base
             //检查是否已经存在
             $insertData['type_name'] = trim($data['type_name']);
             $where['type_name'] = ['=',$insertData['type_name']];
-            $checkInfo = Db::table($this->menusTypeModel->getTable())->where($where)->find();
+            $checkInfo = $this->menusTypeModel->where($where)->find();
             if( !empty($checkInfo) )
                 throw new Exception('该类型已存在');
 
@@ -280,8 +290,8 @@ class Menus extends Base
             $insertData['add_time'] = $t;
             $insertData['edit_time'] = $t;
 
-            Db::startTrans();
-            if( Db::table($this->menusTypeModel->getTable())->insert($insertData) === false )
+            $this->menusTypeModel->startTrans();
+            if( $this->menusTypeModel->insert($insertData) === false )
                 throw new Exception('网络错误，操作失败');
 
             //添加日志
@@ -289,9 +299,9 @@ class Menus extends Base
             if( $logModel->note(LogModel::INSERT,'添加导航类型：'.$insertData['type_name']) === false )
                 throw new Exception('网络错误，操作失败');
 
-            Db::commit();
+            $this->menusTypeModel->commit();
         }catch( Exception $e ){
-            Db::rollback();
+            $this->menusTypeModel->rollback();
             returnJson(false,$e->getMessage());
         }
         returnJson(true,'添加成功');

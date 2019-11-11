@@ -10,18 +10,26 @@ class Base extends Controller
     public function _initialize()
     {
         parent::_initialize();
+
+        //参数接收
+        $this->in_data = input();
+        //权限地图设置
         $this->set_map_power($this->getMenuList());
+        //用户信息记录
         $sysUserInfo = session('sys_user');
         $this->sysUserId = $sysUserInfo['sys_user_id'];
         $this->sysUsername = $sysUserInfo['username'];
         $this->group_id = $sysUserInfo['group_id'];
         $this->arr_limits = $sysUserInfo['sys_user_power'];
         $this->is_super = $sysUserInfo['is_super'];
+        //权限地图 权限匹配
         $this->_act = request()->controller();
         $this->_op = request()->action();
         $this->checkLogin($this->_act,$this->_op);//用户权限检查
         $this->assign('super_user',$this->is_super);//是否超级管理员
-        $this->assign('breadCrumb',$this->getBreadCrumb($this->_act,$this->_op,'->'));//菜单面包屑
+        //菜单面包屑
+        $this->assign('breadCrumb',$this->getBreadCrumb($this->_act,$this->_op,'->'));
+
     }
 
     public function checkLogin($act,$op){
@@ -37,6 +45,30 @@ class Base extends Controller
             }
             noPermission();
         }
+    }
+
+    //视图空方法
+    public function _empty(){
+        // 获取当前url
+        $url = $_SERVER['REQUEST_URI'];
+
+        // 获取当前请求方法名称
+        $action = $this->request->action();
+
+        // 如果控制器是orders
+        $controller = $this->request->controller();
+
+        // 模型名称
+        $module = $this->request->module();
+        // 模板名称
+        $tplName = APP_PATH.'/'.$module.'/view/'.$controller.'/'.$action.'.html';
+        //驼峰转下划线
+        //$tplName = APP_PATH.'/'.$module.'/view/'.humpToLine($controller).'/'.$action.'.html';
+        // 输出视图
+        $this->assign('models',model($controller));
+        $this->assign('get_info',input('get.'));
+        $this->assign('post_info',input('post.'));
+        return $this->fetch($tplName, input());
     }
 
     /**
@@ -151,14 +183,14 @@ class Base extends Controller
             //营销管理
             array('name'=>'营销广告','power'=>'market','act'=>'Market','child'=>array(
                 //广告位管理
-                array('name'=>'广告位管理','power'=>'market_banner_pos','act'=>'Advposition','op'=>'index','child'=>array(
-                    array('name'=>'添加广告位页面','power'=>'market_banner_post_create_view','act'=>'Advposition','op'=>'add','child'=>array(
-                        array('name'=>'添加广告位','power'=>'market_banner_post_create','act'=>'Advposition','op'=>'create_pos')
+                array('name'=>'广告位管理','power'=>'market_banner_pos','act'=>'adv_position','op'=>'index','child'=>array(
+                    array('name'=>'添加广告位页面','power'=>'market_banner_post_create_view','act'=>'adv_position','op'=>'add','child'=>array(
+                        array('name'=>'添加广告位','power'=>'market_banner_post_create','act'=>'adv_position','op'=>'create_pos')
                     )),
-                    array('name'=>'编辑广告位页面','power'=>'market_banner_post_update_view','act'=>'Advposition','op'=>'edit','child'=>array(
-                        array('name'=>'编辑广告位','power'=>'market_banner_post_update','act'=>'Advposition','op'=>'update_pos')
+                    array('name'=>'编辑广告位页面','power'=>'market_banner_post_update_view','act'=>'adv_position','op'=>'edit','child'=>array(
+                        array('name'=>'编辑广告位','power'=>'market_banner_post_update','act'=>'adv_position','op'=>'update_pos')
                     )),
-                    array('name'=>'删除广告位','power'=>'market_banner_post_del','act'=>'Advposition','op'=>'del_pos')
+                    array('name'=>'删除广告位','power'=>'market_banner_post_del','act'=>'adv_position','op'=>'del_pos')
                 )),
                 //广告管理
                 array('name'=>'广告管理','power'=>'market_adv_content','act'=>'Advlist','op'=>'index','child'=>array(
@@ -218,6 +250,36 @@ class Base extends Controller
             ))
         );
         return $menusList;
+    }
+
+    /**
+     * 获取权限地图导航全列表
+     * @return string       html内容
+     */
+    public function getMenu(){
+        if( empty($this->arr_limits) ){
+            $loginModel = model('Login');
+            $loginModel->signOut();
+            $this->error('您没有权限操作后台，正在返回~~~',\think\Url::build('admin/index/index'),'',1);
+            exit;
+        }
+        $menulist = $this->getMenuList();
+        $menu_arr = [];
+        if( !empty($menulist) ){
+            foreach( $menulist as $key => $value ){
+                if( !empty($value['child']) && in_array($value['power'],$this->arr_limits) === true ){
+                    $menu_arr[$key] = $value;
+                    $menu_arr[$key]['child'] = [];
+                    foreach( $value['child'] as $k => $v ){
+                        if( in_array($v['power'],$this->arr_limits) ){
+                            $v['child'] = [];
+                            $menu_arr[$key]['child'][] = $v;
+                        }
+                    }
+                }
+            }
+        }
+        return $menu_arr;
     }
 
     /**

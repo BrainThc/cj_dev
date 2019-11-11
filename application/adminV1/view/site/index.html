@@ -1,0 +1,218 @@
+<!DOCTYPE>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf8" />
+    <title>站点配置</title>
+    <link rel="stylesheet" type="text/css" href="__SYSCSS__/style.css" />
+    <script type="text/javascript" src="__SYSJS__/jquery.min.js"></script>
+    <script type="text/javascript" src="__SYSJS__/jquery.artDialog.js?skin=blue"></script>
+    <script type="text/javascript" src="__SYSJS__/my.js"></script>
+    <script type="text/javascript" src="__JS__/vue.min.js" ></script>
+    <script type="text/javascript" src="__JS__/layer/layer.js" ></script>
+    <!--图片上传资源文件-->
+    <script type="text/javascript" src="__UPLOAD__/plupload.full.min.js"></script>
+    <script type="text/javascript" src="__UPLOAD__/upload.js"></script>
+    <link rel="stylesheet" href="__UPLOAD__/css/plupload.css">
+    <style>
+        .pageTool{ text-align:center;}
+        .pageTool ul{display:block; width:max-content; margin:0 auto;}
+        .pageTool li{float:left; margin:0 10px;}
+        #main_vue{display:none;}
+    </style>
+</head>
+<body width="100%">
+<div id="result" class="result none"></div>
+<div class="mainbox" id="main_vue">
+    <div id="nav" class="mainnav_title">
+        <span v-for="(nav,index) in site_nav">
+            <a  href="javascript:void(0);" v-on:click="getSiteList(nav.id)" >{{ nav.site_name }}</a>|
+        </span>
+    </div>
+    <table cellpadding=0 cellspacing=0 width="100%" class="table_form" >
+        <tr v-for="(site,index) in site_list" >
+            <th width="140">{{ site.site_name }}</th>
+            <td v-if=" site.site_type == 0 ">
+                <input type="text" class="input-text"  v-model="site.site_value" size="40"> {{ site.site_key }}
+                <input type="button" class="button" v-if="site.site_value != site.default" v-on:click="update_site(index)" value="保存修改">
+            </td>
+            <td v-if=" site.site_type == 1 ">
+                <div id="upload_main" >
+                    <div class="upload_box" style="width:300px; border:none;"  >
+                        <input type="hidden" id="logo" v-model="site.site_value" v-bind:data-id="index" class="hid-val-box" readonly />
+                        <div class="upload-title">上传图片</div>
+                        <div class="upload-view" id="logo_img"  >
+                            <img v-bind:src="site.site_value" onerror="this.src='__UPLOAD__/images/upload_add.png'" >
+                        </div>
+                        <div class="upload-del-box">
+                            <input type="button" class="button" v-if="site.site_value != site.default" v-on:click="update_site(index)" value="保存修改">
+                        </div>
+                    </div>
+                    <div class="clear"></div>
+                </div>
+                <script>
+                    $(document).ready(function(){
+                        $("#logo").WebUpload(
+                            'logo',
+                            function(respond){
+                                if( respond.status == '1' ){
+                                    var list_index = $('#'+respond.elementId).attr('data-id');
+                                    vue_main.site_list[list_index].site_value=respond.info.file;
+                                }else {
+                                    layer.msg('网络错误，图片上传失败', {
+                                        skin: 'layui-layer-huise'
+                                    });
+                                    return false;
+                                }
+                            },
+                            function(errors) {
+                                if( errors.code == -600 ){
+                                alert('图片最大2M');
+                                }
+                            },'admin');
+                            $('#logo_img').click(function() {
+                                $('#logo').click();
+                            }
+                        );
+                    });
+                </script>
+            </td>
+        </tr>
+    </table>
+    <div class="btn">
+        <input type="button"  value="保存" class="button" v-on:click="save_all" >
+    </div>
+</div>
+<script>
+    var vue_main = new Vue({
+        el: '#main_vue',
+        data:{
+            'site_nav' : [],
+            'site_pid' : 0,
+            'site_list' : []
+        },
+        mounted:function(){
+            var that = this;
+            //获取头部设置类型
+            that.getNavList(0);
+            //获取列表
+            that.site_pid = that.site_nav[0].id;
+            that.getSiteList();
+            $('#main_vue').show();
+        },
+        methods:{
+            //获取头部导航
+            getNavList:function(site_pid){
+                var that = this;
+                if( typeof(site_pid) == 'undefined' ){
+                    site_pid = 0;
+                }
+                $.ajax({
+                    url: "{:url('site/get_config_list')}",
+                    type: 'POST',
+                    dataType: 'json',
+                    async: false,
+                    data:{'site_pid' : site_pid},
+                    success:function (data) {
+                        if( data.status ){
+                            that.site_nav = data.info;
+                        }
+                    },
+                    error:function(e){
+                        layer.msg('网络错误数据拉取失败', {
+                            skin: 'layui-layer-huise'
+                        });
+                        return false;
+                    }
+                });
+            },
+            //获取类型内的配置列表
+            getSiteList:function(site_pid){
+                var that = this;
+                if( typeof(site_pid) == 'undefined' ){
+                    site_pid = that.site_pid;
+                }else{
+                    that.site_pid = site_pid;
+                }
+                $.ajax({
+                    url: "{:url('site/get_config_list')}",
+                    type: 'POST',
+                    dataType: 'json',
+                    async: false,
+                    data:{'site_pid' : site_pid},
+                    success:function (data) {
+                        if( data.status ){
+                            for( var i = 0; i < data.info.length; i++ ){
+                                data.info[i].default = data.info[i].site_value;
+                            }
+                            that.site_list = data.info;
+                        }
+                    },
+                    error:function(e){
+                        layer.msg('网络错误数据拉取失败', {
+                            skin: 'layui-layer-huise'
+                        });
+                        return false;
+                    }
+                });
+            },
+            update_site:function(index){
+                var that = this;
+                var _obj = that.site_list[index];
+                if( _obj.site_value == '' ){
+                    if( !confirm(_obj.site_name+'内容为空是否继续保存') ){
+                        return false;
+                    }
+                }
+                _obj.type = 'update';
+                $.ajax({
+                    url: "{:url('site/update_config')}",
+                    type: 'POST',
+                    dataType: 'json',
+                    data:  _obj,
+                    success:function (data) {
+                        layer.msg(data.msg, {
+                            skin: 'layui-layer-huise'
+                        });
+                        if( data.status ){
+                            that.getSiteList();
+                        }
+                    },
+                    error:function(e){
+                        layer.msg('网络错误，操作失败', {
+                            skin: 'layui-layer-huise'
+                        });
+                        return false;
+                    }
+                });
+            },
+            save_all:function(){
+                var that = this;
+                if( !confirm('是否确认保存') ){
+                    return false;
+                }
+                $.ajax({
+                    url: "{:url('site/update_all_config')}",
+                    type: 'POST',
+                    dataType: 'json',
+                    data:  {info :that.site_list},
+                    success:function (data) {
+                        layer.msg(data.msg, {
+                            skin: 'layui-layer-huise'
+                        });
+                        if( data.status ){
+                            that.getSiteList();
+                        }
+                    },
+                    error:function(e){
+                        layer.msg('网络错误，操作失败', {
+                            skin: 'layui-layer-huise'
+                        });
+                        return false;
+                    }
+                });
+            }
+        }
+    });
+</script>
+</body>
+</html>

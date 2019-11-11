@@ -1,0 +1,363 @@
+<!DOCTYPE>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf8" />
+    <title>分类属性管理</title>
+    <link rel="stylesheet" type="text/css" href="__SYSCSS__/style.css" />
+    <script type="text/javascript" src="__SYSJS__/jquery.min.js"></script>
+    <script type="text/javascript" src="__SYSJS__/jquery.artDialog.js?skin=blue"></script>
+    <script type="text/javascript" src="__SYSJS__/my.js"></script>
+    <script type="text/javascript" src="__JS__/vue.min.js" ></script>
+    <script type="text/javascript" src="__JS__/layer/layer.js" ></script>
+    <style>
+        #nav{margin-bottom:20px; color:#000;}
+        #main_vue{display:none;}
+        .li-box{ float:left; width:280px; margin-right:15px;overflow:hidden; }
+        .li-box .title{width:100%; height:25px; line-height:25px; text-align:center; left:0; top:0; background:#00a0e9; color:#ffffff; }
+        .li-box ul{ float:left; width:280px; height:325px; overflow:hidden; overflow-y:scroll; border:1px solid #ccc;}
+        .li-box li{width:100%; height:25px; line-height:25px;  text-indent:10px;}
+        .li-box li:hover{background:#eee;}
+        .li-box li span{color:#00b7ee; font-size:12px;}
+        .li-box li a{float:right; cursor:pointer; color:#ccc;}
+        .li-box .active{ background:#00b7ee !important; color:#ffffff;}
+        .input-box{ height:30px; width:100%; overflow:hidden; margin:10px auto; }
+        .input-box input{ height:30px; line-height:30px; text-align:center; width:100%; margin:0; padding:0; }
+        .val-title{ font-weight:600;}
+        .val-info{width:auto;}
+    </style>
+</head>
+<body width="100%">
+<div id="result" class="result none"></div>
+<div class="mainbox" id="main_vue">
+    <div class="mainnav_title" style="border:0;" >
+        <input type="button" class="button" v-on:click="parent.window.clearWin();" value="返回" />
+    </div>
+    <div class="mainnav_title" style="border:0;" >
+        <span><a href="javascript:void(0);"><?=$info['cate_name']?> 分类属性管理管理</a></span>
+    </div>
+    <div><p style="color:#FB5A5C;">注：已自动继承上级分类属性 例： 属性类目（所属分类）</p></div>
+    <div class="li-box" id="province" >
+        <div class="title">属性类型</div>
+        <ul>
+            <li style="text-align:center;" v-if="prop_list.length == 0 " >没有属性类型</li>
+            <li v-bind:class="[ ( prop_change == prop.prop_id ) ? 'active' : '']" v-for="(prop,index) in prop_list" v-on:click="get_prop_val_list(prop.prop_id)" >{{ prop.prop_name }}<span v-bind:class="[ ( prop_change == prop.prop_id ) ? 'active' : '']" v-if="prop.cate_id != cate_id"> ( {{ prop.cate_name }} )</span> <a href="javascript:void(0);" v-on:click="del_prop" >删除</a></li>
+        </ul>
+        <div class="input-box" >
+            <input type="text" v-model="new_prop" placeholder="添加属性类目名">
+        </div>
+        <div class="input-box" >
+            <input type="button" class="button" value="添加" v-on:click="add_prop">
+        </div>
+    </div>
+    <div class="li-box val-info"  v-if="prop_info">
+        <div class="title">属性类型信息</div>
+        <ul style="width:auto;">
+            <li class="val-title" >属性类型名称</li>
+            <li><input type="text" v-model="prop_info.prop_name"  /></li>
+            <li class="val-title" >属性类型描述</li>
+            <li>
+                <textarea v-model="prop_info.description"></textarea>
+            </li>
+        </ul>
+        <div class="input-box" ></div>
+        <div class="input-box" >
+            <input type="button" class="button" value="保存" v-on:click="update_prop">
+        </div>
+    </div>
+    <div class="li-box" id="city" v-if="prop_change > 0" >
+        <div class="title">属性值</div>
+        <ul>
+            <li style="text-align:center;" v-if="prop_val_list.length == 0 " >没有属性值</li>
+            <li v-bind:class="[ ( prop_val_change == prop_val.prop_val_id ) ? 'active' : '']" v-for="(prop_val,index) in prop_val_list" v-on:click="change_val(prop_val.prop_val_id)" >{{ prop_val.value }} <a href="javascript:void(0);" v-on:click="del_val" >删除</a></li>
+        </ul>
+        <div class="input-box" >
+            <input type="text" v-model="new_prop_val" placeholder="填写新属性值">
+        </div>
+        <div class="input-box" >
+            <input type="button" class="button" value="添加" v-on:click="add_val">
+        </div>
+    </div>
+    <div class="li-box val-info"  v-if="prop_val_change > 0">
+        <div class="title">属性值信息</div>
+        <ul style="width:auto;">
+            <li class="val-title" >属性值名称</li>
+            <li><input type="text" v-model="prop_val_info.value"  /></li>
+            <li class="val-title" >属性值类型</li>
+            <li>
+                <select v-model="prop_val_info.val_type" >
+                    <?php foreach( $val_type as $k => $type ){ ?>
+                    <option value="<?=$k?>"><?=$type['name']?></option>
+                    <?php } ?>
+                </select>
+                <input v-if="prop_val_info.val_type == 1"  type="color" v-model="prop_val_info.val_img">
+            </li>
+            <li class="val-title" >属性值描述</li>
+            <li>
+                <textarea v-model="prop_val_info.description"></textarea>
+            </li>
+        </ul>
+        <div class="input-box" ></div>
+        <div class="input-box" >
+            <input type="button" class="button" value="保存" v-on:click="update_val">
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    var vue_main = new Vue({
+        el: '#main_vue',
+        data:{
+            'cate_id' : "<?=$info['cate_id']?>",
+            'prop_list' : [],
+            'prop_change' : '',
+            'new_prop' : '',
+            'prop_val_list' : [],
+            'prop_val_change' : '',
+            'new_prop_val' : '',
+            'prop_info' : null,
+            'prop_val_info' : []
+        },
+        mounted:function(){
+            var that = this;
+            that.get_prop_list();
+            $('#main_vue').show();
+        },
+        methods:{
+            get_prop_list:function(){
+                var that = this;
+                $.ajax({
+                    url: "{:url('Goodscateprop/get_prop_list')}",
+                    type: 'post',
+                    dataType: 'json',
+                    async: false,
+                    data:{
+                        cate_id : that.cate_id
+                    },
+                    success:function (data) {
+                        if(data.status){
+                            that.prop_list = data.info;
+                            that.prop_change = '';
+                            that.prop_info = null;
+                        }else{
+                            layer.msg(data.msg, {
+                                skin: 'layui-layer-huise'
+                            });
+                        }
+                    },
+                    error:function(e){
+                        layer.msg('网络错误，数据拉取失败', {
+                            skin: 'layui-layer-huise'
+                        });
+                        return false;
+                    }
+                });
+            },
+            get_prop_val_list:function(prop_id,prop_val_id){
+                var that = this;
+                if( typeof(prop_id) == 'undefined' ){
+                    prop_id = that.prop_change;
+                }else{
+                    that.prop_change = prop_id;
+                }
+                $.ajax({
+                    url: "{:url('Goodscateprop/get_prop_val_list')}",
+                    type: 'post',
+                    dataType: 'json',
+                    async: false,
+                    data:{
+                        prop_id : prop_id
+                    },
+                    success:function (data) {
+                        if(data.status){
+                            that.prop_val_list = data.info.list;
+                            that.prop_info = data.info.prop_info;
+                            that.prop_val_change = '';
+                            if( that.prop_val_list.length > 0 ){
+                                if( typeof(prop_val_id) == 'undefined' ) {
+                                    that.change_val(that.prop_val_list[0].prop_val_id);
+                                }else{
+                                    that.change_val(prop_val_id);
+                                }
+                            }
+                        }else{
+                            layer.msg(data.msg, {
+                                skin: 'layui-layer-huise'
+                            });
+                        }
+                    },
+                    error:function(e){
+                        layer.msg('网络错误，数据拉取失败', {
+                            skin: 'layui-layer-huise'
+                        });
+                        return false;
+                    }
+                });
+            },
+            change_val:function(prop_val_id){
+                var that = this;
+                that.prop_val_change = prop_val_id;
+                $.ajax({
+                    url: "{:url('Goodscateprop/get_prop_val_info')}",
+                    type: 'post',
+                    dataType: 'json',
+                    data:{
+                        prop_val_id : that.prop_val_change
+                    },
+                    success:function (data) {
+                        if(data.status){
+                            that.prop_val_info = data.info;
+                        }else{
+                            layer.msg(data.msg, {
+                                skin: 'layui-layer-huise'
+                            });
+                        }
+                    },
+                    error:function(e){
+                        layer.msg('网络错误，数据拉取失败', {
+                            skin: 'layui-layer-huise'
+                        });
+                        return false;
+                    }
+                });
+            },
+            add_prop:function(type){
+                var that = this;
+                if( that.new_prop == '' ){
+                    layer.msg('请填写属性类名',{
+                        skin:'layui-layer-huise'
+                    });
+                    return false;
+                }
+                $.ajax({
+                    url: "{:url('Goodscateprop/create_prop')}",
+                    type: 'post',
+                    dataType: 'json',
+                    data: {
+                        cate_id : that.cate_id,
+                        name : that.new_prop
+                    },
+                    success: function (data) {
+                        if (data.status) {
+                            that.get_prop_list();
+                            that.new_prop = '';
+                        } else {
+                            layer.msg(data.msg, {
+                                skin: 'layui-layer-huise'
+                            });
+                        }
+                    },
+                    error: function (e) {
+                        layer.msg('网络错误，添加失败', {
+                            skin: 'layui-layer-huise'
+                        });
+                        return false;
+                    }
+                });
+            },
+            add_val:function(){
+                var that = this;
+                if( that.new_prop_val == '' ){
+                    layer.msg('请填写属性值名',{
+                        skin:'layui-layer-huise'
+                    });
+                    return false;
+                }
+                $.ajax({
+                    url: "{:url('Goodscateprop/create_prop_val')}",
+                    type: 'post',
+                    dataType: 'json',
+                    data: {
+                        prop_id : that.prop_change,
+                        name : that.new_prop_val
+                    },
+                    success: function (data) {
+                        if (data.status) {
+                            that.get_prop_val_list();
+                            that.new_prop_val = '';
+                        } else {
+                            layer.msg(data.msg, {
+                                skin: 'layui-layer-huise'
+                            });
+                        }
+                    },
+                    error: function (e) {
+                        layer.msg('网络错误，添加失败', {
+                            skin: 'layui-layer-huise'
+                        });
+                        return false;
+                    }
+                });
+            },
+            update_val:function(){
+                var that = this;
+                var prop_val_id = that.prop_val_info.prop_val_id;
+                $.ajax({
+                    url: "{:url('Goodscateprop/update_prop_val')}",
+                    type: 'post',
+                    dataType: 'json',
+                    data: that.prop_val_info,
+                    success: function (data) {
+                        layer.msg(data.msg, {
+                            skin: 'layui-layer-huise'
+                        });
+                        if (data.status) {
+                            that.get_prop_val_list(that.prop_change,prop_val_id);
+                        }
+                    },
+                    error: function (e) {
+                        layer.msg('网络错误，保存失败', {
+                            skin: 'layui-layer-huise'
+                        });
+                        return false;
+                    }
+                });
+            },
+            update_prop:function(){
+                var that = this;
+                var prop_change = that.prop_info.prop_id;
+                $.ajax({
+                    url: "{:url('Goodscateprop/update_prop')}",
+                    type: 'post',
+                    dataType: 'json',
+                    data: that.prop_info,
+                    success: function (data) {
+                        layer.msg(data.msg, {
+                            skin: 'layui-layer-huise'
+                        });
+                        if (data.status) {
+                            that.get_prop_list();
+                            that.get_prop_val_list(prop_change,that.prop_val_change);
+                        }
+                    },
+                    error: function (e) {
+                        layer.msg('网络错误，保存失败', {
+                            skin: 'layui-layer-huise'
+                        });
+                        return false;
+                    }
+                });
+            },
+            del_prop:function(city_id){
+                var that = this;
+                if( !confirm('是否确认删除') ){
+                    return false;
+                }
+                layer.msg('暂时不允许删除', {
+                    skin: 'layui-layer-huise'
+                });
+                return false;
+            },
+            del_val:function(city_id){
+                var that = this;
+                if( !confirm('是否确认删除') ){
+                    return false;
+                }
+                layer.msg('暂时不允许删除', {
+                    skin: 'layui-layer-huise'
+                });
+                return false;
+            }
+        }
+    });
+</script>
+</html>

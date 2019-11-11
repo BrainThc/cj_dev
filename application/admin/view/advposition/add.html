@@ -37,7 +37,7 @@
                 <th width="140">广告类型：</th>
                 <td>
                     <select v-model="pos_type" >
-                        <?php foreach( $pos_type_list as $type_id => $type ): ?>
+                        <?php foreach( $models::$map_type as $type_id => $type ): ?>
                         <option value="<?=$type_id?>"><?=$type?></option>
                         <?php endforeach; ?>
                     </select>
