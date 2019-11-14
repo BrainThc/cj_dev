@@ -65,7 +65,7 @@ class Base extends Controller
         //驼峰转下划线
         //$tplName = APP_PATH.'/'.$module.'/view/'.humpToLine($controller).'/'.$action.'.html';
         // 输出视图
-        $this->assign('models',model($controller));
+        $this->assign('models',model("common/".$controller));
         $this->assign('get_info',input('get.'));
         $this->assign('post_info',input('post.'));
         return $this->fetch($tplName, input());
