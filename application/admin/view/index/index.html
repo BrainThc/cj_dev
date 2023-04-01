@@ -11,12 +11,12 @@
 					</a>
 				</li>
 				<li class="layui-nav-item layui-hide-xs" lay-unselect>
-					<a href="http://www.tancj.com/" target="_blank" title="前台">
+					<a href="http://www.layui.com/admin/" target="_blank" title="前台">
 						<i class="layui-icon layui-icon-website"></i>
 					</a>
 				</li>
 				<li class="layui-nav-item" lay-unselect>
-					<a href="javascript:void(0);" layadmin-event="refresh" title="刷新">
+					<a href="javascript:;" layadmin-event="refresh" title="刷新">
 						<i class="layui-icon layui-icon-refresh-3"></i>
 					</a>
 				</li>
@@ -54,7 +54,7 @@
 						<cite>{:session('sys_user')['group_name']} ：{:session('sys_user')['username']}</cite>
 					</a>
 					<dl class="layui-nav-child">
-						<dd><a href="{:url('sys_user/updateLoginCache')}">刷新权限</a></dd>
+						<dd><a href="{:url('Sysuser/updateLoginCache')}">刷新权限</a></dd>
 						<!--<dd><a lay-href="set/user/info.html">基本资料</a></dd>-->
 						<dd><a lay-href="{:url('Sysuser/edit',['id'=>session('sys_user')['sys_user_id']])}">修改密码</a></dd>
 						<hr>
@@ -82,7 +82,7 @@
 							<cite>{$menu.name}</cite>
 						</a>
 						<dl class="layui-nav-child">
-							{volist name="menu.children" id="son" }
+							{volist name="menu['child']" id="son" }
 							<dd data-name="console">
 								<a lay-href="{:url($son.act.'/'.$son.op)}">{$son.name}</a>
 							</dd>

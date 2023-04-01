@@ -1,0 +1,195 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf8" />
+    <title>广告位管理</title>
+    <link rel="stylesheet" type="text/css" href="__SYSCSS__/style.css" />
+    <script type="text/javascript" src="__SYSJS__/jquery.min.js"></script>
+    <script type="text/javascript" src="__SYSJS__/jquery.artDialog.js?skin=blue"></script>
+    <script type="text/javascript" src="__SYSJS__/my.js"></script>
+    <script type="text/javascript" src="__JS__/vue.min.js" ></script>
+    <script type="text/javascript" src="__JS__/layer/layer.js" ></script>
+    <script type="text/javascript" src="__JS__/laydate/laydate.js"></script>
+    <!--图片上传资源文件-->
+    <script type="text/javascript" src="__UPLOAD__/plupload.full.min.js"></script>
+    <script type="text/javascript" src="__UPLOAD__/upload.js"></script>
+    <link rel="stylesheet" href="__UPLOAD__/css/plupload.css">
+    <style>
+        .pageTool{ text-align:center;}
+        .pageTool ul{display:block; width:max-content; margin:0 auto;}
+        .pageTool li{float:left; margin:0 10px;}
+        #main_vue{display:none;}
+    </style>
+</head>
+<body width="100%">
+<div id="result" class="result none"></div>
+<div class="mainbox" id="main_vue" >
+    <div class="table-list">
+        <table cellpadding=0 cellspacing=0 width="100%" class="table_form" >
+            <tr>
+                <th width="140" >广告位标题：</th>
+                <td><input type="text" class="input-text" name="adv_title"  v-model="adv_title" /></td>
+            </tr>
+            <tr>
+                <th width="140" >跳转链接：</th>
+                <td>
+                    <input type="text" class="input-text" name="adv_url"  v-model="adv_url" />
+                    <span style="color: #BBBBBB ;">( 跳转链接必须 https:// 或 http:// 开头 )</span>
+                </td>
+            </tr>
+            <tr>
+                <th width="140">排序：</th>
+                <td><input type="text" class="input-text" name="sequence" v-model="sequence" /></td>
+            </tr>
+            <tr>
+                <th width="140"></th>
+                <td style="color:#FB5A5C;">不填写时间为永久有效</td>
+            </tr>
+            <tr>
+                <th width="140">广告时间：</th>
+                <td>
+                    <input type="text" class="input-text" style="width:150px;" id="adv_start_time" name="adv_start_time" v-model="start_time" placeholder="开始时间" /> —
+                    <input type="text" class="input-text" style="width:150px;" id="adv_end_time" name="adv_end_time" v-model="end_time" placeholder="结束时间" />
+                </td>
+            </tr>
+            <tr>
+                <th width="140" >广告图：</th>
+                <td>
+                    <div id="upload_main" >
+                        <div class="upload_box" v-bind:style="{ width: width/3 + 'px'}" >
+                            <input type="hidden" id="images" v-model="adv_img" class="hid-val-box" readonly />
+                            <div class="upload-title">上传图片</div>
+                            <div class="upload-tips"><span>{{ width }}</span> <span>*</span> <span>{{ height }}</span></div>
+                            <div class="upload-view" id="images_img" v-bind:style="{ width: width/3 + 'px',height: height/3 +'px' }" >
+                                <img v-bind:src="adv_img" alt="" onerror="this.src='__UPLOAD__/images/upload_add.png'" >
+                            </div>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <div class="btn" >
+            <input TYPE="button"  value="添加" class="button" v-on:click="add_submit" />
+            <input TYPE="reset"  value="重置" class="button" />
+            <input TYPE="button"  value="返回" class="button" onclick="parent.window.clearWin();" />
+        </div>
+    </div>
+</div>
+<script>
+    var vue_main = new Vue({
+        el: '#main_vue',
+        data:{
+            'pos_id' : "<?=$info['pos_id']?>",
+            'adv_title' : '',
+            'adv_url' : '',
+            'sequence' : 0,
+            'adv_img' : '',
+            'start_time' : '',
+            'end_time' : '',
+            'width' : "<?=$info['width']?>",
+            'height' : "<?=$info['height']?>"
+        },
+        mounted:function(){
+            var that = this;
+            $('#main_vue').show();
+            //图片上传配置
+            $("#images").WebUpload(
+                'adv',
+                function(respond){
+                    if( respond.status == '1' ){
+                        that.adv_img = respond.info.file;
+                    }else {
+                        layer.msg('网络错误，图片上传失败', {
+                            skin: 'layui-layer-huise'
+                        });
+                        return false;
+                    }
+                },
+                function(errors) {
+                    if( errors.code == -600 ){
+                        alert('图片最大2M');
+                    }
+                });
+            $('#images_img').click(function() {
+                $('#images').click();
+            });
+            //图片设置
+            //配置时间插件
+            var start = {
+                elem: '#adv_start_time',
+                format: 'YYYY-MM-DD hh:mm',
+//                    istoday: true,
+                istime: true,
+                choose: function(dates){ //选择好日期的回调
+                    that.start_time = dates;
+                }
+            };
+            var end = {
+                elem: '#adv_end_time',
+                format: 'YYYY-MM-DD hh:mm',
+                istime: true,
+//                    istoday: true,
+                choose: function(dates){ //选择好日期的回调
+                    that.end_time = dates;
+                }
+            };
+            laydate.skin('danlan');
+            laydate(start);
+            laydate(end);
+        },
+        methods: {
+            add_submit:function(){
+                var that = this;
+                if( isNaN(that.sequence) ){
+                    layer.msg('排序必须是数字', {
+                        skin: 'layui-layer-huise'
+                    });
+                    return false;
+                }
+
+                if( that.adv_img == '' ){
+                    layer.msg('请上传图片', {
+                        skin: 'layui-layer-huise'
+                    });
+                    return false;
+                }
+                //时间值重赋值 防止参数丢失
+                that.start_time = $('#adv_start_time').val();
+                that.end_time = $('#adv_end_time').val();
+                $.ajax({
+                    url: "{:url('Advlist/create_adv')}",
+                    type: 'post',
+                    dataType: 'json',
+                    data:{
+                        'pos_id' : that.pos_id,
+                        'adv_title' : that.adv_title,
+                        'adv_img' : that.adv_img,
+                        'adv_url' : that.adv_url,
+                        'sequence' : that.sequence,
+                        'start_time' : that.start_time,
+                        'end_time' : that.end_time
+                    },
+                    success: function (data) {
+                        layer.msg(data.msg, {
+                            skin: 'layui-layer-huise'
+                        });
+                        if( data.status == 1 ){
+                            setTimeout(function(){
+                                parent.window.clearWin();
+                            },1000);
+                        }
+                    },
+                    error: function (e) {
+                        layer.msg('网络错误,提交失败', {
+                            skin: 'layui-layer-huise'
+                        });
+                        return false;
+                    }
+                });
+            }
+        }
+    });
+</script>
+</body>
+</html>

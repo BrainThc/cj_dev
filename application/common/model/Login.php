@@ -1,5 +1,5 @@
 <?php
-namespace app\admin\model;
+namespace app\common\model;
 use app\admin\model\Log as LogModel;
 use app\admin\model\SysUserGroup as SysUserGroupModel;
 use app\admin\model\SysUser as SysUserModel;

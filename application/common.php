@@ -13,8 +13,6 @@
 
 //不要随意改动
 define('__COMPANYKEY__','cjbanbanda');//公司用户配置秘钥key
-define('COMMON_MODEL','common');
-
 //公共函数
 /**
  * 打印查看对象
@@ -65,13 +63,6 @@ if( !function_exists('je') ) {
     }
 }
 
-if( !function_exists('nModel') ) {
-    function nModel($model_name = '',$type=COMMON_MODEL)
-    {
-        return model($type.'/'.$model_name);
-    }
-}
-
 /**
  * 接口返回格式
  * @param bool $bool    状态
@@ -119,7 +110,7 @@ if( !function_exists('noPermission') ) {
  * @return array        已处理的数据集
  */
 if( !function_exists('setTree') ){
-    function setTree($arr_all,$parent_id=0,$relation=['parent'=>'id','son'=>'pid'],$child_name='children'){
+    function setTree($arr_all,$parent_id=0,$relation=['parent'=>'id','son'=>'pid']){
         $tree_arr = [];
         if( empty($relation) || empty($arr_all) ){
             return $arr_all;
@@ -129,7 +120,7 @@ if( !function_exists('setTree') ){
         if( !empty($arr_all) ){
             foreach( $arr_all as $tkey => $t ){
                 if( $t[$son] == $parent_id ){
-                    $t[$child_name] = setTree($arr_all,$t[$parent],$relation,$child_name);
+                    $t['children'] = setTree($arr_all,$t[$parent],$relation);
                     $tree_arr[] = $t;
                 }
             }
@@ -165,56 +156,6 @@ if( !function_exists('setTreeList') ) {
             $return_list[$key] = $val;
         }
         return $return_list;
-    }
-}
-
-/**
- * 自动匹配需要更新参数
- * @param array $dataInfo       原参数
- * @param array $postData       更新参数
- * @param array $append_param   匹配参数不为空追加内容 或 存在参数需要特定的值
- * @param array $param_type     参数类型
- * @return array $data    匹配后的参数集
- */
-if( !function_exists('setUpdateData') )
-{
-    function setUpdateData($dataInfo=[],$postData=[],$append_param=[],$param_type=[]){
-        if( empty($dataInfo) || empty($postData) ){
-            return [];
-        }
-        $data = [];
-        foreach($dataInfo as $k => $v){
-            if( isset($postData[$k]) && $postData[$k] != $v ){
-                if( isset($param_type[$k]) ){
-                    switch($param_type[$k]){
-                        case 'intval' :
-                            $postData[$k] = intval($postData[$k]);
-                            break;
-                        case 'trim' :
-                            $postData[$k] = empty($postData[$k]) ? '' : trim($postData[$k]);
-                            break;
-                        case 'dateTime' :
-                            $postData[$k] = empty($postData[$k]) ? 0 : strtotime($postData[$k]);
-                            break;
-                        case 'json' :
-                            if( is_array($postData[$k]) ){
-                                $postData[$k] = json_encode($postData[$k]);
-                            }else{
-                                $postData[$k] = trim($postData[$k]);
-                            }
-                            break;
-                        default :
-                            $postData[$k] = empty($postData[$k]) ? '' : trim($postData[$k]);
-                            break;
-                    }
-                    $data[$k] = $postData[$k];
-                }else{
-                    $data[$k] = empty($postData[$k]) ? '' : trim($postData[$k]);
-                }
-            }
-        }
-        $data = array_merge($data,$append_param);
-        return $data;
     }
 }
 

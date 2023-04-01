@@ -1,5 +1,6 @@
 <?php
 namespace app\admin\controller;
+use app\admin\model\Log as LogModel;
 use think\Exception;
 
 /**
@@ -13,12 +14,13 @@ class Site extends Base
 
     public function _initialize(){
         parent::_initialize();
+        $this->siteModel = model('SiteConfig');
     }
 
     //配置信息展示页
     public function index(){
         //获取所有信息
-        $list = $this->model->where('pid',0)
+        $list = $this->siteModel->where('pid',0)
             ->order('id','asc')
             ->select();
         $this->assign('list',$list);
@@ -29,12 +31,13 @@ class Site extends Base
     public function get_config_list(){
         $site_pid = input('site_pid',0);
         $where['pid'] = $site_pid;
-        $list = $this->model->where($where)->select();
+        $list = $this->siteModel->where($where)->select();
         returnJson(true,'success',$list);
     }
 
     //创建配置
-    public function create_config(){
+    public function create_config()
+    {
         $data = input('post.');
         try {
             if ( empty($data['site_key']) || empty($data['site_name']) )
@@ -46,26 +49,27 @@ class Site extends Base
             $insertData['pid'] = empty($data['pid']) ? 0 : intval($data['pid']);
 
             //检查配置关键词和配置名是否存在
-            $checkState = $this->model->where('site_key',$insertData['site_key'])->find();
+            $checkState = $this->siteModel->where('site_key',$insertData['site_key'])->find();
             if( !empty($checkState) )
                 throw new Exception('配置关键词：“'.$insertData['site_key'].'” 已存在');
 
-            $checkState = $this->model->where('site_name',$insertData['site_name'])->find();
+            $checkState = $this->siteModel->where('site_name',$insertData['site_name'])->find();
             if( !empty($checkState) )
                 throw new Exception('配置名：“'.$insertData['site_name'].'”已存在');
 
-            $this->model->startTrans();
+            $this->siteModel->startTrans();
             //添加数据
-            if( $this->model->insert($insertData) === false )
+            if( $this->siteModel->insert($insertData) === false )
                 throw new Exception('网络错误，添加失败');
 
             //日志记录
-            if ( $this->LogIn($this->logModel::INSERT, '添加站点配置：' . $insertData['site_name'],$insertData) === false )
+            $logModel = model('Log');
+            if ( $logModel->note(LogModel::INSERT, '添加站点配置：' . $insertData['site_name']) === false )
                 throw new Exception('网络错误，操作失败');
 
-            $this->model->commit();
+            $this->siteModel->commit();
         } catch (Exception $e) {
-            $this->model->rollback();
+            $this->siteModel->rollback();
             returnJson(false,$e->getMessage());
         }
         returnJson(true,'添加成功');
@@ -103,7 +107,7 @@ class Site extends Base
             $where['site_name'] = trim($data['site_name']);
             $where['id'] = intval($data['id']);
             //检查配置是否存在
-            $checkInfo = $this->model->where($where)->find();
+            $checkInfo = $this->siteModel->where($where)->find();
             if( empty($checkInfo) )
                 throw new Exception('配置'.$where['site_name'].'不存在');
 
@@ -132,20 +136,20 @@ class Site extends Base
                     $logMsg = "编辑站点 “{$data['site_name']}” 配置内容：{$updateData['site_value']}";
                     break;
             }
-            $this->model->startTrans();
+            $this->siteModel->startTrans();
             //更新数据
-            $updateState = $this->model->where($where)->update($updateData);
+            $updateState = $this->siteModel->where($where)->update($updateData);
             if( empty($updateState) )
                 throw new Exception('网络错误，操作失败');
 
             //日志记录
-            $updateData['where'] = $where;
-            if ( $this->LogIn($this->logModel::UPDATES, $logMsg,$updateData) === false )
+            $logModel = model('Log');
+            if ( $logModel->note(LogModel::UPDATES, $logMsg) === false )
                 throw new Exception('网络错误，操作失败');
 
-            $this->model->commit();
+            $this->siteModel->commit();
         } catch (Exception $e) {
-            $this->model->rollback();
+            $this->siteModel->rollback();
             $this->error = $e->getMessage();
             return false;
         }

@@ -36,37 +36,48 @@ function is_mobile_request()
 
 
 //域名绑定配置
-$domain_config = [];
-$domain = [
-    'lily'=>'lily',// Lily专属
-    'www'=>'admin',//PC端
-    'm'=>'wap',//WAP端
-    'g'=>'admin',//总后台
-    'a'=>'api',//接口,
-    'linshi' => 'linshi',//临时使用 可以随时改
-    'p'=>'api/upload/index'//资源库 仅限文件上传接口 和 图片读取
-];
-foreach( $domain as $d => $c ){
-    $domain_config[SCHEME.$d.'.'.DOMAIN] = ['model'=>$c];
+$domain_config = array(
+    //PC端
+    SCHEME.'www.'.DOMAIN => array(
+        'model' => 'index',
+    ),
+    //WAP端
+    SCHEME.'m.'.DOMAIN => array(
+        'model' => 'wap',
+    ),
+    //暂用 禁用
+    //SCHEME.'baoting.'.DOMAIN => array(
+    //     'model' => 'baoting',
+    //),
+    //总后台
+    SCHEME.'g.'.DOMAIN => array(
+        'model' => 'admin',
+    ),
+    //接口
+    SCHEME.'a.'.DOMAIN => array(
+        'model' => 'api',
+    ),
+    //资源库 仅限文件上传接口 和 图片读取
+    SCHEME.'p.'.DOMAIN => array(
+        'model' => 'api/upload/index',
+    )
+);
+// if( SCHEME.$_SERVER['SERVER_NAME'] != SCHEME.'xiying.'.DOMAIN ){
+//PC 端 web端识别跳转
+if( SCHEME.$_SERVER['SERVER_NAME'] == SCHEME.'www.'.DOMAIN && is_mobile_request() ){
+    exit(header('location:'.SCHEME.'m.'.DOMAIN));
+}else if( SCHEME.$_SERVER['SERVER_NAME'] == SCHEME.'m.'.DOMAIN && !is_mobile_request() ){
+    exit(header('location:'.SCHEME.'www.'.DOMAIN));
 }
-if( SCHEME.$_SERVER['SERVER_NAME'] != SCHEME.'www.zlm-lily.cn' ){
-    //PC 端 web端识别跳转
-    if( SCHEME.$_SERVER['SERVER_NAME'] == SCHEME.'www.'.DOMAIN && is_mobile_request() ){
-        // exit(header('location:'.SCHEME.'m.'.DOMAIN));
-    }else if( SCHEME.$_SERVER['SERVER_NAME'] == SCHEME.'m.'.DOMAIN && !is_mobile_request() ){
-    }
- }else{
-    exit(header('location:'.SCHEME.'lily.'.DOMAIN));//这个是表白设定
- }
-//模块绑定
-$model = isset($domain_config[SCHEME.$_SERVER['SERVER_NAME']]) ? $domain_config[SCHEME.$_SERVER['SERVER_NAME']]['model'] : 'index';
-define('BIND_MODULE',$model);
-
+// }
 //跨域配置
 $allow_origin_config = [];
 foreach( $domain_config as $domain => $config ){
     $allow_origin_config[] = $domain;
 }
+//模块绑定
+$model = isset($domain_config[SCHEME.$_SERVER['SERVER_NAME']]) ? $domain_config[SCHEME.$_SERVER['SERVER_NAME']]['model'] : 'index';
+define('BIND_MODULE',$model);
 //配置跨域
 if(isset($_SERVER['HTTP_ORIGIN'])){
     if(in_array($_SERVER['HTTP_ORIGIN'], $allow_origin_config)){

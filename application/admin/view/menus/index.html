@@ -74,6 +74,7 @@
                     {field: 'id', title: '操作', width: 200, templet: '#ctrlTpl'}
                 ]],
                 done: function () {
+                    console.log(menus_type_id);
                     layer.closeAll('loading');
                 }
             });
@@ -296,7 +297,7 @@
     });
 
     //关闭所有二级窗口
-    function callback(){
+    function clearWin(){
         loadList();
         layer.closeAll();
     }

@@ -82,19 +82,6 @@ function checkSort(obj,max){
     }
 }
 
-function checkSort_value(value,max){
-    if( typeof(value) != 'string' && typeof(value) != 'number' ){
-        return false;
-    }
-    if(typeof(max) == 'undefined'){
-        max = 255;
-    }
-    if(value > max || value < 0 ){
-        return false;
-    }
-    return true;
-}
-
 function alidateFloatEmpty(obj,type){
     var num = $(obj).val();
     if( num.trim() == '' || isNaN(num) ){

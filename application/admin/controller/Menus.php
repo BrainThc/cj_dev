@@ -1,5 +1,6 @@
 <?php
 namespace app\admin\controller;
+use app\admin\model\Log as LogModel;
 use think\Exception;
 
 /**
@@ -12,7 +13,8 @@ class Menus extends Base
     public function _initialize()
     {
         parent::_initialize();
-        $this->menusTypeModel = nModel('MenusType');
+        $this->menusModel = model('Menus');
+        $this->menusTypeModel = model('MenusType');
     }
 
     //获取所有导航类型列表
@@ -34,7 +36,10 @@ class Menus extends Base
             $where['pid'] = $data['pid'];
             $whereOr['id'] = $data['pid'];
         }
-        $menus_all = $this->model->where($where)->order('sequence','desc')->select();
+        $menus_all = $this->menusModel
+            ->where($where)
+            ->order('sequence','desc')
+            ->select();
         if( !empty($menus_all) ){
             foreach( $menus_all as $k => $v ){
                 $v['name'] = $v['menu_name'];
@@ -113,17 +118,18 @@ class Menus extends Base
             $t = time();
             $insertData['add_time'] = $t;
             $insertData['edit_time'] = $t;
-            $this->model->startTrans();
-            if( $this->model->insert($insertData) === false )
+            $this->menusModel->startTrans();
+            if( $this->menusModel->insert($insertData) === false )
                 throw new Exception('网络错误，添加失败');
 
-            //日志记录
-            if ( $this->LogIn($this->logModel::INSERT, '添加导航菜单：'.$insertData['menu_name'],$insertData) === false )
-                throw new Exception('网络错误，操作失败');
+            //添加日志
+            $logModel = model('Log');
+            if( $logModel->note(LogModel::INSERT,'添加导航菜单：'.$insertData['menu_name']) === false )
+                throw new Exception('网络错误，添加失败');
 
-            $this->model->commit();
+            $this->menusModel->commit();
         }catch( Exception $e ){
-            $this->model->rollback();
+            $this->menusModel->rollback();
             returnJson(false,$e->getMessage());
         }
         returnJson(true,'添加成功');
@@ -136,7 +142,7 @@ class Menus extends Base
             noPermission();
 
         $where['id'] = ['=',$ids];
-        $info = $this->model->where($where)->find();
+        $info = $this->menusModel->where($where)->find();
         if( empty($info) )
             noPermission();
 
@@ -153,13 +159,14 @@ class Menus extends Base
 
             $where['id'] = ['=',$data['menu_id']];
             //检查是否存在
-            $info = $this->model->where($where)->find();
+            $info = $this->menusModel->where($where)->find();
             if( empty($info) )
                 throw new Exception('参数错误');
 
-
             if( empty($data['menu_name']) )
                 throw new Exception('导航名不能为空');
+
+            $updateData['menu_name'] = trim($data['menu_name']);
 
             //父级id
             if( !empty($data['menus_type_id']) && intval($data['menus_type_id']) > 0 ) {
@@ -170,27 +177,27 @@ class Menus extends Base
                     throw new Exception('导航类型不存在');
 
             }
+
+            $updateData['menu_url'] = empty($data['menu_url']) ? '' : $data['menu_url'];
+            $updateData['menu_icon'] = empty($data['menu_icon']) ? '' : $data['menu_icon'];
+            $updateData['pid'] = empty($data['pid']) ? 0 : $data['pid'];
+            $updateData['sequence'] = empty($data['sequence']) ? 0 : $data['sequence'];
             $t = time();
-            $param_type = array(
-                'pid'       => 'intval',
-                'sequence'  => 'intval',
-            );
-            $updateData = setUpdateData($info->toArray(),$data,['edit_time'=>$t],$param_type);
-            if(!empty($updateData)){
-                $this->model->startTrans();
-                $updateState = $this->model->where($where)->update($updateData);
-                if( empty($updateState) )
-                    throw new Exception('网络错误，保存失败');
+            $updateData['edit_time'] = $t;
+            $this->menusModel->startTrans();
 
-                //日志记录
-                $updateData['where'] = $where;
-                if ( $this->LogIn($this->logModel::UPDATES, '编辑导航菜单：'.$info['menu_name'],$updateData) === false )
-                    throw new Exception('网络错误，操作失败');
+            $updateState = $this->menusModel->where($where)->update($updateData);
+            if( empty($updateState) )
+                throw new Exception('网络错误，保存失败');
 
-                $this->model->commit();
-            }
+            //添加日志
+            $logModel = model('Log');
+            if( $logModel->note(LogModel::UPDATES,'编辑导航菜单：'.$info['menu_name']) === false )
+                throw new Exception('网络错误，保存失败');
+
+            $this->menusModel->commit();
         }catch( Exception $e ){
-            $this->model->rollback();
+            $this->menusModel->rollback();
             returnJson(false,$e->getMessage());
         }
         returnJson(true,'保存成功');
@@ -206,23 +213,24 @@ class Menus extends Base
             $menu_id = intval($data['id']);
             $where['id'] = ['=',$menu_id];
             //检查栏目是否存在
-            $info = $this->model->where($where)->find();
+            $info = $this->menusModel->where($where)->find();
             if( empty($info) )
                 throw new Exception('参数错误');
 
             $updateData['sequence'] = empty($data['sequence']) ? 0 : intval($data['sequence']);
-            $this->model->startTrans();
-            $updateState = $this->model->where($where)->update($updateData);
+            $this->menusModel->startTrans();
+            $updateState = $this->menusModel->where($where)->update($updateData);
             if( empty($updateState) )
                 throw new Exception('网络错误，保存失败');
 
-            //日志记录
-            if ( $this->LogIn($this->logModel::UPDATES, '修改 “'.$info['menu_name'].'” 导航排序',$updateData) === false )
+            //添加日志
+            $logModel = model('Log');
+            if( $logModel->note(LogModel::UPDATES,'修改 “'.$info['menu_name'].'” 导航排序') === false )
                 throw new Exception('网络错误，操作失败');
 
-            $this->model->commit();
+            $this->menusModel->commit();
         }catch( Exception $e ){
-            $this->model->rollback();
+            $this->menusModel->rollback();
             returnJson(false,$e->getMessage());
         }
         returnJson(true,'修改成功');
@@ -239,23 +247,24 @@ class Menus extends Base
 
             $where['id'] = ['=',$data['id']];
             //检查是否存在
-            $info = $this->model->where($where)->find();
+            $info = $this->menusModel->where($where)->find();
             if( empty($info) )
                 throw new Exception('参数错误');
 
-            $this->model->startTrans();
+            $this->menusModel->startTrans();
             $updateData['is_deleted'] = 1;
-            $status = $this->model->where($where)->update($updateData);
+            $status = $this->menusModel->where($where)->update($updateData);
             if( empty($status) )
                 throw new Exception('网络错误，操作失败');
 
-            //日志记录
-            if ( $this->LogIn($this->logModel::DEL, '删除导航：'.$info['menu_name'],$where) === false )
+            //添加日志
+            $logModel = model('Log');
+            if( $logModel->note(LogModel::DEL,'删除导航：'.$info['menu_name']) === false )
                 throw new Exception('网络错误，操作失败');
 
-            $this->model->commit();
+            $this->menusModel->commit();
         }catch( Exception $e ){
-            $this->model->rollback();
+            $this->menusModel->rollback();
             returnJson(false,$e->getMessage());
         }
         returnJson(true,'删除成功');
@@ -285,8 +294,9 @@ class Menus extends Base
             if( $this->menusTypeModel->insert($insertData) === false )
                 throw new Exception('网络错误，操作失败');
 
-            //日志记录
-            if ( $this->LogIn($this->logModel::INSERT, '添加导航类型：'.$insertData['type_name'],$insertData) === false )
+            //添加日志
+            $logModel = model('Log');
+            if( $logModel->note(LogModel::INSERT,'添加导航类型：'.$insertData['type_name']) === false )
                 throw new Exception('网络错误，操作失败');
 
             $this->menusTypeModel->commit();

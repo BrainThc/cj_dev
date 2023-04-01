@@ -57,7 +57,7 @@
                     <div class="btn-box" >
                         <div class="layui-input-block">
                             <button class="layui-btn" lay-submit lay-filter="formSubmit">保存</button>
-                            <button type="reset" class="layui-btn layui-btn-primary"  value="返回" onclick="parent.window.callback();" >返回</button>
+                            <button type="reset" class="layui-btn layui-btn-primary"  value="返回" onclick="parent.window.clearWin();" >返回</button>
                         </div>
                     </div>
                 </div>
@@ -68,9 +68,8 @@
 <script>
     var menu_id = "{$info.id}";
     var menus_type_id = "{$info.menus_type_id}";
-    var pid = "{$info.pid}";
     var getMenusListApi = "{:url('Menus/get_menus_list')}";
-    var updateApi = "{:url('Menus/update_menu')}";
+    var updateApi = "{url:('Menus/update_menu')}";
     var form = layui.form;
     //图片上传配置
     $("#icon").WebUpload(
@@ -113,13 +112,10 @@
                     $('select[name=pid]').append('<option value="0">为顶级分类</option>');
                     var selected = '';
                     for( var l = 0; l < res.data.length; l++ ){
-                        selected = '';//初始化
-                        if( pid == res.data[l].id ){
+                        if( menus_type_id == res.data[l].id ){
                             selected = 'selected';
                         }
-                        if( menu_id != res.data[l].id ){
-                            $('select[name=pid]').append('<option value="'+res.data[l].id+'" '+selected+' >'+res.data[l].name+'</option>');
-                        }
+                        $('select[name=pid]').append('<option value="'+res.data[l].id+'" '+selected+' >'+res.data[l].name+'</option>');
                     }
                     form.render();
                 }else{
@@ -162,12 +158,12 @@
                     time: 500
                 }, function(){
                     if(!res.code){
-                        parent.window.callback();
+                        parent.window.clearWin();
                     }
                 });
             },
             error: function (e) {
-                layer.msg('网络错误,保存失败', {
+                layer.msg('网络错误,添加失败', {
                     skin: 'layui-layer-huise'
                 });
                 return false;
