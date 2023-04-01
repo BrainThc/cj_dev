@@ -1,0 +1,267 @@
+<!DOCTYPE>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf8" />
+        <title>文章管理</title>
+        <link rel="stylesheet" type="text/css" href="__SYSCSS__/style.css" />
+        <script type="text/javascript" src="__SYSJS__/jquery.min.js"></script>
+        <script type="text/javascript" src="__SYSJS__/jquery.artDialog.js?skin=blue"></script>
+        <script type="text/javascript" src="__SYSJS__/my.js"></script>
+        <script type="text/javascript" src="__JS__/vue.min.js" ></script>
+        <script type="text/javascript" src="__JS__/layer/layer.js" ></script>
+        <script type="text/javascript" src="__JS__/laydate/laydate.js"></script>
+        <!--图片上传资源文件-->
+        <script type="text/javascript" src="__UPLOAD__/plupload.full.min.js"></script>
+        <script type="text/javascript" src="__UPLOAD__/upload.js"></script>
+        <link rel="stylesheet" href="__UPLOAD__/css/plupload.css">
+        <!--副文本资源文件-->
+        <script type="text/javascript" charset="utf-8" src="__JS__/ueditor/ueditor.config.js"></script>
+        <script type="text/javascript" charset="utf-8" src="__JS__/ueditor/ueditor.all.min.js"></script>
+        <script type="text/javascript" charset="utf-8" src="__JS__/ueditor/plugin.js"></script>
+        <script type="text/javascript" charset="utf-8" src="__JS__/ueditor/lang/zh-cn/zh-cn.js"></script>
+        <style>
+            .pageTool{ text-align:center;}
+            .pageTool ul{display:block; width:max-content; margin:0 auto;}
+            .pageTool li{float:left; margin:0 10px;}
+            #main_vue{display:none;}
+        </style>
+    </head>
+    <body width="100%">
+    <div id="result" class="result none"></div>
+    <div class="mainbox" id="main_vue" >
+        <div class="mainnav_title">
+            <input type="button" class="button" v-on:click="parent.window.clearWin();" value="返回" />
+        </div>
+        <div class="table-list">
+            <table cellpadding=0 cellspacing=0 width="100%" class="table_form" >
+                <tr>
+                    <th width="140" >文章标题：</th>
+                    <td><input type="text" class="input-text" style="width:320px;" name="adv_title"  v-model="title" /></td>
+                    <td rowspan="5" >
+                        <div id="upload_main" >
+                            <div class="upload_box" style="width:360px; height:250px;">
+                                <input type="hidden" id="images" v-model="images" class="hid-val-box" readonly />
+                                <div class="upload-title">列表图片</div>
+                                <div class="upload-tips"><span>宽</span> <span>*</span><span>高</span></div>
+                                <div class="upload-view" id="images_img" style="height:200px;" >
+                                    <img v-bind:src="images" alt="" onerror="this.src='__UPLOAD__/images/upload_add.png'" >
+                                </div>
+                            </div>
+                            <div class="clear"></div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th width="140" >文章SEO描述（description）：</th>
+                    <td>
+                        <textarea style="width:320px; height:100px; resize:none" v-model="desc" ></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <th width="140" >文章SEO关键词（keyword）：</th>
+                    <td>
+                        <textarea style="width:320px; height:100px; resize:none"  v-model ="keyword" ></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <th width="140">是否推荐：</th>
+                    <td>
+                        是 <input type="radio" class="input-text" v-model="recommend" value="1" />
+                        否 <input type="radio" class="input-text" v-model="recommend" value="0" />
+                    </td>
+                </tr>
+                <tr>
+                    <th width="140">排序：</th>
+                    <td><input type="text" class="input-text" name="sequence" v-model="sequence" /></td>
+                </tr>
+                <tr>
+                    <th width="140">阅读权限：</th>
+                    <td colspan="2" >
+                        <select name="readgroup" v-model="readgroup" >
+                            <?php foreach( $map_readgroup as $key => $group ){ ?>
+                            <option value="<?=$key?>" ><?=$group?></option>
+                            <?php } ?>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th width="140">文章栏目：</th>
+                    <td colspan="2" >
+                        <select name="cate_id" v-model="cate_id" >
+                            <option value="0">请选择</option>
+                            <option v-for="(cate,index) in cate_list" v-bind:value="cate.art_cate_id" v-html="cate.cate_name"></option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th width="140" >文章内容：</th>
+                    <td colspan="2">
+                        <div id="content" style="width:90%; height:400px;"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <th width="140"></th>
+                    <td colspan="2" style="color:#FB5A5C;" >注意：文章添加后在 不可读列表 且为 未审核状态，若要在客户端显示需要在列表中设置中设置为 可读 并 审核</td>
+                </tr>
+            </table>
+            <div class="btn" >
+                <input TYPE="button"  value="添加" class="button" v-on:click="add_submit" />
+                <input TYPE="button"  value="返回" class="button" onclick="parent.window.clearWin();" />
+            </div>
+        </div>
+    </div>
+    <script>
+        var ue = UE.getEditor('content');
+        //获取文章内容内容
+        function getContents() {
+            var html = '';
+            ue.ready(function () {
+                html = ue.getContent();
+            });
+            return html;
+        }
+        var vue_main = new Vue({
+            el: '#main_vue',
+            data:{
+                'cate_list' : [],
+                'title' : '',
+                'images' : '',
+                'desc' : '',
+                'cate_id' : 0,
+                'keyword' : '',
+                'recommend' : 0,
+                'sequence' : 0,
+                'readgroup' : 0,
+                'content' : '',
+            },
+            mounted:function(){
+                var that = this;
+                that.get_cate_list();
+                $('#main_vue').show();
+                //图片上传配置
+                $("#images").WebUpload(
+                    'adv',
+                    function(respond){
+                        if( respond.status == '1' ){
+                            that.images = respond.info.file;
+                        }else {
+                            layer.msg('网络错误，图片上传失败', {
+                                skin: 'layui-layer-huise'
+                            });
+                            return false;
+                        }
+                    },
+                    function(errors) {
+                        if( errors.code == -600 ){
+                            alert('图片最大2M');
+                        }
+                    });
+                $('#images_img').click(function() {
+                    $('#images').click();
+                });
+            },
+            methods: {
+                get_cate_list:function(){
+                    var that = this;
+                    $.ajax({
+                        url: "{:url('Articlecate/get_cate_list')}?v="+Math.random(),
+                        type: 'get',
+                        dataType: 'json',
+                        success:function (data) {
+                            if(data.status){
+                                //区分层级
+                                that.set_tree(data.info);
+                            }else{
+                                layer.msg(data.msg, {
+                                    skin: 'layui-layer-huise'
+                                });
+                                return false;
+                            }
+                        },
+                        error:function(e){
+                            layer.msg('网络错误数据拉取失败', {
+                                skin: 'layui-layer-huise'
+                            });
+                            return false;
+                        }
+                    });
+                },
+                set_tree:function(cate_list){
+                    var that = this;
+                    var nbsp = '';
+                    for( var i = 0; i < cate_list.length; i++ ){
+                        cate_list[i].oldSequence = cate_list[i].sequence;
+                        cate_list[i].tree = '';
+                        nbsp = '';
+                        if( cate_list[i].pNum > 0 ){
+                            cate_list[i].tree += '├';
+                            for( var t = 0; t < cate_list[i].pNum; t++ ){
+                                nbsp += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+                                cate_list[i].tree += '─';
+                            }
+                            cate_list[i].tree = nbsp+cate_list[i].tree;
+                            cate_list[i].cate_name = cate_list[i].tree+cate_list[i].cate_name;
+                        }
+                    }
+                    that.cate_list = cate_list;
+                },
+                add_submit:function(){
+                    var that = this;
+                    if( that.title == '' ){
+                        layer.msg('标题必填', {
+                            skin: 'layui-layer-huise'
+                        });
+                        return false;
+                    }
+                    if( isNaN(that.sequence) ){
+                        layer.msg('排序必须是数字', {
+                            skin: 'layui-layer-huise'
+                        });
+                        return false;
+                    }
+                    if( that.images == '' ){
+                        layer.msg('未上传列表图片', {
+                            skin: 'layui-layer-huise'
+                        });
+                        return false;
+                    }
+                    that.content = getContents();
+                    //时间值重赋值 防止参数丢失
+                    $.ajax({
+                        url: "{:url('Article/create_article')}",
+                        type: 'post',
+                        dataType: 'json',
+                        data:{
+                            'title' : that.title,
+                            'images' : that.images,
+                            'desc' : that.desc,
+                            'cate_id' : that.cate_id,
+                            'keyword' : that.keyword,
+                            'recommend' : that.recommend,
+                            'sequence' : that.sequence,
+                            'readgroup' : that.readgroup,
+                            'content' : that.content
+                        },
+                        success: function (data) {
+                            layer.msg(data.msg, {
+                                skin: 'layui-layer-huise'
+                            });
+                            if( data.status == 1 ){
+                                setTimeout(function(){
+                                    parent.window.clearWin();
+                                },1000);
+                            }
+                        },
+                        error: function (e) {
+                            layer.msg('网络错误,提交失败', {
+                                skin: 'layui-layer-huise'
+                            });
+                            return false;
+                        }
+                    });
+                }
+            }
+        });
+    </script>
+    </body>
+</html>

@@ -1,0 +1,82 @@
+{__NOLAYOUT__}<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf8" />
+    <title>一贯科技内容管理系统</title>
+    <link rel="stylesheet" href="__SYSCSS__/style.css">
+    <!--<load href='__SYSCSS__/style.css' />-->
+    <!--<load href="__SYSJS__/jquery.min.js"/>-->
+    <!--<load href="__SYSJS__/jquery.validate.js"/>-->
+    <!--<load href="__SYSJS__/jquery.form.js"/>-->
+    <!--<load href="__SYSJS__/my.js"/>-->
+    <!--[if IE 6]-->
+    <script src="__SYSJS__/jquery.min.js"  type="text/javascript" ></script>
+    <script src="__SYSJS__/jquery.validate.js"  type="text/javascript" ></script>
+    <script src="__SYSJS__/jquery.form.js"  type="text/javascript" ></script>
+    <script src="__SYSJS__/my.js"  type="text/javascript" ></script>
+    <script src="__SYSJS__/png.js"  type="text/javascript" ></script>
+    <script type="text/javascript">
+        DD_belatedPNG.fix(' .login_box ');
+    </script>
+    <!--[endif]-->
+    <style>
+        body {background:#02609b url(__SYSIMG__/login_bg.gif)   repeat-x;}
+    </style>
+</head>
+<body id="loginbg" >
+<form method='post' name="login" id="form1" action="{:url('Login/signIn')}">
+    <div class="login_box">
+        <div class="login_title">CJ内容管理系统</div>
+
+        <div class="login_left">
+            <img src="__SYSIMG__/admin_logo.png"   border="0" alt="" >
+        </div>
+
+        <div class="login_right">
+            <div class="msg"><div id="result" class="result none"></div></div>
+            <div class="login_form">
+                <ul>
+                    <li><label>账号</label><input type="text" id="username" class="input-text" name="username" size="16"></li>
+                    <li><label>密码</label><input type="password"  class="input-text" name="password" size="16"></li>
+                    <li><label>验证码</label><input name="verifyCode" class="input-text inputbox" id="verifyCode"  size="6" value="" maxlength="4" /><img src="{:captcha_src()}" onclick="this.src='{:captcha_src()}?'+Math.random()" class="checkcode" align="absmiddle"  title="验证码" id="verifyImage"/></li>
+                    <li><label></label><input type="hidden" name="ajax" value="1"><input type="submit" class="button"> <input type="reset" name="reset" value="重置" class="button" id="reset" /></li>
+                    <!--<li style="text-align: center;"><a style="color: #fff" href="">忘记密码</a></li>-->
+                </ul>
+            </div>
+        </div>
+
+    </div>
+</form>
+<script language="JavaScript">
+
+    jQuery(document).ready(function($){
+        $('#form1').ajaxForm({
+            beforeSend:function(){
+                $('#result').html('<img src="__SYSIMG__/msg_loading.gif">').show();
+            },
+            success:       complete,  // post-submit callback,
+            error: errReturn,
+            dataType: 'json'
+        });
+        return false;
+    });
+    function complete(data){
+        if (data.status==1)
+        {
+            $('#result').html(data.msg).show();
+            window.location.href = '{:url("Index/index")}';
+            return false;
+        }else{
+            // errReturn();
+            // $('#verifyCode').val('');
+            // $('#verifyImage').attr('src','{:captcha_src()}?'+Math.random());
+            $('#result').html(data.msg).show();
+        }
+    }
+
+    function errReturn(){
+        $('#verifyImage').attr('src','{:captcha_src()}');
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,233 @@
+<!DOCTYPE>
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf8" />
+    <title>地区管理</title>
+    <link rel="stylesheet" type="text/css" href="__SYSCSS__/style.css" />
+    <script type="text/javascript" src="__SYSJS__/jquery.min.js"></script>
+    <script type="text/javascript" src="__SYSJS__/jquery.artDialog.js?skin=blue"></script>
+        <script type="text/javascript" src="__SYSJS__/my.js"></script>
+        <script type="text/javascript" src="__JS__/vue.min.js" ></script>
+        <script type="text/javascript" src="__JS__/layer/layer.js" ></script>
+        <style>
+            #nav{margin-bottom:20px; color:#000;}
+            .li-box{ float:left; width:200px; margin-right:15px;overflow:hidden; }
+            .li-box .title{width:100%; height:25px; line-height:25px; text-align:center; left:0; top:0; background:#00a0e9; color:#ffffff; }
+            .li-box ul{ float:left; width:200px; height:325px; overflow:hidden; overflow-y:scroll; border:1px solid #ccc;}
+            .li-box li{width:100%; height:25px; line-height:25px;  text-indent:10px;}
+            .li-box li:hover{background:#eee;}
+            .li-box li a{float:right; cursor:pointer; color:#ccc;}
+            .li-box .active{ background:#00b7ee !important; color:#ffffff;}
+            .input-box{ height:30px; width:100%; overflow:hidden; margin:10px auto; }
+            .input-box input{ height:30px; line-height:30px; text-align:center; width:100%; margin:0; padding:0; }
+        </style>
+    </head>
+    <body width="100%">
+        <div id="result" class="result none"></div>
+        <div class="mainbox" id="main_vue">
+            <div id="nav" class="mainnav_title">
+                <span>省市区管理</span>
+            </div>
+            <div class="li-box" id="province" >
+                <div class="title">省份</div>
+                <ul>
+                    <li style="text-align:center;" v-if="prov_list.length == 0 " >数据拉取中...</li>
+                    <li v-bind:class="[ ( prov_change == prov.id ) ? 'active' : '']" v-for="(prov,index) in prov_list" v-on:click="get_city_list(prov.id,'prov')" >{{ prov.name }} <a href="javascript:void(0);" v-on:click="del_city" >删除</a></li>
+                </ul>
+                <div class="input-box" >
+                    <input type="text" v-model="new_prov" placeholder="填写省份名">
+                </div>
+                <div class="input-box" >
+                    <input type="button" class="button" value="添加" v-on:click="add_city('prov')">
+                </div>
+            </div>
+            <div class="li-box" id="city" v-if="prov_change > 0" >
+                <div class="title">城市</div>
+                <ul>
+                    <li style="text-align:center;" v-if="city_list.length == 0 " >没有内容</li>
+                    <li v-bind:class="[ ( city_change == city.id ) ? 'active' : '']" v-for="(city,index) in city_list" v-on:click="get_city_list(city.id,'city')" >{{ city.name }} <a href="javascript:void(0);" v-on:click="del_city" >删除</a></li>
+                </ul>
+                <div class="input-box" >
+                    <input type="text" v-model="new_city" placeholder="填写城市名">
+                </div>
+                <div class="input-box" >
+                    <input type="button" class="button" value="添加" v-on:click="add_city('city')">
+                </div>
+            </div>
+            <div class="li-box" id="area" v-if="city_change > 0">
+                <div class="title">区域</div>
+                <ul>
+                    <li style="text-align:center;" v-if="area_list.length == 0 " >没有内容</li>
+                    <li v-bind:class="[ ( area_change == area.id ) ? 'active' : '']" v-for="(area,index) in area_list" >{{ area.name }} <a href="javascript:void(0);" v-on:click="del_city" >删除</a></li>
+                </ul>
+                <div class="input-box" >
+                    <input type="text" v-model="new_area" placeholder="填写区域名">
+                </div>
+                <div class="input-box" >
+                    <input type="button" class="button" value="添加" v-on:click="add_city('area')">
+                </div>
+            </div>
+        </div>
+    </body>
+    <script>
+        var vue_main = new Vue({
+            el: '#main_vue',
+            data:{
+                'prov_list' : [],
+                'prov_change' : '',
+                'new_prov' : '',
+                'city_list' : [],
+                'city_change' : '',
+                'new_city' : '',
+                'area_list' : [],
+                'area_change' : '',
+                'new_area' : ''
+            },
+            mounted:function(){
+                var that = this;
+                that.get_city_list();
+            },
+            methods:{
+                get_city_list:function(pid,type){
+                    if( typeof(pid) == 'undefined' ){
+                        pid = 0;
+                    }
+                    if( typeof(type) == 'undefined' ){
+                        type = '';
+                    }
+                    var that = this;
+                    $.ajax({
+                        url: "{:url('City/get_city_list')}",
+                        type: 'post',
+                        dataType: 'json',
+                        data:{
+                            pid : pid
+                        },
+                        success:function (data) {
+                            if(data.status){
+                                switch(type){
+                                    case 'prov' :
+                                        that.prov_change = pid;
+                                        that.city_change = '';
+                                        that.city_list = data.info;
+                                        that.area_list = [];
+                                        break;
+                                    case 'city' :
+                                        that.city_change = pid;
+                                        that.area_list = data.info;
+                                        break;
+                                    case 'area' :
+                                        that.area_list = data.info;
+                                        break;
+                                    default :
+                                        that.prov_list = data.info;
+                                        that.prov_change = '';
+                                        that.city_change = '';
+                                        that.area_change = '';
+                                        that.city_list = [];
+                                        that.area_list = [];
+                                        break;
+                                }
+                            }else{
+                                layer.msg(data.msg, {
+                                    skin: 'layui-layer-huise'
+                                });
+                            }
+                        },
+                        error:function(e){
+                            layer.msg('网络错误数据拉取失败', {
+                                skin: 'layui-layer-huise'
+                            });
+                            return false;
+                        }
+                    });
+                },
+                add_city:function(type){
+                    var that = this;
+                    var name = '';
+                    var pid = 0;
+                    switch(type){
+                        case 'prov':
+                            if( that.new_prov == '' ){
+                                layer.msg('请填写省份名', {
+                                    skin: 'layui-layer-huise'
+                                });
+                                return false;
+                            }
+                            type = '';
+                            name = that.new_prov;
+                            pid = 0;
+                            break;
+                        case 'city':
+                            type = 'prov';
+                            if( that.new_city == '' ){
+                                layer.msg('请填写城市名', {
+                                    skin: 'layui-layer-huise'
+                                });
+                                return false;
+                            }
+                            name = that.new_city;
+                            pid = that.prov_change;
+                            break;
+                        case 'area':
+                            if( that.new_area == '' ){
+                                layer.msg('请填写区域名', {
+                                    skin: 'layui-layer-huise'
+                                });
+                                return false;
+                            }
+                            name = that.new_area;
+                            pid = that.city_change;
+                            break;
+                        default :
+                            if( that.new_area == '' ){
+                                layer.msg('页面错误，添加失败', {
+                                    skin: 'layui-layer-huise'
+                                });
+                                return false;
+                            }
+                            return false;
+                            break;
+                    }
+                    $.ajax({
+                        url: "{:url('City/create_city')}",
+                        type: 'post',
+                        dataType: 'json',
+                        data: {
+                            name : name,
+                            pid : pid
+                        },
+                        success: function (data) {
+                            if (data.status) {
+                                that.get_city_list(pid,type);
+                                that.new_prov = '';
+                                that.new_city = '';
+                                that.new_area = '';
+                            } else {
+                                layer.msg(data.msg, {
+                                    skin: 'layui-layer-huise'
+                                });
+                            }
+                        },
+                        error: function (e) {
+                            layer.msg('网络错误，添加失败', {
+                                skin: 'layui-layer-huise'
+                            });
+                            return false;
+                        }
+                    });
+                },
+                del_city:function(city_id){
+                    var that = this;
+                    if( !confirm('是否确认删除') ){
+                        return false;
+                    }
+                    layer.msg('暂时不允许删除', {
+                        skin: 'layui-layer-huise'
+                    });
+                    return false;
+                }
+            }
+        });
+    </script>
+</html>
