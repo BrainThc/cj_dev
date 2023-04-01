@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<meta content="" name="keywords">
+		<meta content="" name="description">
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="format-detection" content="telephone=no,email=no,adress=no" />
+		<meta http-equiv="Pragma" content="no-cache" />
+		<title>欢乐赛车推筒子</title>
+		<link rel="stylesheet" type="text/css" href="../public/css/reset.css"/>
+		<link rel="stylesheet" type="text/css" href="../public/layer/skin/layer.css"/>
+		<link rel="stylesheet" type="text/css" href="../public/css/common.css"/>
+		<link rel="stylesheet" type="text/css" href="../public/css/game_list.css"/>
+		<script src="../public/js/jquery-2.1.0.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../public/js/common.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../public/layer/layer.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+	<body>
+		<div class="home_wrap">
+			<div class="header clearfix">
+				<a href="javascript:history.back(-1);" class="return_btn fl"></a>
+				<a href="javascript:void(0);" class="member_btn fr" onclick="codeOpen(this,'master_ups')"></a>
+			</div>
+			
+			<div class="games_title"><img src="../public/images/company_title.png" alt="" /></div>
+			
+			<div class="game_msg">
+				<div class="game_list clearfix">
+					<div class="game_name fl">
+						<span>大小</span>
+						<i><img src="../public/images/game01.png" alt="" /></i>
+					</div>
+					<a href="javascript:layer.msg('该游戏暂未开启，敬请期待', {skin: 'layui-layer-huise'});" class="entrance fr">
+						<span>大小</span>
+					</a>
+				</div>
+				<div class="game_list clearfix">
+					<div class="game_name fl">
+						<span>二八</span>
+						<i><img src="../public/images/game02.png" alt="" /></i>
+					</div>
+					<a href="javascript:layer.msg('该游戏暂未开启，敬请期待', {skin: 'layui-layer-huise'});" class="entrance fr">
+						<span>二八</span>
+					</a>
+				</div>
+				<div class="game_list clearfix">
+					<div class="game_name fl">
+						<span>牛牛</span>
+						<i><img src="../public/images/game03.png" alt="" /></i>
+					</div>
+					<a href="javascript:layer.msg('该游戏暂未开启，敬请期待', {skin: 'layui-layer-huise'});" class="entrance fr">
+						<span>牛牛</span>
+					</a>
+				</div>
+				<div class="game_list clearfix">
+					<div class="game_name fl">
+						<span>牌九</span>
+						<i><img src="../public/images/game04.png" alt="" /></i>
+					</div>
+					<a href="index.html" class="entrance fr">
+						<span>牌九</span>
+					</a>
+				</div>
+			</div>
+			
+			<!--二维码-->
+			<div class="code_wrap">
+				<div class="code_mask" onclick="codeClose(this)"></div>
+				<div class="code_bar ups_wrap">
+					<div class="code_title"></div>
+					<div class="code_img"><img src="" alt="" /></div>
+					<div class="code_tips">点击长按二维码<span></span></div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

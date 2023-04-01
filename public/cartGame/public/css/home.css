@@ -1,0 +1,161 @@
+html{
+	background: #000;
+}
+
+.home_wrap{
+	width: 7.5rem;
+	height: 12.2rem;
+	background: url(../images/home_bg.png) no-repeat top center /cover;
+	left: 50%;
+	top: 50%;
+	margin-left: -3.75rem;
+	margin-top: -6.1rem;
+	position: fixed;
+	z-index: 9999;
+}
+
+.header{
+	color: #fff;
+	padding: .14rem .08rem;
+}
+
+.header .user_info .user_face{
+	width: .82rem;
+	height: .82rem;
+	border-radius: 50%;
+	overflow: hidden;
+	background: #fff;
+}
+
+.header .user_info .user_face img{
+	width: 100%;
+	height: 100%;
+}
+
+.header .user_info .user_data{
+	margin-left: .3rem;
+	margin-top: .06rem;
+}
+
+.header .user_info .user_data .user_id{
+	font-size: .24rem;
+	color: #c0bc99;
+}
+
+.header .setting_btn{
+	width: .8rem;
+	height: .8rem;
+	background: url(../images/home_setting.png) no-repeat;
+	background-size: 100% 100%;
+	margin-right: .02rem;
+	margin-top: -.02rem;
+}
+
+.activity{
+	padding-top: 4.08rem;
+	padding-left: 1.37rem;
+}
+
+.activity .activity_list{
+	width: 5.84rem;
+	height: 2.15rem;
+	box-sizing: border-box;
+	border-radius: .16rem;
+	margin-bottom: .24rem;
+	background-image:-webkit-linear-gradient(to right, #291f1e, #221e1f, #312726);
+	background-image:linear-gradient(to right, #291f1e, #221e1f, #312726);
+	position: relative;
+	overflow: hidden;
+}
+
+.activity .activity_list a{
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+
+.activity .activity_list img{
+	width: 100%;
+	height: 100%;
+}
+
+.activity .activity_list .act_info{
+	position: absolute;
+	right: 0;
+	top: 0;
+	height: 100%;
+	width: 3.2rem;
+	background: rgba(0,0,0,.5);
+	padding-top: .1rem;
+	color: #fff;
+	text-align: center;
+}
+
+.activity .activity_list .act_info .nper_title,.activity .activity_list .act_info .countdown_box .countdown_title{
+	/*-webkit-text-stroke: .02rem #000;*/
+	font-size: .3rem;
+	font-weight: 600;
+}
+
+.activity .activity_list .act_info .lottery_num{
+	text-align: center;
+	margin-top: .1rem;
+}
+
+.activity .activity_list .act_info .lottery_num span{
+	display: inline-block;
+	width: .32rem;
+	height: .32rem;
+	margin: 0 -.04rem;
+}
+
+.activity .activity_list .act_info .lottery_num span img{
+	width: 100%;
+	height: 100%;
+}
+
+.activity .activity_list .act_info .countdown_box .countdown_bar{
+	width: 2.54rem;
+	height: .64rem;
+	line-height: .64rem;
+	font-size: .42rem;
+	margin: 0 auto;
+	border-radius: .08rem;
+	background-image:-webkit-linear-gradient(to bottom, #324265, #09122f, #252b56);
+	background-image:linear-gradient(to bottom, #324265, #09122f, #252b56);
+	color: #47aeff;
+	margin-top: .05rem;
+	font-weight: 600;
+}
+
+.footer{
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	width: 100%;
+}
+
+.footer a{
+	display: block;
+	position: absolute;
+	bottom: 0;
+}
+
+.footer .ranking_btn,.footer .record_btn{
+	width: 2.5rem;
+	height: 1rem;
+}
+
+.footer .ranking_btn{
+	left: 0;
+}
+
+.footer .record_btn{
+	right: 0;
+}
+
+.footer .angent_btn{
+	width: 1.9rem;
+	height: 1.66rem;
+	left: 2.8rem;
+}

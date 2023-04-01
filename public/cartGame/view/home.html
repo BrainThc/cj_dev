@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<meta content="" name="keywords">
+		<meta content="" name="description">
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="format-detection" content="telephone=no,email=no,adress=no" />
+		<meta http-equiv="Pragma" content="no-cache" />
+		<title>欢乐赛车推筒子</title>
+		<link rel="stylesheet" type="text/css" href="../public/css/reset.css"/>
+		<link rel="stylesheet" type="text/css" href="../public/layer/skin/layer.css"/>
+		<link rel="stylesheet" type="text/css" href="../public/css/common.css"/>
+		<link rel="stylesheet" type="text/css" href="../public/css/home.css"/>
+		<script src="../public/js/jquery-2.1.0.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../public/js/common.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../public/layer/layer.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+	<body>
+		<div class="home_wrap">
+			<div class="header clearfix">
+				<div class="user_info fl clearfix">
+					<div class="user_face fl"><img src="http://pengjianquan.pro.bluej.cn/resume/favicon.ico" alt="" /></div>
+					<div class="user_data fl">
+						<div class="user_name">卢本伟</div>
+						<div class="user_id">ID: <span>29012</span></div>
+					</div>
+				</div>
+				<a href="javascript:void(0);" class="setting_btn click_voice fr" onclick="viewOpen(this,'setting')"></a>
+			</div>
+			
+			<!--游戏背景音乐-->
+			<audio src="../public/media/background.mp3" id="bgm" loop=""></audio>
+			<div id="sound_box"></div>
+			
+			<div class="activity">
+				<div class="activity_list">
+					<a href="game_list.html">
+						<img src="https://img10.360buyimg.com/da/jfs/t15649/180/606588298/196140/b15fe6af/5a38e2b6Nd7d1988c.jpg" alt="" />
+						<div class="act_info">
+							<div class="nper">
+								<div class="nper_title">最新开奖<span>661550</span>期</div>
+								<div class="lottery_num">
+									<span><img src="../public/images/ranking_num1.png" alt="" /></span>
+									<span><img src="../public/images/ranking_num2.png" alt="" /></span>
+									<span><img src="../public/images/ranking_num3.png" alt="" /></span>
+									<span><img src="../public/images/ranking_num4.png" alt="" /></span>
+									<span><img src="../public/images/ranking_num5.png" alt="" /></span>
+									<span><img src="../public/images/ranking_num6.png" alt="" /></span>
+									<span><img src="../public/images/ranking_num7.png" alt="" /></span>
+									<span><img src="../public/images/ranking_num8.png" alt="" /></span>
+									<span><img src="../public/images/ranking_num9.png" alt="" /></span>
+									<span><img src="../public/images/ranking_num10.png" alt="" /></span>
+								</div>
+							</div>
+							<div class="countdown_box">
+								<div class="countdown_title">距离下次开奖剩余</div>
+								<div class="countdown_bar">
+									<span>03</span> : <span>27</span>
+								</div>
+							</div>
+						</div>
+					</a>
+				</div>
+				
+				<div class="activity_list">
+					<a href="javascript:layer.msg('该活动暂未开启', {skin: 'layui-layer-huise'});">
+						<img src="https://img10.360buyimg.com/da/jfs/t15649/180/606588298/196140/b15fe6af/5a38e2b6Nd7d1988c.jpg" alt="" />
+						<div class="act_info">
+							<div class="nper">
+								<div class="nper_title">最新开奖<span>661550</span>期</div>
+								<div class="lottery_num">
+									<span><img src="../public/images/ranking_num1.png" alt="" /></span>
+									<span><img src="../public/images/ranking_num2.png" alt="" /></span>
+									<span><img src="../public/images/ranking_num3.png" alt="" /></span>
+									<span><img src="../public/images/ranking_num4.png" alt="" /></span>
+									<span><img src="../public/images/ranking_num5.png" alt="" /></span>
+									<span><img src="../public/images/ranking_num6.png" alt="" /></span>
+									<span><img src="../public/images/ranking_num7.png" alt="" /></span>
+									<span><img src="../public/images/ranking_num8.png" alt="" /></span>
+									<span><img src="../public/images/ranking_num9.png" alt="" /></span>
+									<span><img src="../public/images/ranking_num10.png" alt="" /></span>
+								</div>
+							</div>
+							<div class="countdown_box">
+								<div class="countdown_title">距离下次开奖剩余</div>
+								<div class="countdown_bar">
+									<span>03</span> : <span>27</span>
+								</div>
+							</div>
+						</div>
+					</a>
+				</div>
+			</div>
+			
+			<div class="footer clearfix">
+				<a href="javascript:layer.msg('该功能暂未开放，敬请期待', {skin: 'layui-layer-huise'});" class="ranking_btn click_voice"></a>
+				<a href="javascrript:void(0);" class="angent_btn click_voice" onclick="viewOpen(this,'angent')"></a>
+				<a href="javascrript:void(0);" class="record_btn click_voice" onclick="viewOpen(this,'record')"></a>
+			</div>
+		</div>
+		
+		<script type="text/javascript">
+			$(document).ready(function(){
+				checkVoiceState();
+				checkBgmState();
+				audioAutoPlay('bgm','bgm');
+			});
+		</script>
+	</body>
+</html>

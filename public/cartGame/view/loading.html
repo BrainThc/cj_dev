@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<meta content="" name="keywords">
+		<meta content="" name="description">
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="format-detection" content="telephone=no,email=no,adress=no" />
+		<meta http-equiv="Pragma" content="no-cache" />
+		<title>欢乐赛车推筒子</title>
+		<link rel="stylesheet" type="text/css" href="../public/css/reset.css"/>
+		<link rel="stylesheet" type="text/css" href="../public/layer/skin/layer.css"/>
+		<link rel="stylesheet" type="text/css" href="../public/css/common.css"/>
+		<link rel="stylesheet" type="text/css" href="../public/css/loading.css"/>
+		<script src="../public/js/jquery-2.1.0.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../public/js/common.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+	<body>
+		<div class="loading_wrap">
+			<div class="loading_txt">
+				<span class="normal_txt">loading...</span>
+				<span class="material_loading"><span class="loaded_img"></span>/<span class="loading_img">0</span></span>
+			</div>
+			<div class="loading_bar"><span style="width: 0%;"></span></div>
+		</div>
+		
+		<script type="text/javascript">
+			$(document).ready(function(){
+				getLoadingGrogress();
+			});
+			
+			//本页面是用来加载赛车牌九游戏素材的，如果loading页之后是进入首页home.html，那么这个页面就废了
+			
+			var material_size = 100;//定义要加载素材的数量，比如图片的数量存入一个数组new Array()，存储在本地，获取数组的长度，这里默认写死一个数字
+			var loaded_size = 0;//定义已经加载完的素材数量，这里默认写死0
+			//同时将两个值赋值在material_loading，用js拼接的方式
+			
+			//根据loaded_size除以material_size的值取整到百分比，将该值赋值到类名为loading_bar的行内样式中，进度条就会自动有加载样式了
+			
+			//这里静态不能用网络加载的方式，只能用定时器的方式，用demo展示，怎么实现后台你自己发挥
+			function getLoadingGrogress(){
+				var T = setInterval(function(){
+					loaded_size += 1;
+					$('.loaded_img').html(loaded_size);
+					$('.loading_img').html(material_size);
+					$('.loading_bar span').css('width',loaded_size / material_size * 100 + '%');
+					
+					if( loaded_size >= material_size ){
+						clearInterval(T);
+						location = 'home.html';
+					}
+				},30);
+			};
+		</script>
+	</body>
+</html>

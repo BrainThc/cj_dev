@@ -1,0 +1,74 @@
+html{
+	background-image:-webkit-linear-gradient(to bottom, #1e1b16, #2d271b, #41392e);
+	background-image:linear-gradient(to bottom, #1e1b16, #2d271b, #41392e);
+}
+
+.bet_wrap{
+	width: 6.62rem;
+	height: 7.7rem;
+	margin: 0 auto;
+	position: relative;
+	background: url(../images/bet_list_bg.png) no-repeat;
+	background-size: 100% 100%;
+	padding: 0 .28rem;
+	box-sizing: border-box;
+	padding-top: 1.58rem;
+}
+
+.bet_list_box{
+	width: 100%;
+	height: 5.94rem;
+	overflow-y: auto;
+	-webkit-overflow-scrolling: touch;
+}
+
+table{
+	color: #efe07d;
+	width: 100%;
+	text-align: center;
+}
+
+table tr{
+	border-bottom: 1px solid #5e5139;
+}
+
+table tr:last-of-type{
+	border: none;
+}
+
+table td{
+	padding: .2rem 0;
+}
+
+table td:first-of-type{
+	width: 1.06rem;
+}
+
+table td:nth-of-type(2){
+	width: 1.1rem;
+}
+
+table td:nth-of-type(3){
+	width: 1.84rem;
+}
+
+table td:nth-of-type(4){
+	width: 2.1rem;
+}
+
+table .sex{
+	height: .3rem;
+	display: block;
+	margin: 0 auto;
+	text-align: center;
+}
+
+table .sex img{
+	display: block;
+	height: 100%;
+	margin: 0 auto;
+}
+
+table .serial_num{
+	color: #fff;
+}

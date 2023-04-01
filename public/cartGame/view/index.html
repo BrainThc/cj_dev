@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<meta content="" name="keywords">
+		<meta content="" name="description">
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="format-detection" content="telephone=no,email=no,adress=no" />
+		<meta http-equiv="Pragma" content="no-cache" />
+		<title>欢乐赛车推筒子</title>
+		<link rel="stylesheet" type="text/css" href="../public/css/reset.css"/>
+		<link rel="stylesheet" type="text/css" href="../public/layer/skin/layer.css"/>
+		<link rel="stylesheet" type="text/css" href="../public/css/common.css"/>
+		<link rel="stylesheet" type="text/css" href="../public/css/index.css"/>
+		<script src="../public/js/jquery-2.1.0.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../public/js/common.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../public/layer/layer.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+	<body>
+		<div class="wrapper">
+			<div class="game_box">
+				<div class="nav_bar clearfix">
+					<div class="nav_menu click_voice fl" onclick="dropMenuShow(this)">
+						<div class="drop_menu">
+							<a href="javascript:void(0);" class="setting_btn click_voice" onclick="viewOpen(this,'setting')"><i></i>设置</a>
+							<!--<a href="javascript:void(0);" class="statistical click_voice"><i></i>统计</a>-->
+							<a href="home.html" class="return_home click_voice"><i></i>返回</a>
+						</div>
+					</div>
+					<div class="button_list fr clearfix">
+						<a href="javascript:void(0)" class="nav_btn click_voice" onclick="codeOpen(this,'customer_ser')"><img src="../public/images/nav_btn1.png" alt="" /></a>
+						<a href="javascript:void(0)" class="nav_btn click_voice" onclick="viewOpen(this,'rule')"><img src="../public/images/nav_btn2.png" alt="" /></a>
+						<a href="javascript:void(0)" class="nav_btn click_voice" onclick="shareGuideOpen()"><img src="../public/images/nav_btn3.png" alt="" /></a>
+						<a href="javascript:void(0)" class="nav_btn click_voice" onclick="viewOpen(this,'charts')"><img src="../public/images/nav_btn4.png" alt="" /></a>
+					</div>
+				</div>
+				
+				<div class="racing_box">
+					<!--游戏背景音乐-->
+					<audio src="../public/media/background.mp3" id="bgm" loop=""></audio>
+					<!--本局结算背景音乐-->
+					<audio src="../public/media/loss.mp3" id="loss"></audio>
+					<!--开始游戏音效-->
+					<audio src="../public/media/gamestart.mp3" id="start_bgm"></audio>
+					<!--盖牌音效-->
+					<audio src="../public/media/closewin.mp3" id="closewin"></audio>
+					<!--分散筹码音效-->
+					<audio src="../public/media/got_reward.mp3" id="got_reward"></audio>
+					
+					<div id="sound_box"></div>
+					
+					<div class="game_star_tips"></div>
+					<div class="schedule clearfix">
+						<a href="javascript:void(0);" id="user_list" class="click_voice" onclick="viewOpen(this,'player_list')"></a>
+						<div class="ranking_bar clearfix">
+							<div class="ranking_num"><img src="../public/images/ranking_num1.png" alt="" /></div>
+							<div class="ranking_num"><img src="../public/images/ranking_num2.png" alt="" /></div>
+							<div class="ranking_num"><img src="../public/images/ranking_num3.png" alt="" /></div>
+							<div class="ranking_num"><img src="../public/images/ranking_num4.png" alt="" /></div>
+							<div class="ranking_num"><img src="../public/images/ranking_num5.png" alt="" /></div>
+							<div class="ranking_num"><img src="../public/images/ranking_num6.png" alt="" /></div>
+							<div class="ranking_num"><img src="../public/images/ranking_num7.png" alt="" /></div>
+							<div class="ranking_num"><img src="../public/images/ranking_num8.png" alt="" /></div>
+							<div class="ranking_num"><img src="../public/images/ranking_num9.png" alt="" /></div>
+							<div class="ranking_num"><img src="../public/images/ranking_num10.png" alt="" /></div>
+						</div>
+						<a href="javascript:void(0);" id="rank_list" class="click_voice" onclick="viewOpen(this,'record')"></a>
+					</div>
+					
+					<div class="cart_wrap" style="height: 2.84rem;background: url(../public/images/cartbg.png) no-repeat;background-size: 100% 100%;">
+						<div id="cart_box"></div>
+					</div>
+					
+					<div class="bets_bar">
+						<div class="bets">
+							<div class="bets_list">
+								<div class="tot_corn">0</div>
+								<div class="sorting no_1"><img src="../public/images/ranking_num01.png" alt="" /></div>
+								<div class="bets_area_title">1门</div>
+								<div class="bets_area">
+									<div class="card"><img src="../public/images/card_back.png" data-val="0" alt="" /></div>
+								</div>
+								<div class="corn_num">0</div>
+								<a href="javascript:void(0);" class="view_detail click_voice" onclick="viewOpen(this,'bet_list')">查看详情</a>
+								<div class="user_point"><span>3</span>点</div>
+							</div>
+							<div class="bets_list">
+								<div class="tot_corn">0</div>
+								<div class="sorting no_2"><img src="../public/images/ranking_num02.png" alt="" /></div>
+								<div class="bets_area_title">2门</div>
+								<div class="bets_area">
+									<div class="card "><img src="../public/images/card_back.png" data-val="1" alt="" /></div>
+								</div>
+								<div class="corn_num">0</div>
+								<a href="javascript:void(0);" class="view_detail click_voice" onclick="viewOpen(this,'bet_list')">查看详情</a>
+								<div class="user_point"><span>3</span>点</div>
+							</div>
+							<div class="bets_list">
+								<div class="tot_corn">0</div>
+								<div class="sorting no_3"><img src="../public/images/ranking_num03.png" alt="" /></div>
+								<div class="bets_area_title">3门</div>
+								<div class="bets_area">
+									<div class="card "><img src="../public/images/card_back.png" data-val="2" alt="" /></div>
+								</div>
+								<div class="corn_num">0</div>
+								<a href="javascript:void(0);" class="view_detail click_voice" onclick="viewOpen(this,'bet_list')">查看详情</a>
+								<div class="user_point"><span>3</span>点</div>
+							</div>
+							<div class="bets_list">
+								<div class="tot_corn">0</div>
+								<div class="sorting no_4"><img src="../public/images/ranking_num04.png" alt="" /></div>
+								<div class="bets_area_title">4门</div>
+								<div class="bets_area">
+									<div class="card "><img src="../public/images/card_back.png" data-val="3" alt="" /></div>
+								</div>
+								<div class="corn_num">0</div>
+								<a href="javascript:void(0);" class="view_detail click_voice" onclick="viewOpen(this,'bet_list')">查看详情</a>
+								<div class="user_point"><span>3</span>点</div>
+							</div>
+							<div class="bets_list">
+								<div class="tot_corn">0</div>
+								<div class="sorting no_5"><img src="../public/images/ranking_num05.png" alt="" /></div>
+								<div class="bets_area_title">5门</div>
+								<div class="bets_area">
+									<div class="card "><img src="../public/images/card_back.png" data-val="4" alt="" /></div>
+								</div>
+								<div class="corn_num">0</div>
+								<a href="javascript:void(0);" class="view_detail click_voice" onclick="viewOpen(this,'bet_list')">查看详情</a>
+								<div class="user_point"><span>3</span>点</div>
+							</div>
+							<div class="bets_list">
+								<div class="tot_corn">0</div>
+								<div class="sorting no_6"><img src="../public/images/ranking_num06.png" alt="" /></div>
+								<div class="bets_area_title">6门</div>
+								<div class="bets_area">
+									<div class="card "><img src="../public/images/card_back.png" data-val="5" alt="" /></div>
+								</div>
+								<div class="corn_num">0</div>
+								<a href="javascript:void(0);" class="view_detail click_voice" onclick="viewOpen(this,'bet_list')">查看详情</a>
+								<div class="user_point"><span>3</span>点</div>
+							</div>
+							<div class="bets_list">
+								<div class="tot_corn">0</div>
+								<div class="sorting no_7"><img src="../public/images/ranking_num07.png" alt="" /></div>
+								<div class="bets_area_title">7门</div>
+								<div class="bets_area">
+									<div class="card "><img src="../public/images/card_back.png" data-val="6" alt="" /></div>
+								</div>
+								<div class="corn_num">0</div>
+								<a href="javascript:void(0);" class="view_detail click_voice" onclick="viewOpen(this,'bet_list')">查看详情</a>
+								<div class="user_point"><span>3</span>点</div>
+							</div>
+							<div class="bets_list">
+								<div class="tot_corn">0</div>
+								<div class="sorting no_8"><img src="../public/images/ranking_num08.png" alt="" /></div>
+								<div class="bets_area_title">8门</div>
+								<div class="bets_area">
+									<div class="card "><img src="../public/images/card_back.png" data-val="7" alt="" /></div>
+								</div>
+								<div class="corn_num">0</div>
+								<a href="javascript:void(0);" class="view_detail click_voice" onclick="viewOpen(this,'bet_list')">查看详情</a>
+								<div class="user_point"><span>3</span>点</div>
+							</div>
+						</div>
+						
+						<div class="countdown_bar">
+							<div class="countdown_box">
+								<div class="room_num">房间号：<span>66666</span></div>
+								<div class="game_tips">游戏开始</div>
+								<div class="roulette">0</div>
+								<div class="cover_card"><img src="../public/images/card_back.png" alt="" /></div>
+							</div>
+						</div>
+						
+						<div class="user_data fl">
+							<div class="user_id" onclick="viewOpen(this,'nickname')">ID: <span>29807</span></div>
+							<div class="user_money">￥<span>9999</span></div>
+						</div>
+						
+						<div class="bets_menu fr clearfix">
+							<!--<a href="javascript:void(0);" id="shop_menu" class="click_voice"></a>-->
+							<a href="javascript:void(0);" id="homeowners" class="click_voice" onclick="codeOpen(this,'master_ups')"></a>
+							<a href="javascript:void(0);" id="activity" class="click_voice" onclick="viewOpen(this,'activity')"></a>
+						</div>
+						
+						<div class="chip_bar clearfix">
+							<div class="chip active click_voice" data-val="1"></div>
+							<div class="chip click_voice" data-val="10" ></div>
+							<div class="chip click_voice" data-val="50" ></div>
+							<div class="chip click_voice" data-val="100" ></div>
+							<div class="chip click_voice" data-val="500" ></div>
+							<div class="chip click_voice" data-val="1000" ></div>
+							<div class="chip click_voice" data-val="5000" ></div>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<!--本局结算-->
+			<div class="game_over">
+				<div class="over_mask"></div>
+				<div class="settle_box ups_wrap">
+					<a href="javascript:void(0);" class="close_click close_btn" onclick="closeSettle()"></a>
+					<div class="ranking_list_wrap">
+						<div class="ranking_list clearfix">
+							<div class="rank_num fl"><img src="../public/images/ranking01.png" alt="" /></div>
+							<div class="rank_name fl">冠军</div>
+							<div class="user_name fl">卢本伟</div>
+							<div class="core fl">999</div>
+							<a href="javascript:void(0);" class="seat_detail open_click fr">座位1详情</a>
+						</div>
+						
+						<div class="ranking_list clearfix">
+							<div class="rank_num fl"><img src="../public/images/ranking02.png" alt="" /></div>
+							<div class="rank_name fl">亚军</div>
+							<div class="user_name fl">卢本伟卢本伟卢本伟卢本伟</div>
+							<div class="core fl">888</div>
+							<a href="javascript:void(0);" class="seat_detail open_click fr">座位2详情</a>
+						</div>
+						
+						<div class="ranking_list clearfix">
+							<div class="rank_num fl"><img src="../public/images/ranking03.png" alt="" /></div>
+							<div class="rank_name fl">季军</div>
+							<div class="user_name fl">卢本伟</div>
+							<div class="core fl">777</div>
+							<a href="javascript:void(0);" class="seat_detail open_click fr">座位3详情</a>
+						</div>
+						
+						<div class="ranking_list clearfix">
+							<div class="rank_num fl"><img src="../public/images/ranking01.png" alt="" /></div>
+							<div class="rank_name fl">殿军</div>
+							<div class="user_name fl">卢本伟</div>
+							<div class="core fl">666</div>
+							<a href="javascript:void(0);" class="seat_detail open_click fr">座位4详情</a>
+						</div>
+						
+						<div class="ranking_list clearfix">
+							<div class="rank_num fl"><img src="../public/images/ranking01.png" alt="" /></div>
+							<div class="rank_name fl">垫底</div>
+							<div class="user_name fl">卢本伟</div>
+							<div class="core fl">555</div>
+							<a href="javascript:void(0);" class="seat_detail open_click fr">座位5详情</a>
+						</div>
+					</div>
+					
+					<div class="my_core">0.00</div>
+					
+					<div class="close_count">还有<span>0</span>秒关闭</div>
+				</div>
+			</div>
+			
+			<!--二维码-->
+			<div class="code_wrap">
+				<div class="code_mask" onclick="codeClose(this)"></div>
+				<div class="code_bar ups_wrap">
+					<div class="code_title"></div>
+					<div class="code_img"><img src="" alt="" /></div>
+					<div class="code_tips">点击长按二维码<span></span></div>
+				</div>
+			</div>
+			
+			<!--分享引导-->
+			<div class="share_wrap">
+				<div class="share_mask"></div>
+				<div class="share_ups" onclick="shareGuideClose()">
+					<div class="guide fr"></div>
+					<div class="share_tips fr">
+						<i></i>
+						<span>发给好友</span>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<script src="../public/js/index.js" type="text/javascript" charset="utf-8"></script>
+	</body>
+</html>

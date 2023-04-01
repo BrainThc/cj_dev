@@ -1,0 +1,43 @@
+html{
+	background-image:-webkit-linear-gradient(to bottom, #1e1b16, #2d271b, #41392e);
+	background-image:linear-gradient(to bottom, #1e1b16, #2d271b, #41392e);
+}
+
+.nick_name_wrap{
+	width: 6.1rem;
+	height: 4rem;
+	margin: 0 auto;
+	position: relative;
+	background: url(../images/change_nickname.png) no-repeat;
+	background-size: 100% 100%;
+	box-sizing: border-box;
+	padding-top: 1.74rem;
+}
+
+.nick_name_wrap #nick_name_txt{
+	width: 4.56rem;
+	height: .65rem;
+	line-height: .65rem;
+	text-align: center;
+	padding: 0 .3rem;
+	box-sizing: border-box;
+	border: none;
+	background: none;
+	display: block;
+	margin: 0 auto;
+	color: #fff;
+	outline: none;
+}
+
+.nick_name_wrap #confirm_btn{
+	display: block;
+	margin: 0 auto;
+	width: 1.52rem;
+	height: .6rem;
+	border: none;
+	outline: none;
+	background: none;
+	/*background: url(../images/confirm_btn.png) no-repeat;
+	background-size: 100% 100%;*/
+	margin-top: .68rem;
+}

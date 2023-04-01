@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<meta content="" name="keywords">
+		<meta content="" name="description">
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="format-detection" content="telephone=no,email=no,adress=no" />
+		<meta http-equiv="Pragma" content="no-cache" />
+		<title>欢乐赛车推筒子</title>
+		<link rel="stylesheet" type="text/css" href="../public/css/reset.css"/>
+		<link rel="stylesheet" type="text/css" href="../public/layer/skin/layer.css"/>
+		<link rel="stylesheet" type="text/css" href="../public/css/common.css"/>
+		<link rel="stylesheet" type="text/css" href="../public/css/nickname_change.css"/>
+		<script src="../public/js/jquery-2.1.0.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../public/js/common.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../public/layer/layer.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+	<body>
+		<div class="nick_name_wrap">
+			<form action="javascript:void(0);" method="">
+				<input type="text" id="nick_name_txt" name="nick_name_txt" />
+				<input type="submit" value="" id="confirm_btn" onclick="submitNickName()" />
+			</form>
+		</div>
+		
+		<script type="text/javascript">
+			$(document).ready(function(){
+				setParentFontsize();//加载layer的页面调用
+			});
+			
+			function submitNickName(){
+				var new_name = $('#nick_name_txt').val();
+				if( new_name == '' ){
+					layer.msg('请输入名字', {
+						skin: 'layui-layer-huise'
+					});
+					return false;
+				}
+				parent.window.chageNickName(new_name);
+				parent.layer.closeAll('iframe');
+			}
+		</script>
+	</body>
+</html>

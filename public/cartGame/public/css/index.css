@@ -1,0 +1,691 @@
+.schedule{
+	height: .74rem;
+	background-image:-webkit-linear-gradient(to right, #3b3728, #786946, #3b3728);
+	background-image:linear-gradient(to right, #3b3728, #786946, #3b3728);
+	padding: 0 .2rem;
+}
+
+#user_list{
+	float: left;
+	width: .79rem;
+	height: .69rem;
+	background: url(../images/user.png) no-repeat;
+	background-size: 100% 100%;
+	margin-top: .02rem;
+	position: relative;
+}
+
+.ranking_bar{
+	padding-top: .1rem;
+	margin-left: .3rem;
+	float: left;
+}
+
+.ranking_bar .ranking_num{
+	width: .53rem;
+	height: .53rem;
+	line-height: .53rem;
+	overflow: hidden;
+	border-radius: 50%;
+	box-sizing: border-box;
+	font-size: .3rem;
+	color: #fff;
+	font-weight: 600;
+	text-align: center;
+	float: left;
+}
+
+.ranking_bar .ranking_num img{
+	width: 100%;
+	height: 100%;
+}
+
+/*.ranking_bar .ranking_num:first-of-type{
+	background: url(../images/ranking_num1.png) no-repeat;
+	background-size: 100% 100%;
+}
+
+.ranking_bar .ranking_num:nth-of-type(2){
+	background: url(../images/ranking_num2.png) no-repeat;
+	background-size: 100% 100%;
+}
+
+.ranking_bar .ranking_num:nth-of-type(3){
+	background: url(../images/ranking_num3.png) no-repeat;
+	background-size: 100% 100%;
+}
+
+.ranking_bar .ranking_num:nth-of-type(4){
+	background: url(../images/ranking_num4.png) no-repeat;
+	background-size: 100% 100%;
+}
+
+.ranking_bar .ranking_num:nth-of-type(5){
+	background: url(../images/ranking_num5.png) no-repeat;
+	background-size: 100% 100%;
+}
+
+.ranking_bar .ranking_num:nth-of-type(6){
+	background: url(../images/ranking_num6.png) no-repeat;
+	background-size: 100% 100%;
+}
+
+.ranking_bar .ranking_num:nth-of-type(7){
+	background: url(../images/ranking_num7.png) no-repeat;
+	background-size: 100% 100%;
+}
+
+.ranking_bar .ranking_num:nth-of-type(8){
+	background: url(../images/ranking_num8.png) no-repeat;
+	background-size: 100% 100%;
+}
+
+.ranking_bar .ranking_num:nth-of-type(9){
+	background: url(../images/ranking_num9.png) no-repeat;
+	background-size: 100% 100%;
+}
+
+.ranking_bar .ranking_num:last-of-type{
+	background: url(../images/ranking_num10.png) no-repeat;
+	background-size: 100% 100%;
+}*/
+
+#rank_list{
+	float: right;
+	width: .56rem;
+	height: .7rem;
+	background: url(../images/ranking.png) no-repeat;
+	background-size: 100% 100%;
+}
+
+.bets_bar{
+	height: 7.65rem;
+	background: url(../images/bottom_bg.png) no-repeat;
+	background-size: 100% 100%;
+	position: relative;
+}
+
+.bets_list{
+	position: absolute;
+	width: 1.68rem;
+	height: 1.85rem;
+	background: url(../images/bets.png) no-repeat;
+	background-size: 100% 100%;
+}
+
+.bets_list:first-of-type{
+	left: .06rem;
+	top: .05em;
+}
+
+.bets_list:nth-of-type(2){
+	left: 50%;
+	top: .05em;
+	margin-left: -.84rem;
+}
+
+.bets_list:nth-of-type(3){
+	right: .06rem;
+	top: .05em;
+}
+
+.bets_list:nth-of-type(4){
+	left: .06rem;
+	top: 2.1rem;
+}
+
+.bets_list:nth-of-type(5){
+	right: .06rem;
+	top: 2.1rem;
+}
+
+.bets_list:nth-of-type(6){
+	left: .06rem;
+	top: 4.14rem;
+}
+
+.bets_list:nth-of-type(7){
+	left: 50%;
+	top: 4.14rem;
+	margin-left: -.84rem;
+}
+
+.bets_list:nth-of-type(8){
+	right: .06rem;
+	top: 4.14rem;
+}
+
+.bets_area_title{
+	margin-top: .34rem;
+	color: #665d4e;
+	font-size: .32rem;
+	text-align: center;
+	font-weight: 600;
+}
+
+.bets_area{
+	position: absolute;
+	width: 1.06rem;
+	height: .85rem;
+	left: 50%;
+	top: .43rem;
+	margin-left: -.53rem;
+	z-index: 9999;
+}
+
+.bets_area .card{
+	position: absolute;
+	width: .5rem;
+    height: .8rem;
+	top: 0;
+	z-index: 8891;
+	display: none;
+	left: .27rem;
+}
+
+.bets_area .card img{
+	width: 100%;
+	height: 100%;
+}
+
+.tot_corn{
+	color: #fff;
+	font-size: .28rem;
+	line-height: .36rem;
+	margin-left: .38rem;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.sorting{
+	position: absolute;
+	right: .1rem;
+	color: #f7f7ac;
+	font-weight: 600;
+	top: 0;
+	z-index: 9999;
+}
+
+.sorting img{
+	height: .2rem;
+}
+
+.corn_num{
+	color: #e8da95;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	margin-top: .03rem;
+    padding: 0 .42rem 0 .2rem;
+}
+
+.user_data{
+	margin-top: 6.2rem;
+	padding-left: .2rem;
+	color: #fff;
+	font-size: .18rem;
+	line-height: .28rem;
+}
+
+.user_data .user_id{
+	color: #f7f7ac;
+}
+
+.bets_menu{
+	margin-top: 6.2rem;
+	padding-right: .32rem;
+}
+
+.bets_menu a{
+	display: block;
+	float: left;
+	margin-left: .28rem;
+}
+
+.bets_menu #shop_menu{
+	width: .53rem;
+	height: .41rem;
+	background: url(../images/shop.png) no-repeat;
+	background-size: 100% 100%;
+}
+
+.bets_menu #homeowners{
+	width: .42rem;
+	height: .5rem;
+	background: url(../images/owner.png) no-repeat;
+	background-size: 100% 100%;
+}
+
+.bets_menu #activity{
+	width: .4rem;
+	height: .44rem;
+	background: url(../images/activity.png) no-repeat;
+	background-size: 100% 100%;
+}
+
+.chip_bar{
+	width: 6.96rem;
+	height: 1.16rem;
+	position: absolute;
+	left: 50%;
+	bottom: 0;
+	margin-left: -3.48rem;
+	padding: 0 .05rem;
+}
+
+.chip{
+	float: left;
+	width: .84rem;
+	height: .84rem;
+	font-size: .3rem;
+	line-height: .99rem;
+	text-align: center;
+	color: #fff;
+	font-weight: 600;
+	margin: 0 .09rem;
+	margin-top: .25rem;
+	border-radius: 50%;
+}
+
+.chip.active{
+	border: .02rem solid yellow;
+	box-shadow: 0 0 .1rem yellow;
+}
+
+.chip:first-of-type{
+	background: url(../images/chip01.png) no-repeat;
+	background-size: 100% 100%;
+	margin-left: 0;
+}
+
+.chip:nth-of-type(2){
+	background: url(../images/chip02.png) no-repeat;
+	background-size: 100% 100%;
+}
+
+.chip:nth-of-type(3){
+	background: url(../images/chip03.png) no-repeat;
+	background-size: 100% 100%;
+}
+
+.chip:nth-of-type(4){
+	background: url(../images/chip04.png) no-repeat;
+	background-size: 100% 100%;
+}
+
+.chip:nth-of-type(5){
+	background: url(../images/chip05.png) no-repeat;
+	background-size: 100% 100%;
+}
+
+.chip:nth-of-type(6){
+	background: url(../images/chip06.png) no-repeat;
+	background-size: 100% 100%;
+	margin-right: 0;
+}
+
+.chip:nth-of-type(7){
+	background: url(../images/chip07.png) no-repeat;
+	background-size: 100% 100%;
+	margin-right: 0;
+}
+
+.money{
+	width:.3rem;
+	height:.3rem;
+	background: url(../images/chip01.png) no-repeat;
+    background-size: 100% 100%;
+    margin-left: 0;
+    position:absolute;
+    display:none;
+}
+
+.countdown_bar{
+	position: absolute;
+	left: 50%;
+	top: 2.1rem;
+	-webkit-transform: translateX(-50%);
+	transform: translateX(-50%);
+	z-index: 8890;
+}
+
+.countdown_box{
+	position: relative;
+	z-index: 8889;
+	height: 1.9rem;
+}
+
+.cover_card{
+	position: absolute;
+	left: 50%;
+	bottom: 0;
+	width: .52rem;
+	height: .8rem;
+	z-index: 9999;
+	margin-left: -.26rem;
+	display: none;
+}
+
+.cover_card img{
+	width: 100%;
+	height: 100%;
+}
+
+.room_num{
+	width: 2.4rem;
+	height: .42rem;
+	border: .03rem solid #b2a385;
+	background-image:-webkit-linear-gradient(to bottom, #38392b, #5a5c49);
+	background-image:linear-gradient(to bottom, #38392b, #5a5c49);
+	border-radius: .08rem;
+	text-align: center;
+	line-height: .42rem;
+	color: #fff;
+	font-size: .24rem;
+	box-sizing: border-box;
+}
+
+.game_tips{
+	font-size: .26rem;
+	color: #ede735;
+	text-align: center;
+	margin-top: .12rem;
+}
+
+.roulette{
+	width: .99rem;
+	height: .99rem;
+	background: url(../images/roulette.png) no-repeat;
+	background-size: 100% 100%;
+	margin: 0 auto;
+	margin-top: .1rem;
+	font-size: .3rem;
+	font-weight: 600;
+	text-align: center;
+	line-height: .99rem;
+	color: #f7f7ac;
+	display: none;
+}
+
+.view_detail{
+	color: #f7f7ac;
+	font-size: .18rem;
+	margin-left: .6rem;
+	float: left;
+}
+
+.user_point{
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	margin-bottom: -.24rem;
+	font-size: .22rem;
+	width: 100%;
+	text-align: center;
+	font-weight: 600;
+	color: #fff7ce;
+}
+
+.game_star_tips{
+	width: 7.5rem;
+	height: 1.15rem;
+	background: url(../images/game_tips.png) no-repeat;
+	background-size: 100% 100%;
+	position: fixed;
+	left: -100%;
+	top: 50%;
+	margin-top: -.55rem;
+	z-index: 99999;
+	-webkit-transition: all 600ms linear;
+	transition: all 600ms linear;
+}
+
+.opening{
+	-webkit-transform: translateX(100%);
+	transform: translateX(100%);
+}
+
+.animated{
+	-webkit-animation: coverRotate 1s linear;
+	animation: coverRotate 1s linear;
+}
+
+.bets_list:nth-of-type(2) .card{
+	-webkit-animation-delay: 3s;
+	animation-delay: 3s;
+}
+
+.bets_list:nth-of-type(3) .card{
+	-webkit-animation-delay: 6s;
+	animation-delay: 6s;
+}
+
+.bets_list:nth-of-type(4) .card{
+	-webkit-animation-delay: 9s;
+	animation-delay: 9s;
+}
+
+.bets_list:nth-of-type(5) .card{
+	-webkit-animation-delay: 12s;
+	animation-delay: 12s;
+}
+
+.bets_list:nth-of-type(6) .card{
+	-webkit-animation-delay: 15s;
+	animation-delay: 15s;
+}
+
+.bets_list:nth-of-type(7) .card{
+	-webkit-animation-delay: 18s;
+	animation-delay: 18s;
+}
+
+.bets_list:nth-of-type(8) .card{
+	-webkit-animation-delay: 21s;
+	animation-delay: 21s;
+}
+
+@-webkit-keyframes coverRotate{
+	100% {
+		-webkit-transform: rotateX(180deg) rotateY(180deg);
+		transform: rotateX(180deg) rotateY(180deg);
+	}
+}
+
+@keyframes coverRotate{
+	100% {
+		-webkit-transform: rotateX(180deg) rotateY(180deg);
+		transform: rotateX(180deg) rotateY(180deg);
+	}
+}
+
+.game_over{
+	width: 7.5rem;
+    height: 12.06rem;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin-top: -6.03rem;
+    margin-left: -3.75rem;
+    z-index: 99999;
+    background: url(../images/game_over_bg.png) no-repeat center center /cover;
+    display: none;
+}
+
+.settle_box{
+	width: 6.88rem;
+	height: 9.8rem;
+	background: url(../images/end_bg.png) no-repeat;
+	background-size: 100% 100%;
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	margin-left: -3.44rem;
+	margin-top: -4.9rem;
+	padding: 2.3rem .4rem 0;
+	box-sizing: border-box;
+}
+
+.ranking_list_wrap{
+	height: 6.2rem;
+	overflow: auto;
+	-webkit-overflow-scrolling: touch;
+}
+
+.ranking_list{
+	width: 100%;
+	height: .86rem;
+	border: 1px solid #8e8d7b;
+	box-sizing: border-box;
+	border-radius: .43rem;
+	color: #fff;
+	line-height: .86rem;
+	margin-bottom: .1rem;
+	padding: 0 .2rem;
+}
+
+.ranking_list .rank_num{
+	width: .76rem;
+	height: .85rem;
+}
+
+.ranking_list .rank_num img{
+	width: 100%;
+	height: 100%;
+}
+
+.ranking_list .rank_name{
+	font-size: .24rem;
+	margin-left: .1rem;
+}
+
+.ranking_list:first-of-type .rank_name{
+	color: #d8d220;
+}
+
+.ranking_list:nth-of-type(2) .rank_name{
+	color: #849dc8;
+}
+
+.ranking_list:nth-of-type(3) .rank_name{
+	color: #e4bf92;
+}
+
+.ranking_list:nth-of-type(4) .rank_name{
+	color: #c9bf78;
+}
+
+.ranking_list:nth-of-type(5) .rank_name{
+	color: #c0bcb9;
+}
+
+.ranking_list .user_name{
+	width: 1.6rem;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	margin-left: .12rem;
+	text-align: center;
+}
+
+.ranking_list .core{
+	color: #ff7b7e;
+	width: 1rem;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	text-align: center;
+}
+
+.ranking_list .seat_detail{
+	display: block;
+	width: 1.44rem;
+	height: .42rem;
+	border: .02rem solid #655f4f;
+	line-height: .42rem;
+	text-align: center;
+	border-radius: .08rem;
+	color: #c8e448;
+	margin-top: .2rem;
+}
+
+.settle_box .my_core{
+	color: #fff;
+	font-size: .4rem;
+	position: absolute;
+	bottom: .34rem;
+	left: 4.1rem;
+}
+
+.settle_box .close_count{
+	position: absolute;
+	left: 50%;
+	bottom: -.5rem;
+	color: #aca699;
+	-webkit-transform: translateX(-50%);
+	transform: translateX(-50%);
+}
+
+.over_mask{
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(0,0,0,.6);
+}
+
+.game_over .settle_box .close_btn{
+	position: absolute;
+	right: 0;
+	top: 1.2rem;
+	margin-right: -.26rem;
+}
+
+.share_mask{
+	position: fixed;
+	left: 50%;
+	top: 0;
+	width: 7.5rem;
+	height: 100%;
+	margin-left: -3.75rem;
+	background: rgba(0,0,0,.6);
+	z-index: 99999;
+	display: none;
+}
+
+.share_ups{
+	position: fixed;
+	left: 50%;
+	top: 0;
+	width: 7.5rem;
+	height: 100%;
+	margin-left: -3.75rem;
+	z-index: 99999;
+	color: #fff;
+	font-size: .4rem;
+	display: none;
+}
+
+.share_ups .share_tips{
+	margin-top: 1.38rem;
+	margin-right: .2rem;
+}
+
+.share_ups .share_tips i{
+	display: inline-block;
+	vertical-align: middle;
+	width: .8rem;
+	height: .8rem;
+	background: url(../images/share.png) no-repeat;
+	background-size: 100% 100%
+}
+
+.share_ups .guide{
+	width: 1.29rem;
+	height: 1.77rem;
+	background: url(../images/guide.png) no-repeat;
+	background-size: 100% 100%;
+	margin-right: .36rem;
+}

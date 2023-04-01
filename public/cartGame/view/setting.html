@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<meta content="" name="keywords">
+		<meta content="" name="description">
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="format-detection" content="telephone=no,email=no,adress=no" />
+		<meta http-equiv="Pragma" content="no-cache" />
+		<title>欢乐赛车推筒子</title>
+		<link rel="stylesheet" type="text/css" href="../public/css/reset.css"/>
+		<link rel="stylesheet" type="text/css" href="../public/layer/skin/layer.css"/>
+		<link rel="stylesheet" type="text/css" href="../public/css/common.css"/>
+		<link rel="stylesheet" type="text/css" href="../public/css/setting.css"/>
+		<script src="../public/js/jquery-2.1.0.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../public/js/common.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../public/layer/layer.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+	<body>
+		<div class="setting_wrap">
+			<div class="button_box">
+				<div class="check_wrap">
+					<input type="checkbox" id="bgm_btn"/>
+					<div></div>
+				</div>
+				<div class="check_wrap">
+					<input type="checkbox" id="sound_btn"/>
+					<div></div>
+				</div>
+			</div>
+		</div>
+		
+		<script type="text/javascript">
+			$(document).ready(function(){
+				setParentFontsize();//加载layer的页面调用
+				checkVoiceState('def');//加载完页面检查音效是否开启或者关闭
+				checkBgmState('def');//加载完页面检查背景音乐是否开启或者关闭
+				
+				if( audio_play_state == 1 ){
+					$('#sound_btn').prop('checked',true);
+				}else{
+					$('#sound_btn').prop('checked',false);
+				}
+				
+				if( bgm_play_state == 1 ){
+					$('#bgm_btn').prop('checked',true);
+				}else{
+					$('#bgm_btn').prop('checked',false);
+				}
+			});
+		</script>
+	</body>
+</html>
