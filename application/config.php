@@ -246,9 +246,9 @@ return [
     'captcha' => [
         'useCurve' => false,
         'useNoise' => false,
-        'fontSize' => 12,
-        'imageH' => 25,
-        'imageW' => 80,
+        'fontSize' => 14,
+        'imageH' => 38,
+        'imageW' => 130,
         'length' => 4,
         'reset' => true
     ],
@@ -257,6 +257,7 @@ return [
         '__SYSJS__' => '/static/admin/js',
         '__SYSCSS__' => '/static/admin/css',
         '__SYSIMG__' => '/static/admin/images',
+        '__LAYUI__' => '/static/layui',
         '__UPLOAD__' => '/static/plupload'
     ]
 ];

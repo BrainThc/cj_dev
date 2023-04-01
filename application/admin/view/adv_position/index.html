@@ -1,0 +1,169 @@
+{extend name="base" /}
+{block name="title" }广告位管理{/block}
+{block name="body" }
+<div class="layui-fluid" >
+    <div class="layui-card">
+        <div class="layui-card-body"  >
+            <form class="layui-form" action="" id="form" >
+                <div class="layui-form-item">
+                    <label class="layui-form-label">广告位id</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="pos_id" value="" placeholder="广告位id" autocomplete="off" class="layui-input">
+                    </div>
+                    <label class="layui-form-label">关键词</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="keyword" value="" placeholder="广告位关键词" autocomplete="off" class="layui-input">
+                    </div>
+                    <div class="layui-input-inline" style="width:auto;" >
+                        <button class="layui-btn" lay-submit lay-filter="formDemo">搜索</button>
+                    </div>
+                    <div class="layui-input-inline" style="width:auto;" >
+                        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <table id="adv_box" lay-filter="adv"></table>
+        </div>
+    </div>
+</div>
+<!-- 操作模板 -->
+<script type="text/html" id="toolbarTpl" >
+    <button class="layui-btn layui-btn-sm" lay-event="add" >添加广告位</button>
+</script>
+<!-- 操作模板 -->
+<script type="text/html" id="ctrlTpl">
+    <button class="layui-btn layui-btn-xs" lay-event="detail"  >编辑</button>
+    <button class="layui-btn layui-btn-danger layui-btn-xs" style="margin:0;" lay-event="deleted" >{{ d.status ? '禁用' : '恢复' }}</button>
+</script>
+<script>
+    var getAdvPostListApi = "{:url('adv_position/get_advpost_list')}",
+    addViewUrl = "{:url('adv_position/add')}",
+    editViewUrl = "{:url('adv_position/edit',['id'=>'pos_id'])}",
+    deletedAPI = "{:url('adv_position/del_pos')}";
+    var table = layui.table;
+    //执行渲染
+    table.render({
+        id:'adv_box',
+        elem: '#adv_box',
+        height: 'auto', //容器高度
+        url: getAdvPostListApi,
+        page: true,
+        toolbar: '#toolbarTpl',
+        cols: [[
+            {field: 'pos_id', title: '广告位id', width: 100},
+            {field: 'pos_name', title: '广告位标题'},
+            {field: 'pos_type', title: '广告类型',width:100,align:'center'},
+            {field: 'pos_adv_num', title: '广告展示数',width:100,align:'center'},
+            {field: 'size', title: '尺寸',width:200,align:'center'},
+            {field: 'pos_id', title: '操作', width: 200, templet: '#ctrlTpl'}
+        ]]
+    });
+
+    var form = layui.form;
+    layui.use('form', function(){
+        form.on('submit', function(data){
+            searchData = data.field;
+            //上述方法等价于
+            table.reload('adv_box', {
+                where: searchData,
+                page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+            });
+            return false;
+        });
+        form.render();
+    });
+
+    //头部按钮事件
+    table.on('toolbar(adv)', function(obj) {
+        var data = obj.data;
+        var layEvent = obj.event;
+        switch( layEvent ){
+            case 'add' :
+                layer.open({
+                    title:'添加广告位',
+                    type:2,
+                    shadeClose: true,
+                    closeBtn:1,
+                    area:['80%','80%'],
+                    content:addViewUrl,
+                    success:function (layero,index){
+                        //子窗口操作
+                        // LayuiOpenView = window[layero.find('iframe')[0]['name']];
+                    }
+                });
+                break;
+            default :
+                return false;
+                break;
+        }
+        return false;
+    });
+
+    table.on('tool(adv)', function(obj) {
+        var data = obj.data;
+        var layEvent = obj.event;
+        switch(layEvent) {
+            case 'detail' ://详情
+                url = editViewUrl.replace('pos_id',data.pos_id);
+                layer.open({
+                    title:'编辑广告位',
+                    type:2,
+                    shadeClose: true,
+                    closeBtn:1,
+                    area:['80%','80%'],
+                    content:url,
+                    success:function (layero,index){
+                        //子窗口操作
+                        // LayuiOpenView = window[layero.find('iframe')[0]['name']];
+                    }
+                });
+                break;
+            case 'deleted' ://删除
+                var msg = data.status ? '删除将把所属广告一并删除，是否确认删除' : '是否确认恢复';
+                layer.confirm(msg, {
+                    btn: ["确定","取消"] //按钮
+                }, function(){
+                    $.ajax({
+                        url: deletedAPI,
+                        type: 'post',
+                        dataType: 'json',
+                        data:{ pos_id:data.pos_id },
+                        success:function (res) {
+                            layer.msg(res.msg, {
+                                time: 1000
+                            }, function(){
+                                if( !res.code ){
+                                    table.reload('adv_box');
+                                }
+                            });
+                        },
+                        error:function(e){
+                            layer.msg('网络错误', {
+                                skin: 'layui-layer-huise'
+                            });
+                        }
+                    });
+                    return false;
+                });
+                break;
+            default :
+                return false;
+                break;
+        }
+        return false;
+    });
+    //关闭所有二级窗口
+    function callback(){
+        table.reload('adv_box');
+        layer.closeAll();
+    }
+</script>
+{/block}

@@ -73,9 +73,26 @@ class Goods extends Base
         returnJson(true,'success',$info);
     }
 
-    //添加提交
+    //添加商品
     public function create(){
-        returnJson(false);
+        $data = input('post.');
+        try{
+            if( empty($data['goods_name']) ){
+                throw new Exception('商品名不能为空');
+            }
+            $data['goods_cate'] = input('post.goods_cate');
+            if( isset($data['goods_cate']) && intval($data['goods_cate']) ){
+                throw new Exception('商品名不能为空');
+            }
+        }catch( Exception $e ){
+            returnJson(false,$e->getMessage());
+        }
+        returnJson(true,'添加成功');
+    }
+
+    //添加提交
+    public function create_goods(){
+        returnJson(false,input('post.'));
     }
 
 }

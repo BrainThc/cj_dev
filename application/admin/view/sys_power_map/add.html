@@ -1,0 +1,95 @@
+{extend name="base" /}
+{block name="title" }权限地图管理{/block}
+{block name="style" }
+<style>
+    .layui-form-label{width:150px;}
+</style>
+{/block}
+{block name="body" }
+<div class="layui-fluid" >
+    <div class="layui-card" >
+        <div class="layui-card-body">
+            <form class="layui-form" >
+                <div class="layui-form-item">
+                    <label class="layui-form-label">地图名：</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="name" required  lay-verify="required" placeholder="地图名" autocomplete="off" class="layui-input" >
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">权限code：</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="power" required  lay-verify="required" placeholder="权限code" autocomplete="off" class="layui-input" >
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">权限action_code：</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="act" required  lay-verify="required" placeholder="权限action_code" autocomplete="off" class="layui-input" >
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">权限options_code：</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="op" required  lay-verify="required" placeholder="权限options_code" autocomplete="off" class="layui-input" >
+                    </div>
+                </div>
+                <div id="layui_bottom_btn_box">
+                    <div class="btn-box" >
+                        <div class="layui-input-block">
+                            <button class="layui-btn" lay-submit lay-filter="formSubmit">立即提交</button>
+                            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    var addApi = "{:url('sys_power_map/create_map')}";
+    var form = layui.form;
+
+    //表单渲染
+    form.render();
+    //监听提交
+    form.on('submit(formSubmit)', function(data){
+        if( data.field.pos_name == '' ){
+            layer.msg('请填写广告标题');
+            return false;
+        }
+        if( data.field.pos_desc == '' ){
+            layer.msg('请填写广告描述');
+            return false;
+        }
+        if( data.field.width == '' ){
+            layer.msg('请填写广告宽度');
+            return false;
+        }
+        if( data.field.height == '' ){
+            layer.msg('请填写广告高度');
+            return false;
+        }
+        $.ajax({
+            url: addApi,
+            type: 'post',
+            dataType: 'json',
+            data:data.field,
+            success: function (res) {
+                layer.msg(res.msg, {
+                    time: 500
+                }, function(){
+                    if(!res.code){
+                        parent.window.callback();
+                    }
+                });
+            },
+            error: function (e) {
+                layer.msg('网络错误,操作失败');
+                return false;
+            }
+        });
+        return false;
+    });
+</script>
+{/block}

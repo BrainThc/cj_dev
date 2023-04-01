@@ -1,0 +1,147 @@
+{extend name="base" /}
+{block name="title" }广告管理{/block}
+{block name="static_link" }
+<!--图片上传资源文件-->
+<script type="text/javascript" src="__UPLOAD__/plupload.full.min.js"></script>
+<script type="text/javascript" src="__UPLOAD__/upload.js"></script>
+<link rel="stylesheet" href="__UPLOAD__/css/plupload.css">
+{/block}
+{block name="style" }
+<style>
+    .layui-form-label{width:100px;}
+</style>
+{/block}
+{block name="body" }
+<div class="layui-fluid" >
+    <div class="layui-card" >
+        <div class="layui-card-body">
+            <form class="layui-form" >
+                <div class="layui-form-item">
+                    <input type="hidden" name="pos_id" value="{$info.pos_id}" class="layui-input" >
+                    <label class="layui-form-label">标题：</label>
+                    <div class="layui-input-inline">
+                        <input type="hidden" name="pos_id" required  class="layui-input" value="{$info.pos_id}" >
+                        <input type="hidden" name="adv_id" required  class="layui-input" value="{$info.adv_id}" >
+                        <input type="text" name="adv_title" required  lay-verify="required" placeholder="广告标题" autocomplete="off" class="layui-input" value="{$info.adv_title}" >
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">跳转链接：</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="adv_url"  placeholder="广告位描述" autocomplete="off" class="layui-input" value="{$info.adv_url}"  >
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">( 跳转链接必须 https:// 或 http:// 开头 空内容为无跳转 )</div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">排序：</label>
+                    <div class="layui-input-inline">
+                        <input type="number" name="sequence" required  lay-verify="required" placeholder="广告显示排序" autocomplete="off" value="{$info.sequence}" class="layui-input" onkeyup="checkSort(this)" onblur="alidateFloatEmpty(this)" >
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">( 由大到小排序 0-255 )</div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">广告时间：</label>
+                    <div class="layui-input-inline">
+                        <input type="text" id="start_time" name="start_time" placeholder="开始时间" autocomplete="off" class="layui-input" value="{$info.start_time}" >
+                    </div>
+                    <div class="layui-form-mid layui-word-aux"> - </div>
+                    <div class="layui-input-inline">
+                        <input type="text" id="end_time" name="end_time" placeholder="结束时间" autocomplete="off" class="layui-input" value="{$info.end_time}" >
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">（不填写时间为永久有效）</div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">广告图：</label>
+                    <div class="layui-input-block" id="upload_main" >
+                        <div class="upload_box" style="width:{$info.width / 3}px" >
+                            <input type="hidden" name="adv_img" id="images" value="{$info.adv_img}" class="hid-val-box" readonly />
+                            <div class="upload-title">上传图片</div>
+                            <div class="upload-tips"><span>{$info.width}</span> <span>*</span> <span>{$info.height}</span></div>
+                            <div class="upload-view" id="images_img" v-bind:style="{ width: width/3 + 'px',height: height/3 +'px' }" >
+                                <img src="{$info.adv_img}" onerror="this.src='__UPLOAD__/images/upload_add.png'" >
+                            </div>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+                <div id="layui_bottom_btn_box">
+                    <div class="btn-box" >
+                        <div class="layui-input-block">
+                            <button class="layui-btn" lay-submit lay-filter="formSubmit">保存</button>
+                            <button onclick="parent.window.callback();" class="layui-btn layui-btn-primary">返回</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    var editApi = "{:url('adv_list/update_adv')}";
+    var form = layui.form;
+    layui.use('laydate', function(){
+        var laydate = layui.laydate;
+        //执行一个laydate实例
+        laydate.render({
+            elem: '#start_time' //指定元素
+        });
+        laydate.render({
+            elem: '#end_time' //指定元素
+        });
+    });
+
+    //图片上传配置
+    $("#images").WebUpload(
+        'adv',
+        function(respond){
+            if( !respond.code ){
+                $('#images').val(respond.data.file);
+                $('#images_img img').attr('src',respond.data.file);
+            }else {
+                layer.msg('网络错误，图片上传失败', {
+                    skin: 'layui-layer-huise'
+                });
+                return false;
+            }
+        },
+        function(errors) {
+            if( errors.code == -600 ){
+                alert('图片最大2M');
+            }
+        });
+    $('#images_img').click(function() {
+        $('#images').click();
+    });
+    //监听提交
+    form.on('submit(formSubmit)', function(data){
+        if( data.field.adv_title == '' ){
+            layer.msg('请填写广告标题');
+            return false;
+        }
+        if( data.field.adv_img == '' ){
+            layer.msg('缺少广告图');
+            return false;
+        }
+        $.ajax({
+            url: editApi,
+            type: 'post',
+            dataType: 'json',
+            data:data.field,
+            success: function (res) {
+                layer.msg(res.msg, {
+                    time: 1000
+                }, function(){
+                    if( !res.code ){
+                        parent.window.callback();
+                    }
+                });
+            },
+            error: function (e) {
+                layer.msg('网络错误,提交失败');
+                return false;
+            }
+        });
+        return false;
+    });
+</script>
+{/block}

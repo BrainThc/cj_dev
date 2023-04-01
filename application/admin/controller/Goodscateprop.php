@@ -147,6 +147,7 @@ class Goodscateprop extends Base
             $t = time();
             $insertData['prop_id'] = $prop_id;
             $insertData['value'] = $prop_val_name;
+            $insertData['val_img'] = '';
             $insertData['add_time'] = $t;
             $insertData['edit_time'] = $t;
             Db::startTrans();

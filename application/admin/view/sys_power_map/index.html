@@ -1,0 +1,168 @@
+{extend name="base" /}
+{block name="title" }权限地图管理{/block}
+{block name="style" }
+<style>
+    .layui-card-body{overflow:hidden;}
+    .li-list{ padding:10px; padding-left:0; overflow:hidden;}
+    .li-list-mod{float:left; border-right:1px solid #2F4056; overflow:hidden;}
+    .li-list-cont{float:left; overflow:hidden;}
+    table{width:100%;}
+    table tr {border-bottom:1px solid #2F4056;}
+    .power_mod{text-align:center;}
+    .contr-list{margin:10px;}
+    table td {padding:10px;}
+    .layui-form-checkbox{margin-bottom:10px;}
+</style>
+{/block}
+{block name="body" }
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <div class="btn-box" >
+                <div class="layui-input-inline">
+                    <button class="layui-btn" onclick="add_power(this)" data-type="mod" >添加模块</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <table class="layui-table">
+                <colgroup>
+                    <col width="150">
+                    <col>
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>管理模块</th>
+                    <th>模块权限地图</th>
+                </tr>
+                </thead>
+                <tbody>
+                {volist name="power_list" id="list" }
+                <tr>
+                    <td class="power_mod">
+                        <!--<input type="checkbox" name="power[]" value="{$list.power}" title="{$list.name}">-->
+                        <input type="button" class="layui-btn layui-btn-radius layui-btn-normal" value="{$list.name}">
+                    </td>
+                    <td>
+                        <table class="layui-table">
+                            <colgroup>
+                                <col width="150">
+                                <col>
+                            </colgroup>
+                            <thead>
+                            <tr>
+                                <th>子模块</th>
+                                <th>操作权限</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {volist name="list.children" id="li" }
+                            <tr>
+                                <td>
+                                    <!--<input type="checkbox" name="power[]" value="{$li.power}" title="{$li.name}">-->
+                                    <input type="button" class="layui-btn layui-btn-radius layui-btn-normal" value="{$li.name}">
+
+                                </td>
+                                <td>
+                                    {volist name="li.children" id="contr" }
+                                    <!--<input type="checkbox" name="power[]" value="{$contr.power}" title="{$contr.name}">-->
+                                    <input type="button" class="contr-list layui-btn layui-btn-radius layui-btn-danger" value="{$li.name}">
+                                    {/volist}
+                                </td>
+                            </tr>
+                            {/volist}
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                {/volist}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<!-- 操作模板 -->
+<script type="text/html" id="mapTpl">
+
+</script>
+<script>
+    var getPowerListApi = "{:url('sys_power_map/getMapList')}",
+        addViewUrl = "{:url('sys_power_map/add',['pid'=>'pid'])}",
+        editViewUrl = "{:url('adv_position/edit',['id'=>'pos_id'])}",
+        deletedAPI = "{:url('adv_position/del_pos')}";
+    var form = layui.form;
+    layui.use('form', function() {
+        form.render();
+    });
+
+    form.on('submit', function(data){
+        searchData = data.field;
+        console.log(132);
+        return false;
+        //上述方法等价于
+    });
+
+    function add_power(type){
+        switch(type){
+            case 'mod' :
+                url = addViewUrl.replace('pid',0);
+                break;
+            case 'mod_chile' :
+                url = addViewUrl.replace('pid',0);
+                break;
+            case 'contr' :
+                url = addViewUrl.replace('pid',0);
+                break;
+        }
+        layer.open({
+            title:'添加权限地图',
+            type:2,
+            shadeClose: true,
+            closeBtn:1,
+            area:['80%','80%'],
+            content:addViewUrl,
+            success:function (layero,index){
+                //子窗口操作
+                // LayuiOpenView = window[layero.find('iframe')[0]['name']];
+            }
+        });
+        return false;
+    }
+
+    //头部按钮事件
+    table.on('toolbar(head_btn)', function(obj) {
+        var data = obj.data;
+        var layEvent = obj.event;
+        switch( layEvent ){
+            case 'add' :
+                layer.open({
+                    title:'添加模块地图',
+                    type:2,
+                    shadeClose: true,
+                    closeBtn:1,
+                    area:['80%','80%'],
+                    content:addViewUrl,
+                    success:function (layero,index){
+                        //子窗口操作
+                        // LayuiOpenView = window[layero.find('iframe')[0]['name']];
+                    }
+                });
+                break;
+            case 'btn-expand' :
+                treetable.expandAll('#menus_list');
+                break;
+            case 'btn-fold' :
+                treetable.foldAll('#menus_list');
+                break;
+            default :
+                return false;
+                break;
+        }
+        return false;
+    });
+</script>
+{/block}

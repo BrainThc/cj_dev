@@ -1,30 +1,29 @@
 <?php
 namespace app\admin\controller;
-use think\Db;
-use think\Controller;
-use app\admin\model\Log as LogModel;
 class Log extends Base
 {
-    public function index()
-    {
-        $logModel = model('Log');
+    //获取日志
+    public function getAll(){
+        $size = input('limit',10);
+        $page = input('page',1);
+        $pageLimit = (($page - 1) * $size).','.$size;
         $where = [];
         $keyword = input('keyword','');
         if( $keyword != ''){
-            $where['username'] = ['like',"%{$keyword}%"];
+            $where['u.username'] = ['like',"%{$keyword}%"];
         }
         //配置显示用户
         if( $this->is_super ){//只有超级用户才能查看所有会员
             $sys_user_id = intval(input('sys_user_id'));//id筛选
-            if( $sys_user_id > 0 ){
-                $where['l.sys_user_id'] = ['=',$sys_user_id];
+            if( $sys_user_id > 0 ) {
+                $where['l.sys_user_id'] = ['=', $sys_user_id];
             }
         }else{
             $where['l.sys_user_id'] = ['=',$this->sysUserId];
         }
         $log_type = input('type','');
         if( $log_type != '' ){
-            $where['type'] = ['=',$log_type];
+            $where['l.type'] = ['=',$log_type];
         }
         $start_date = input('start_time','');
         $start_time = strtotime($start_date);
@@ -37,23 +36,28 @@ class Log extends Base
         }else if( !empty($end_date) ){
             $where['l.add_time'] = ['<=',$start_time];
         }
-        $list = Db::table($logModel->getTable().' l')
-            ->join($logModel->getTable('sys_user').' u','u.sys_user_id = l.sys_user_id')
+        $sysUserModel = model('SysUser');
+        $list = $this->model->alias('l')
+            ->join($sysUserModel->getTable('sys_user').' u','u.sys_user_id = l.sys_user_id','left')
             ->field('l.*,u.username')
             ->where($where)
             ->order('l.add_time','desc')
-            ->paginate(15);
+            ->limit($pageLimit)->select();
+
+        $count = $this->model->alias('l')
+            ->join($sysUserModel->getTable('sys_user').' u','u.sys_user_id = l.sys_user_id','left')
+            ->field('l.*,u.username')
+            ->where($where)
+            ->count();
         if( !empty($list) ){
             foreach( $list as $k => $row ){
-                $row['type'] = isset(LogModel::$map_type[$row['type']]) ? LogModel::$map_type[$row['type']] : $row['type'];
+                $row['username'] = empty($row['username']) ? '游客' : $row['username'];
+                $row['type'] = isset($this->logModel::$map_type[$row['type']]) ? $this->logModel::$map_type[$row['type']] : $row['type'];
+                $row['add_time'] = date('Y-m-d H:i:s',$row['add_time']);
                 $list[$k] = $row;
             }
         }
-        $this->assign('list',$list);
-        $page = $list->render();
-        $page = empty($page) ? '' : $page;
-        $this->assign('page',$page);
-        return $this->fetch();
+        returnJson(true,'success',$list,['count'=>$count]);
     }
 
 }

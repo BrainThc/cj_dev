@@ -1,9 +1,6 @@
 <?php
 namespace app\admin\controller;
 use think\Controller;
-use think\Db;
-use app\admin\model\SysUser as SysUserModel;
-use app\admin\model\SysUserGroup as SysUserGroupModel;
 use think\Exception;
 
 class Login extends Controller
@@ -23,6 +20,7 @@ class Login extends Controller
     public function signIn(){
         $data = input('post.');
         $sysUserModel = model('SysUser');
+        $loginModel = model('Login');
         try{
             if( empty($data) || empty($data['username']) || empty($data['password']) )
                 throw new Exception('账号和密码不能为空');
@@ -35,7 +33,7 @@ class Login extends Controller
             //用户检查
             $where['username'] = ['=',$username];
             $where['status'] = ['>',0];
-            $userInfo = Db::table($sysUserModel->getTable())->where($where)->find();
+            $userInfo = $sysUserModel->where($where)->find();
             if( empty($userInfo) )
                 throw new Exception('用户不存在');
 
@@ -47,29 +45,30 @@ class Login extends Controller
                 throw new Exception('验证码错误');
 
             //检查账号状态
-            if( SysUserModel::$map_status[$userInfo['status']]['value'] != SysUserModel::USER_NORMAL )
-                throw new Exception('账号已被禁用');
+            if( $sysUserModel::$map_status[$userInfo['status']]['value'] != $sysUserModel::USER_NORMAL )
+                throw new Exception(    '账号已被禁用');
 
-            Db::startTrans();
+            $loginModel->startTrans();
             //配置登录信息
-            $loginModel = model('Login');
             if( $loginModel->signInfo($userInfo) === false )
                 throw new Exception('网络错误，登录信息记录失败');
 
             //更新用户信息
-            $userInfo['login_count']++;
+            $login_count = $userInfo['login_count'];
+            $login_count++;
             $data = [
-                'login_count'   => $userInfo['login_count'],
+                'login_count'   => $login_count,
                 'last_ip'       => Request()->ip(),
                 'last_time'     => time()
             ];
-            $updateState = Db::table($sysUserModel->getTable())->where('sys_user_id',$userInfo['sys_user_id'])->update($data);
-            if( empty($updateState) ){
+            $updateWhere['sys_user_id'] = $userInfo['sys_user_id'];
+            $updateState = $sysUserModel->where($updateWhere)->update($data);
+            if( empty($updateState) )
                 throw new Exception('网络错误,用户信息异常');
-            }
-            Db::commit();
+
+            $loginModel->commit();
         }catch( Exception $e ){
-            Db::rollback();
+            $loginModel->rollback();
             returnJson(false,$e->getMessage());
         }
         returnJson(true,'登录成功');
@@ -83,9 +82,9 @@ class Login extends Controller
         $loginModel->signOut();
         $userId = session('sys_user_id');
         if( empty($userId) ){
-            $this->success('退出成功，正在跳转~~~',\think\Url::build('admin/login/index'),'',1);
+            $this->success('退出成功，正在跳转~~~',url('login/index'),'',1);
         }else{
-            $this->error('操作失败，正在返回~~~',\think\Url::build('admin/index/index'),'',1);
+            $this->error('操作失败，正在返回~~~',url('index/index'),'',1);
         }
     }
 

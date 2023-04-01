@@ -14,7 +14,7 @@ class Goods extends Model
 
     const SALES_ON = 1;
     const SALES_OFF = 2;
-
+    
     public static $map_sales_status = array(
         self::SALES_ON => array(
             'desc' => '已上架'

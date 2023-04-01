@@ -1,0 +1,33 @@
+<table class="layui-table">
+    <colgroup>
+        <col width="120px">
+        <col>
+        <col v-for="(prop,p_index) in show_list.prop_list" v-if="prop.checked" >
+        <col width="150px">
+        <col width="150px">
+        <col width="150px">
+        <col width="150px">
+    </colgroup>
+    <tbody>
+        <tr>
+            <td>管理员：</td>
+            <td>{:session('sys_user')['username']}</td>
+        </tr>
+        <tr>
+            <td>所属组别：</td>
+            <td>{:session('sys_user')['group_name']}</td>
+        </tr>
+        <tr>
+            <td>登录次数：</td>
+            <td>{:session('sys_user')['login_count']}</td>
+        </tr>
+        <tr>
+            <td>最后登录时间：</td>
+            <td>{:session('sys_user')['last_time']}</td>
+        </tr>
+        <tr>
+            <td>最后登录ip：</td>
+            <td>{:session('sys_user')['last_ip']}</td>
+        </tr>
+    </tbody>
+</table>

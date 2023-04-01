@@ -1,50 +1,33 @@
-<!DOCTYPE>
-<html>
-<head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf8" />
-    <title>日志管理</title>
-    <link rel="stylesheet" type="text/css" href="__SYSCSS__/style.css" />
-    <script type="text/javascript" src="__SYSJS__/jquery.min.js"></script>
-    <script type="text/javascript" src="__SYSJS__/jquery.artDialog.js?skin=blue"></script>
-    <script type="text/javascript" src="__SYSJS__/my.js"></script>
-    <style>
-        .pageTool{ text-align:center;}
-        .pageTool ul{display:block; width:max-content; margin:0 auto;}
-        .pageTool li{float:left; margin:0 10px;}
-    </style>
-</head>
-<body width="100%">
-<div id="result" class="result none"></div>
-<div class="mainbox">
-    <div class="table-list">
-        <table width="100%" cellspacing="0">
-            <thead>
-                <tr>
-                    <th align="left" width="60" >操作账号</th>
-                    <th width="200" align="center">日志类型</th>
-                    <th width="500" align="center">日志内容</th>
-                    <th width="50">操作时间</th>
-                    <th width="50">操作ip</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php if( !empty($list) ): foreach( $list as $role ){ ?>
-                <tr>
-                    <td align="left">{$role['username']}</td>
-                    <td align="center">{$role['type']}</td>
-                    <td align="center">{$role['description']}</td>
-                    <td align="center">{:date('Y-m-d,H:i:s',$role['add_time'])}</td>
-                    <td align="center">{$role['add_ip']}</td>
-                </tr>
-            <?php } endif; ?>
-            </tbody>
-            <tfoot>
-                <tr>
-                    <td colspan="5" class="pageTool">{$page}</td>
-                </tr>
-            </tfoot>
-        </table>
+{extend name="base" /}
+{block name="title" }日志管理{/block}
+{block name="body" }
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <table id="log_list" lay-filter="log"></table>
+        </div>
     </div>
 </div>
-</body>
-</html>
+<script type="text/html" id="toolbarTpl" >
+</script>
+<script>
+    var getLogListApi = "{:url('log/getAll')}";
+    var table = layui.table;
+    //执行渲染
+    table.render({
+        id:'log_list',
+        elem: '#log_list',
+        height: 'auto', //容器高度
+        url: getLogListApi,
+        page: true,
+        toolbar: '#toolbarTpl',
+        cols: [[
+            {field: 'username', title: '操作账号', width: 100},
+            {field: 'type', title: '日志类型',align:'center',width: 100},
+            {field: 'description', title: '日志内容'},
+            {field: 'add_time', title: '操作时间',width: 200},
+            {field: 'add_ip', title: '操作ip',width:200},
+        ]]
+    });
+</script>
+{/block}

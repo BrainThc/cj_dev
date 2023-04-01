@@ -1,6 +1,5 @@
 <?php
 namespace app\admin\model;
-use think\Db;
 use think\Model;
 
 /**
@@ -26,10 +25,7 @@ class SysUserGroup extends Model
     //检查是否超级管理员
     public function checkSuperGroup($group_id){
         //获取所有权限组
-        $groupInfo = Db::table($this->getTable())
-            ->field('status')
-            ->where('group_id',$group_id)
-            ->find();
+        $groupInfo = $this->field('status')->where('group_id',$group_id)->find();
         if( empty($groupInfo) ){
             return false;
         }

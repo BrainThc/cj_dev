@@ -1,0 +1,207 @@
+{extend name="base" /}
+{block name="title" }站点配置{/block}
+{block name="static_link" }
+    <script src="__JS__/vue.min.js"></script>
+    <script src="__LAYUI__/layui/layui.js"></script>
+    <!--图片上传资源文件-->
+    <script type="text/javascript" src="__UPLOAD__/plupload.full.min.js"></script>
+    <script type="text/javascript" src="__UPLOAD__/upload.js"></script>
+    <link rel="stylesheet" href="__UPLOAD__/css/plupload.css">
+{/block}
+{block name="body"}
+<div class="mainbox" id="main_vue" v-cloak>
+    <ul class="layui-nav">
+        <li  v-bind:class="index == 0 ? 'layui-nav-item layui-this' : 'layui-nav-item'" v-for="(nav,index) in site_nav" >
+            <a href="javascript:void(0);" v-on:click="getSiteList(nav.id)" >{{ nav.site_name }}</a>
+        </li>
+    </ul>
+    <div class="layui-fluid" id="upload_main" >
+        <div class="layui-card">
+            <div class="layui-card-body">
+                <div class="layui-form-item"  v-for="(site,index) in site_list" >
+                    <label class="layui-form-label">{{ site.site_name }}：</label>
+                    <div v-if=" site.site_type == 0 ">
+
+                        <div class="layui-input-inline"  >
+                            <input type="text" :placeholder="site.site_name" autocomplete="off" class="layui-input" v-model="site.site_value" >
+                        </div>
+                        <div class="layui-form-mid layui-word-aux">{{ site.site_key }}</div>
+                        <button type="button" v-if="site.site_value != site.default" class="layui-btn layui-btn layui-btn-danger" v-on:click="update_site(index)" >保存修改</button>
+                    </div>
+                    <div  v-else=" site.site_type == 1 " >
+                        <div class="layui-input-inline" style="width:auto;">
+                            <div class="upload_box" style="width:300px; border:none;"  >
+                                <input type="hidden" id="logo" v-model="site.site_value" v-bind:data-id="index" class="hid-val-box" readonly />
+                                <div class="upload-title">上传图片</div>
+                                <div class="upload-view" id="logo_img" >
+                                    <img v-bind:src="site.site_value" onerror="this.src='__UPLOAD__/images/upload_add.png'" >
+                                </div>
+                                <div class="upload-del-box">
+
+                                    <button type="button" v-if="site.site_value != site.default" class="layui-btn layui-btn layui-btn-danger" v-on:click="update_site(index)" >保存修改</button>
+                                </div>
+                            </div>
+                            <div class="clear"></div>
+                            <script>
+                                $(document).ready(function(){
+                                    $("#logo").WebUpload(
+                                        'logo',
+                                        function(respond){
+                                            if( !respond.code ){
+                                                var list_index = $('#'+respond.elementId).attr('data-id');
+                                                vue_main.site_list[list_index].site_value=respond.data.file;
+                                            }else {
+                                                layer.msg('网络错误，图片上传失败');
+                                                return false;
+                                            }
+                                        },
+                                        function(errors) {
+                                            if( errors.code == -600 ){
+                                                alert('图片最大2M');
+                                            }
+                                        },
+                                        'admin'
+                                    );
+                                    $('#logo_img').click(function() {
+                                            $('#logo').click();
+                                        }
+                                    );
+                                });
+                            </script>
+                        </div>
+                    </div>
+                </div>
+                <div id="layui_bottom_btn_box">
+                    <div class="btn-box" >
+                        <div>
+                            <button type="button" class="layui-btn layui-btn layui-btn-danger" v-on:click="save_all"  >保存修改</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var vue_main = new Vue({
+        el: '#main_vue',
+        data:{
+            'site_nav' : [],
+            'site_pid' : 0,
+            'site_list' : []
+        },
+        mounted:function(){
+            var that = this;
+            layui.use('element', function(){
+                var element = layui.element;
+            });
+            //获取头部设置类型
+            that.getNavList(0);
+            //获取列表
+            that.site_pid = that.site_nav[0].id;
+            that.getSiteList();
+        },
+        methods:{
+            //获取头部导航
+            getNavList:function(site_pid){
+                var that = this;
+                if( typeof(site_pid) == 'undefined' ){
+                    site_pid = 0;
+                }
+                $.ajax({
+                    url: "{:url('site/get_config_list')}",
+                    type: 'POST',
+                    dataType: 'json',
+                    async: false,
+                    data:{'site_pid' : site_pid},
+                    success:function (res) {
+                        if( !res.code ){
+                            that.site_nav = res.data;
+                        }
+                    },
+                    error:function(e){
+                        layer.msg('网络错误数据拉取失败');
+                        return false;
+                    }
+                });
+            },
+            //获取类型内的配置列表
+            getSiteList:function(site_pid){
+                var that = this;
+                if( typeof(site_pid) == 'undefined' ){
+                    site_pid = that.site_pid;
+                }else{
+                    that.site_pid = site_pid;
+                }
+                $.ajax({
+                    url: "{:url('site/get_config_list')}",
+                    type: 'POST',
+                    dataType: 'json',
+                    async: false,
+                    data:{'site_pid' : site_pid},
+                    success:function (res) {
+                        if( !res.code ){
+                            for( var i = 0; i < res.data.length; i++ ){
+                                res.data[i].default = res.data[i].site_value;
+                            }
+                            that.site_list = res.data;
+                        }
+                    },
+                    error:function(e){
+                        layer.msg('网络错误数据拉取失败');
+                        return false;
+                    }
+                });
+            },
+            update_site:function(index){
+                var that = this;
+                var _obj = that.site_list[index];
+                if( _obj.site_value == '' ){
+                    if( !confirm(_obj.site_name+'内容为空是否继续保存') ){
+                        return false;
+                    }
+                }
+                _obj.type = 'update';
+                $.ajax({
+                    url: "{:url('site/update_config')}",
+                    type: 'POST',
+                    dataType: 'json',
+                    data:  _obj,
+                    success:function (res) {
+                        layer.msg(res.msg);
+                        if( !res.code ){
+                            that.getSiteList();
+                        }
+                    },
+                    error:function(e){
+                        layer.msg('网络错误，操作失败');
+                        return false;
+                    }
+                });
+            },
+            save_all:function(){
+                var that = this;
+                if( !confirm('是否确认保存') ){
+                    return false;
+                }
+                $.ajax({
+                    url: "{:url('site/update_all_config')}",
+                    type: 'POST',
+                    dataType: 'json',
+                    data:  {info :that.site_list},
+                    success:function (res) {
+                        layer.msg(res.msg);
+                        if( !res.code ){
+                            that.getSiteList();
+                        }
+                    },
+                    error:function(e){
+                        layer.msg('网络错误，操作失败');
+                        return false;
+                    }
+                });
+            }
+        }
+    });
+</script>
+{/block}

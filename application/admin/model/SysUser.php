@@ -1,6 +1,5 @@
 <?php
 namespace app\admin\model;
-use think\Db;
 use think\Model;
 /**
  * 管理员账号model

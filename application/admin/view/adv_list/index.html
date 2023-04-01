@@ -1,0 +1,102 @@
+{extend name="base" /}
+{block name="title" }广告位管理{/block}
+{block name="body" }
+<div class="layui-fluid" >
+    <div class="layui-card">
+        <div class="layui-card-body"  >
+            <form class="layui-form" action="" id="form" >
+                <div class="layui-form-item">
+                    <label class="layui-form-label">广告位id</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="pos_id" value="" placeholder="广告位id" autocomplete="off" class="layui-input">
+                    </div>
+                    <label class="layui-form-label">关键词</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="keyword" value="" placeholder="广告位关键词" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button class="layui-btn" lay-submit lay-filter="formDemo">搜索</button>
+                        <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="layui-fluid">
+    <div class="layui-card">
+        <div class="layui-card-body">
+            <table id="pos_box" lay-filter="pos"></table>
+        </div>
+    </div>
+</div>
+<!-- 操作模板 -->
+<script type="text/html" id="ctrlTpl">
+    <button class="layui-btn layui-btn-danger layui-btn-xs" lay-event="detail" >管理广告内容</button>
+</script>
+<script>
+    var getAdvPostListApi = "{:url('adv_position/get_advpost_list')}";
+    var advListView = "{:url('adv_list/adv_list',['id'=>'pos_id'])}";
+    var table = layui.table;
+    //执行渲染
+    table.render({
+        id:'pos_box',
+        elem: '#pos_box',
+        height: 'auto', //容器高度
+        url: getAdvPostListApi,
+        page: true,
+        toolbar: '#toolbarTpl',
+        cols: [[
+            {field: 'pos_id', title: '管理', width: 120, templet: '#ctrlTpl'},
+            {field: 'pos_id', title: '广告位id', width: 100},
+            {field: 'pos_name', title: '广告位标题'},
+            {field: 'pos_type', title: '广告类型',width:100,align:'center'},
+            {field: 'size', title: '尺寸',width:200,align:'center'},
+            {field: 'pos_adv_num', title: '广告展示数',width:100,align:'center'}
+        ]]
+    });
+    var form = layui.form;
+    layui.use('form', function(){
+        form.on('submit', function(data){
+            searchData = data.field;
+            //上述方法等价于
+            table.reload('pos_box', {
+                where: searchData,
+                page: {
+                    curr: 1 //重新从第 1 页开始
+                }
+            });
+            return false;
+        });
+        form.render();
+    });
+    table.on('tool(pos)', function(obj) {
+        var data = obj.data;
+        var layEvent = obj.event;
+        switch(layEvent) {
+            case 'detail' ://详情
+                url = advListView.replace('pos_id',data.pos_id);
+                layer.open({
+                    title:data.pos_name+'—内容管理',
+                    type:2,
+                    shadeClose: true,
+                    closeBtn:1,
+                    area:['95%','95%'],
+                    content:url
+                });
+                break;
+            default :
+                return false;
+                break;
+        }
+        return false;
+    });
+    //关闭所有二级窗口
+    function callback(){
+        table.reload('pos_box');
+        layer.closeAll();
+    }
+</script>
+{/block}

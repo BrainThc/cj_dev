@@ -1,0 +1,165 @@
+{extend name="base" /}
+{block name="title" }广告位管理{/block}
+{block name="static_link" }
+<!--图片上传资源文件-->
+<script type="text/javascript" src="__UPLOAD__/plupload.full.min.js"></script>
+<script type="text/javascript" src="__UPLOAD__/upload.js"></script>
+<link rel="stylesheet" href="__UPLOAD__/css/plupload.css">
+{/block}
+{block name="style" }
+<style>
+    .layui-form-label{width:100px;}
+</style>
+{/block}
+{block name="body" }
+<div class="layui-fluid" >
+    <div class="layui-card" >
+        <div class="layui-card-body">
+            <form class="layui-form" >
+                <div class="layui-form-item">
+                    <label class="layui-form-label">广告位标题：</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="pos_name" required  lay-verify="required" placeholder="广告位标题" autocomplete="off" class="layui-input" >
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">广告位描述：</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="pos_desc" required  lay-verify="required" placeholder="广告位描述" autocomplete="off" class="layui-input" >
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">限制显示数：</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="pos_adv_num" value="0" placeholder="最多显示的广告数" autocomplete="off" class="layui-input" >
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">( 0 为不限制 )</div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">广告类型：</label>
+                    <div class="layui-input-inline" >
+                        <select name="pos_type" id="pos_type" lay-search >
+                            <?php foreach( $models::$map_type as $type_id => $type ): ?>
+                            <option value="<?=$type_id?>"><?=$type?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">尺寸：</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="width" placeholder="宽" autocomplete="off" class="layui-input" >
+                    </div>
+                    <div class="layui-form-mid layui-word-aux"> * </div>
+                    <div class="layui-input-inline">
+                        <input type="text" name="height" placeholder="高" autocomplete="off" class="layui-input" >
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">占位图：</label>
+                    <div class="layui-input-block" id="upload_main" >
+                        <div class="upload_box" >
+                            <input type="hidden" name="image" id="icon" class="hid-val-box" readonly />
+                            <div class="upload-title">上传图片</div>
+                            <!--<div class="upload-tips"><span>0</span> <span>*</span> <span>0</span></div>-->
+                            <div class="upload-view" id="icon_img" >
+                                <img onerror="this.src='__UPLOAD__/images/upload_add.png'" >
+                            </div>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+                <div id="layui_bottom_btn_box">
+                    <div class="btn-box" >
+                        <div class="layui-input-block">
+                            <button class="layui-btn" lay-submit lay-filter="formSubmit">立即提交</button>
+                            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    var addApi = "{:url('adv_position/create_pos')}";
+    var form = layui.form;
+    //图片上传配置
+    $("#icon").WebUpload(
+        'adv',
+        function(respond){
+            if( !respond.code ){
+                $('#icon').val(respond.data.file);
+                $('#icon_img img').attr('src',respond.data.file);
+            }else {
+                layer.msg('网络错误，图片上传失败');
+                return false;
+            }
+        },
+        function(errors) {
+            if (errors.code == -600) {
+                layer.msg('图片最大2M');
+            }
+        }
+    );
+    $('#icon_img').click(function() {
+        $('#icon').click();
+    });
+
+    //高宽效果
+    $('input[name="width"]').blur(function(){
+        var w = $(this).val();
+        if( w > 180 ){
+            $('#upload_main .upload_box').css('width',w/3+'px');
+            $('#icon_img').css('width',w/3+'px');
+        }
+    });
+    $('input[name="height"]').blur(function(){
+        var h = $(this).val();
+        if( h > 180 ){
+            $('#icon_img').css('height',h/3+'px');
+        }
+    });
+    //表单渲染
+    form.render();
+    //监听提交
+    form.on('submit(formSubmit)', function(data){
+        if( data.field.pos_name == '' ){
+            layer.msg('请填写广告标题');
+            return false;
+        }
+        if( data.field.pos_desc == '' ){
+            layer.msg('请填写广告描述');
+            return false;
+        }
+        if( data.field.width == '' ){
+            layer.msg('请填写广告宽度');
+            return false;
+        }
+        if( data.field.height == '' ){
+            layer.msg('请填写广告高度');
+            return false;
+        }
+        $.ajax({
+            url: addApi,
+            type: 'post',
+            dataType: 'json',
+            data:data.field,
+            success: function (res) {
+                layer.msg(res.msg, {
+                    time: 500
+                }, function(){
+                    if(!res.code){
+                        parent.window.callback();
+                    }
+                });
+            },
+            error: function (e) {
+                layer.msg('网络错误,操作失败');
+                return false;
+            }
+        });
+        return false;
+    });
+</script>
+{/block}

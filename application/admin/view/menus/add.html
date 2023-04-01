@@ -1,0 +1,166 @@
+{extend name="base" /}
+{block name="title" }导航管理{/block}
+{block name="static_link" }
+<!--图片上传资源文件-->
+<script type="text/javascript" src="__UPLOAD__/plupload.full.min.js"></script>
+<script type="text/javascript" src="__UPLOAD__/upload.js"></script>
+<link rel="stylesheet" href="__UPLOAD__/css/plupload.css">
+{/block}
+{block name="body" }
+<div class="layui-fluid" >
+    <div class="layui-card" id="main_vue">
+        <div class="layui-card-body">
+            <form class="layui-form" >
+                <div class="layui-form-item">
+                    <label class="layui-form-label">导航名：</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="menu_name" required  lay-verify="required" placeholder="导航名" autocomplete="off" class="layui-input" >
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">跳转链接：</label>
+                    <div class="layui-input-block" >
+                        <input type="text" name="menu_url" placeholder="跳转链接" autocomplete="off" class="layui-input" >
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">父级导航：</label>
+                    <div class="layui-input-inline" >
+                        <select name="pid" id="menus_box" lay-search >
+                        </select>
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">(支持输入搜索)</div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">排序：</label>
+                    <div class="layui-input-inline">
+                        <input type="number" min="0" max="255" name="sequence" placeholder="0-255" value="0" required autocomplete="off" class="layui-input" onkeyup="checkSort(this)" onblur="alidateFloatEmpty(this)" >
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">( 0-255 排序由大都小排列)</div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">icon图标：</label>
+                    <div class="layui-input-block" id="upload_main" >
+                        <div class="upload_box" >
+                            <input type="hidden" name="menu_icon" id="icon" class="hid-val-box" readonly />
+                            <div class="upload-title">上传图片</div>
+                            <!--<div class="upload-tips"><span>0</span> <span>*</span> <span>0</span></div>-->
+                            <div class="upload-view" id="icon_img" >
+                                <img onerror="this.src='__UPLOAD__/images/upload_add.png'" >
+                            </div>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+                <div id="layui_bottom_btn_box">
+                    <div class="btn-box" >
+                        <div class="layui-input-block">
+                            <button class="layui-btn" lay-submit lay-filter="formSubmit">立即提交</button>
+                            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    var typeid = getUrlParam('typeId');
+    var getMenusListApi = "{:url('Menus/get_menus_list')}";
+    var addApi = "{:url('Menus/create_menu')}";
+    var form = layui.form;
+    function getMenusAll(){
+        $.ajax({
+            url: getMenusListApi,
+            type: 'post',
+            dataType: 'json',
+            data:{
+                type:typeid,
+                showType:'tree_list',
+            },
+            success:function (res) {
+                if(!res.code){
+                    //区分层级 + 分层标题处理
+                    res.data = setTreeGrid(res.data);
+                    $('select[name=pid]').append('<option value="0">为顶级分类</option>');
+                    for( var l = 0; l < res.data.length; l++ ){
+                        $('select[name=pid]').append('<option value="'+res.data[l].id+'">'+res.data[l].name+'</option>');
+                    }
+                    form.render();
+                }else{
+                    layer.msg(res.msg, {
+                        skin: 'layui-layer-huise'
+                    });
+                }
+            },
+            error:function(e){
+                layer.msg('网络错误数据拉取失败', {
+                    skin: 'layui-layer-huise'
+                });
+                return false;
+            }
+        });
+    }
+    getMenusAll();
+    //监听提交
+    form.on('submit(formSubmit)', function(data){
+        data.field.menus_type_id = typeid;
+        if( data.field.menu_name == '' ){
+            layer.msg('导航名不能为空', {
+                skin: 'layui-layer-huise'
+            });
+            return false;
+        }
+        if( data.field.menus_type_id == '' || data.field.menus_type_id == 0 ){
+            layer.msg('页面错误，请重新进入', {
+                skin: 'layui-layer-huise'
+            });
+            return false;
+        }
+        $.ajax({
+            url: addApi,
+            type: 'post',
+            dataType: 'json',
+            data:data.field,
+            success: function (res) {
+                layer.msg(res.msg, {
+                    time: 500
+                }, function(){
+                    if(!res.code){
+                        parent.window.clearWin();
+                    }
+                });
+            },
+            error: function (e) {
+                layer.msg('网络错误,操作失败', {
+                    skin: 'layui-layer-huise'
+                });
+                return false;
+            }
+        });
+        return false;
+    });
+    //图片上传配置
+    $("#icon").WebUpload(
+        'menus',
+        function(respond){
+            if( !respond.code ){
+                $('#icon').val(respond.data.file);
+                $('#icon_img img').attr('src',respond.data.file);
+            }else {
+                layer.msg('网络错误，图片上传失败', {
+                    skin: 'layui-layer-huise'
+                });
+                return false;
+            }
+        },
+        function(errors) {
+            if( errors.code == -600 ){
+                alert('图片最大2M');
+            }
+        });
+    $('#icon_img').click(function() {
+        $('#icon').click();
+    });
+</script>
+{/block}
